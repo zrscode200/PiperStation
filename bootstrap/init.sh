@@ -10,7 +10,7 @@ TARGET_INPUT=""
 usage() {
   cat <<'EOF'
 Usage:
-  bootstrap/init.sh --runtime codex|claude|codex,claude [--dry-run] [--git-init] /path/to/piper-station-hub
+  bootstrap/init.sh --runtime codex|claude|opencode|codex,claude,opencode [--dry-run] [--git-init] /path/to/piper-station-hub
 
 Creates or updates a Piper Station hub directory from generated runtime templates.
 Unselected runtime surfaces are left alone. Shared project records under
@@ -50,7 +50,7 @@ normalize_runtimes() {
     runtime=$(printf "%s" "$runtime" | sed 's/^ *//; s/ *$//')
     if [ -n "$runtime" ]; then
       case "$runtime" in
-        codex|claude)
+        codex|claude|opencode)
           case " $result " in *" $runtime "*) ;; *) result="${result}${result:+ }$runtime" ;; esac
           ;;
         *) echo "Error: unsupported runtime: $runtime" >&2; return 1 ;;
@@ -75,7 +75,7 @@ fi
 [ "$TARGET_DIR" != "$SOURCE_ROOT" ] || { echo "Error: refusing to initialize the bootstrap source as a hub: $SOURCE_ROOT" >&2; exit 1; }
 
 is_runtime_selected() { printf '%s\n' "$RUNTIMES" | grep -qx -- "$1"; }
-rel_runtime() { case "$1" in AGENTS.md|.codex/*|.piper/plugin/*) printf codex ;; CLAUDE.md|.claude/*) printf claude ;; *) printf shared ;; esac; }
+rel_runtime() { case "$1" in AGENTS.md|.codex/*|.piper/plugin/*) printf codex ;; CLAUDE.md|.claude/*) printf claude ;; opencode.json|.opencode/*) printf opencode ;; *) printf shared ;; esac; }
 is_managed() { case "$1" in projects/*) return 1 ;; *) return 0 ;; esac; }
 is_safe_manifest_rel() { case "$1" in ""|/*|../*|*/../*|projects/*) return 1 ;; *) return 0 ;; esac; }
 
@@ -97,7 +97,7 @@ copy_template_file() { rel="$1"; src=$(template_source "$rel") || { echo "Error:
 
 json_list_from_file() { file="$1"; first=true; while IFS= read -r rel; do [ -n "$rel" ] || continue; if [ "$first" = true ]; then first=false; else printf ',\n'; fi; printf '    "%s"' "$rel"; done < "$file"; }
 manifest_files() { current_file="$1"; cat "$current_file"; [ -f "$TARGET_DIR/.piper/hub-manifest.json" ] || return 0; previous_managed_files | while IFS= read -r rel; do [ -n "$rel" ] || continue; is_safe_manifest_rel "$rel" || continue; rel_rt=$(rel_runtime "$rel"); if [ "$rel_rt" != shared ] && ! is_runtime_selected "$rel_rt" && [ -e "$TARGET_DIR/$rel" ]; then printf '%s\n' "$rel"; fi; done; }
-runtime_file_from_manifest_files() { files="$1"; { if grep -q '^AGENTS.md$\|^\.codex/\|^\.piper/plugin/' "$files"; then printf 'codex\n'; fi; if grep -q '^CLAUDE.md$\|^\.claude/' "$files"; then printf 'claude\n'; fi; } | sort -u; }
+runtime_file_from_manifest_files() { files="$1"; { if grep -q '^\.codex/\|^\.piper/plugin/' "$files"; then printf 'codex\n'; fi; if grep -q '^\.claude/' "$files"; then printf 'claude\n'; fi; if grep -q '^opencode.json$\|^\.opencode/' "$files"; then printf 'opencode\n'; fi; } | sort -u; }
 write_manifest() { current_file="$1"; manifest="$TARGET_DIR/.piper/hub-manifest.json"; if [ "$DRY_RUN" = true ]; then [ -e "$manifest" ] && echo "would update managed hub file: .piper/hub-manifest.json" || echo "would write: .piper/hub-manifest.json"; return; fi; mkdir -p "$TARGET_DIR/.piper"; all="$TARGET_DIR/.piper/hub-manifest.files.$$"; managed="$TARGET_DIR/.piper/hub-manifest.managed.$$"; runtimes="$TARGET_DIR/.piper/hub-manifest.runtimes.$$"; tmp="$manifest.tmp.$$"; manifest_files "$current_file" | sort -u > "$all"; while IFS= read -r rel; do [ -n "$rel" ] && is_managed "$rel" && printf '%s\n' "$rel"; done < "$all" | sort -u > "$managed"; runtime_file_from_manifest_files "$all" > "$runtimes"; installed_at=$(date -u +"%Y-%m-%dT%H:%M:%SZ"); { printf '{\n'; printf '  "hub_version": "%s",\n' "$HUB_VERSION"; printf '  "installed_at": "%s",\n' "$installed_at"; printf '  "runtimes": [\n'; json_list_from_file "$runtimes"; printf '\n  ],\n'; printf '  "file_mode": "managed-outside-projects",\n'; printf '  "files": [\n'; json_list_from_file "$all"; printf '\n  ],\n'; printf '  "managed_files": [\n'; json_list_from_file "$managed"; printf '\n  ]\n'; printf '}\n'; } > "$tmp"; mv "$tmp" "$manifest"; chmod 644 "$manifest"; rm -f "$all" "$managed" "$runtimes"; echo "write managed: .piper/hub-manifest.json"; }
 
 if [ "$DRY_RUN" = true ]; then current_files_tmp="${TMPDIR:-/tmp}/piper-current-files.$$"; else mkdir -p "$TARGET_DIR/.piper"; current_files_tmp="$TARGET_DIR/.piper/current-files.$$"; fi

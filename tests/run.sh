@@ -25,6 +25,7 @@ python3 "$ROOT/scripts/render_templates.py" --check >/dev/null
 python3 -m json.tool "$ROOT/generated/codex/.codex/hooks.json" >/dev/null
 python3 -m json.tool "$ROOT/generated/codex/.piper/plugin/.codex-plugin/plugin.json" >/dev/null
 python3 -m json.tool "$ROOT/generated/claude/.claude/settings.json" >/dev/null
+python3 -m json.tool "$ROOT/generated/opencode/opencode.json" >/dev/null
 
 codex_hub="$TMP_ROOT/codex-hub"
 "$BOOTSTRAP" --runtime codex "$codex_hub" > "$TMP_ROOT/codex.log"
@@ -135,6 +136,51 @@ assert_contains "$TMP_ROOT/claude-session-compact.log" "Resume guidance"
 (cd "$claude_hub" && sh .claude/hooks/pre-compact-protection.sh) > "$TMP_ROOT/claude-pre-compact.log"
 assert_contains "$TMP_ROOT/claude-pre-compact.log" "systemMessage"
 
+opencode_hub="$TMP_ROOT/opencode-hub"
+"$BOOTSTRAP" --runtime opencode "$opencode_hub" > "$TMP_ROOT/opencode.log"
+assert_file "$opencode_hub/AGENTS.md"
+assert_file "$opencode_hub/STATION.md"
+assert_file "$opencode_hub/opencode.json"
+assert_file "$opencode_hub/.opencode/agents/architect.md"
+assert_file "$opencode_hub/.opencode/agents/docs-researcher.md"
+assert_file "$opencode_hub/.opencode/agents/implementer.md"
+assert_file "$opencode_hub/.opencode/agents/reviewer.md"
+assert_file "$opencode_hub/.opencode/agents/security-reviewer.md"
+assert_file "$opencode_hub/.opencode/agents/tester.md"
+assert_file "$opencode_hub/.opencode/commands/ralph.md"
+assert_file "$opencode_hub/.opencode/commands/work-on.md"
+assert_file "$opencode_hub/.opencode/commands/compact-handoff.md"
+assert_file "$opencode_hub/.opencode/skills/ralph-loop/SKILL.md"
+assert_file "$opencode_hub/.piper/lib/bootstrap/add-project.sh"
+assert_executable "$opencode_hub/bin/add-project"
+assert_file_count "$opencode_hub/.opencode/agents" "*.md" 7
+assert_file_count "$opencode_hub/.opencode/commands" "*.md" 5
+assert_file_count "$opencode_hub/.opencode/skills" "SKILL.md" 5
+assert_not_exists "$opencode_hub/CLAUDE.md"
+assert_not_exists "$opencode_hub/.codex"
+assert_not_exists "$opencode_hub/.claude"
+assert_not_exists "$opencode_hub/.piper/plugin"
+assert_contains "$opencode_hub/.piper/hub-manifest.json" '"opencode"'
+assert_not_contains "$opencode_hub/.piper/hub-manifest.json" '"codex"'
+assert_not_contains "$opencode_hub/.piper/hub-manifest.json" '"claude"'
+assert_contains "$opencode_hub/.opencode/commands/work-on.md" "argument-hint"
+assert_contains "$opencode_hub/.opencode/commands/work-on.md" "piper-project:start"
+assert_contains "$opencode_hub/.opencode/commands/ralph.md" "Implementation Review Gate"
+assert_contains "$opencode_hub/.opencode/commands/compact-handoff.md" "Required Compact Resume Packet"
+assert_contains "$opencode_hub/.opencode/skills/ralph-loop/SKILL.md" "OpenCode session"
+assert_contains "$opencode_hub/.opencode/skills/ralph-loop/SKILL.md" "read-only reviewer subagent"
+assert_contains "$opencode_hub/.opencode/agents/README.md" "same helper role set as the Codex and Claude Code"
+assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "OpenAI developer"
+assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "docs MCP server"
+assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "mcpServers"
+assert_contains "$opencode_hub/.opencode/agents/security-reviewer.md" "Authentication and authorization"
+assert_contains "$opencode_hub/STATION.md" "opencode.json"
+assert_contains "$opencode_hub/opencode.json" '"compaction"'
+assert_contains "$opencode_hub/opencode.json" '"permission"'
+assert_not_contains "$opencode_hub/.opencode/commands/superpowers.md" "Force Superpowers"
+python3 -m json.tool "$opencode_hub/.piper/hub-manifest.json" >/dev/null
+python3 -m json.tool "$opencode_hub/opencode.json" >/dev/null
+
 both_hub="$TMP_ROOT/both-hub"
 "$BOOTSTRAP" --runtime codex,claude "$both_hub" > "$TMP_ROOT/both.log"
 assert_file "$both_hub/AGENTS.md"
@@ -144,6 +190,28 @@ assert_file "$both_hub/.claude/settings.json"
 assert_contains "$both_hub/STATION.md" "A hub may have both surfaces installed"
 assert_contains "$both_hub/.piper/hub-manifest.json" '"codex"'
 assert_contains "$both_hub/.piper/hub-manifest.json" '"claude"'
+
+opencode_claude_hub="$TMP_ROOT/opencode-claude-hub"
+"$BOOTSTRAP" --runtime opencode,claude "$opencode_claude_hub" > "$TMP_ROOT/opencode-claude.log"
+assert_file "$opencode_claude_hub/AGENTS.md"
+assert_file "$opencode_claude_hub/CLAUDE.md"
+assert_file "$opencode_claude_hub/opencode.json"
+assert_file "$opencode_claude_hub/.claude/settings.json"
+assert_contains "$opencode_claude_hub/.piper/hub-manifest.json" '"opencode"'
+assert_contains "$opencode_claude_hub/.piper/hub-manifest.json" '"claude"'
+assert_not_contains "$opencode_claude_hub/.piper/hub-manifest.json" '"codex"'
+
+triple_hub="$TMP_ROOT/triple-hub"
+"$BOOTSTRAP" --runtime codex,claude,opencode "$triple_hub" > "$TMP_ROOT/triple.log"
+assert_file "$triple_hub/AGENTS.md"
+assert_file "$triple_hub/CLAUDE.md"
+assert_file "$triple_hub/opencode.json"
+assert_file "$triple_hub/.codex/config.toml"
+assert_file "$triple_hub/.claude/settings.json"
+assert_file "$triple_hub/.opencode/agents/reviewer.md"
+assert_contains "$triple_hub/.piper/hub-manifest.json" '"codex"'
+assert_contains "$triple_hub/.piper/hub-manifest.json" '"claude"'
+assert_contains "$triple_hub/.piper/hub-manifest.json" '"opencode"'
 
 printf 'local note
 ' > "$both_hub/projects/README.md"
@@ -236,8 +304,8 @@ assert_dir "$git_hub/.git"
 
 if "$BOOTSTRAP" --runtime codex "$ROOT" > "$TMP_ROOT/source-refuse.log" 2>&1; then fail "bootstrap should refuse source repo"; fi
 assert_contains "$TMP_ROOT/source-refuse.log" "refusing to initialize the bootstrap source"
-if grep -R -n '{{' "$ROOT/generated" > "$TMP_ROOT/placeholders.log"; then cat "$TMP_ROOT/placeholders.log" >&2; fail "unrendered template placeholder found"; fi
-if grep -R -n '^argument-hint: [^"]' "$ROOT/generated/codex/.piper/plugin/commands" "$ROOT/generated/claude/.claude/commands" > "$TMP_ROOT/frontmatter.log"; then cat "$TMP_ROOT/frontmatter.log" >&2; fail "unquoted argument-hint frontmatter found"; fi
+if grep -R -n '{{' "$ROOT/generated/codex" "$ROOT/generated/claude" "$ROOT/generated/opencode" > "$TMP_ROOT/placeholders.log"; then cat "$TMP_ROOT/placeholders.log" >&2; fail "unrendered template placeholder found"; fi
+if grep -R -n '^argument-hint: [^"]' "$ROOT/generated/codex/.piper/plugin/commands" "$ROOT/generated/claude/.claude/commands" "$ROOT/generated/opencode/.opencode/commands" > "$TMP_ROOT/frontmatter.log"; then cat "$TMP_ROOT/frontmatter.log" >&2; fail "unquoted argument-hint frontmatter found"; fi
 
 git -C "$ROOT" diff --check
 

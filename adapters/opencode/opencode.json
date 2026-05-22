@@ -1,0 +1,28 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "reserved": 10000
+  },
+  "instructions": [
+    "STATION.md",
+    "PRODUCT.md",
+    "ARCHITECTURE.md",
+    "CONVENTIONS.md",
+    "TESTING.md",
+    "SECURITY.md",
+    "automation-policy.md"
+  ],
+  "permission": {
+    "edit": "ask",
+    "bash": "ask"
+  },
+  "mcp": {
+    "openaiDeveloperDocs": {
+      "type": "http",
+      "url": "https://developers.openai.com/mcp",
+      "enabled": false
+    }
+  }
+}

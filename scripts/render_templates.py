@@ -10,7 +10,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNTIMES = ("codex", "claude")
+RUNTIMES = ("codex", "claude", "opencode")
 COMMANDS = ("add-project.md", "work-on.md", "superpowers.md", "ralph.md", "compact-handoff.md")
 SKILLS = (
     "hub-workflow/SKILL.md",
@@ -55,6 +55,24 @@ RUNTIME_CONFIG = {
         "workspace_access": "If the repo is outside the hub, ensure Claude Code has workspace access through `/add-dir <repo-path>` or `claude --add-dir <repo-path>` before editing.",
         "registration_entrypoints": "`/add-project` or `./bin/add-project`",
         "review_helper": "read-only reviewer agent",
+    },
+    "opencode": {
+        "runtime_name": "OpenCode",
+        "instruction_doc": "AGENTS.md",
+        "command_dir": ".opencode/commands",
+        "skill_dir": ".opencode/skills",
+        "frontmatter": {
+            "add-project.md": "---\ndescription: Register a project repo with this Piper Station hub\nargument-hint: \"[repo path and optional project id]\"\n---\n\n",
+            "work-on.md": "---\ndescription: Orient to a registered project and route work through Piper Station modes\nargument-hint: \"[project id or repo path and request]\"\n---\n\n",
+            "superpowers.md": "---\ndescription: Enter Superpowers Mode for discovery, specification, and planning\nargument-hint: \"[project id or repo path and request]\"\n---\n\n",
+            "ralph.md": "---\ndescription: Enter Ralph Mode for one scoped implementation slice\nargument-hint: \"[project id and optional task id]\"\n---\n\n",
+            "compact-handoff.md": "---\ndescription: Prepare compact-safe project work records\nargument-hint: \"[project id and current task]\"\n---\n\n",
+        },
+        "runtime_native": "OpenCode-native",
+        "runtime_session": "OpenCode session",
+        "workspace_access": "If the project repo is outside the current working directory, open OpenCode from the project directory or adjust workspace access before editing.",
+        "registration_entrypoints": "`./bin/add-project`",
+        "review_helper": "read-only reviewer subagent",
     },
 }
 

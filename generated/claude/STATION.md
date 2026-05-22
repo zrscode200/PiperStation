@@ -27,6 +27,7 @@ files provide native entry points; project records stay shared under
 
 - Codex: `AGENTS.md`, `.codex/`, and `.piper/plugin/`.
 - Claude Code: `CLAUDE.md` and `.claude/`.
+- OpenCode: `opencode.json` and `.opencode/`.
 
 A hub may have both surfaces installed. Use one harness actively on a project at
 a time unless the user explicitly coordinates parallel work.
