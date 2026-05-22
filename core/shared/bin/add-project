@@ -359,6 +359,37 @@ write_if_missing() {
   fi
 }
 
+write_project_json_marker() {
+  rel=".piper/project.json"
+  dst="$PROJECT_REPO/.piper/project.json"
+  content="$(project_json)"
+
+  if [ "$DRY_RUN" = true ]; then
+    if [ -f "$dst" ] && grep -q '"runtime"[[:space:]]*:' "$dst"; then
+      echo "would update: $rel"
+    elif [ -f "$dst" ]; then
+      echo "would preserve: $rel"
+    else
+      echo "would create: $rel"
+    fi
+    return
+  fi
+
+  ensure_parent_dir "$dst"
+  existed=false
+  [ -f "$dst" ] && existed=true
+  if [ -f "$dst" ] && ! grep -q '"runtime"[[:space:]]*:' "$dst"; then
+    echo "preserve: $rel"
+  else
+    printf "%s\n" "$content" > "$dst"
+    if [ "$existed" = true ]; then
+      echo "update: $rel"
+    else
+      echo "create: $rel"
+    fi
+  fi
+}
+
 memory_md() {
   cat <<EOF
 # $DISPLAY_NAME Memory
@@ -400,8 +431,7 @@ project_json() {
   "schema_version": 1,
   "project_id": "$escaped_project_id",
   "display_name": "$escaped_display_name",
-  "hub_lite": true,
-  "runtime": "claude-code"
+  "hub_lite": true
 }
 EOF
 }
@@ -433,7 +463,7 @@ write_if_missing "projects/$PROJECT_ID/memory.md" "$MEMORY_MD" "$(memory_md)"
 write_if_missing "projects/$PROJECT_ID/decisions.md" "$DECISIONS_MD" "$(decisions_md)"
 
 if [ "$WRITE_REPO_MARKERS" = true ]; then
-  write_if_missing ".piper/project.json" "$PROJECT_REPO/.piper/project.json" "$(project_json)"
+  write_project_json_marker
   write_if_missing "PIPER.md" "$PROJECT_REPO/PIPER.md" "$(piper_md)"
 else
   echo "skip repo markers: --hub-only"

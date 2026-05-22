@@ -10,9 +10,11 @@ mkdir -p "$TMP_ROOT"
 fail() { echo "FAIL: $1" >&2; exit 1; }
 assert_file() { [ -f "$1" ] || fail "missing file: $1"; }
 assert_dir() { [ -d "$1" ] || fail "missing directory: $1"; }
+assert_executable() { [ -x "$1" ] || fail "expected executable file: $1"; }
 assert_not_exists() { [ ! -e "$1" ] || fail "unexpected path exists: $1"; }
 assert_contains() { grep -q -- "$2" "$1" || fail "expected '$2' in $1"; }
 assert_not_contains() { if grep -q -- "$2" "$1"; then fail "did not expect '$2' in $1"; fi; }
+assert_file_count() { actual=$(find "$1" -type f -name "$2" | wc -l | tr -d ' '); [ "$actual" = "$3" ] || fail "expected $3 files matching $2 under $1, found $actual"; }
 init_git_repo() { git -C "$1" init -q; git -C "$1" config user.name "Piper Unified Tests"; git -C "$1" config user.email "tests@example.invalid"; }
 
 echo "test root: $TMP_ROOT"
@@ -27,26 +29,89 @@ python3 -m json.tool "$ROOT/generated/claude/.claude/settings.json" >/dev/null
 codex_hub="$TMP_ROOT/codex-hub"
 "$BOOTSTRAP" --runtime codex "$codex_hub" > "$TMP_ROOT/codex.log"
 assert_file "$codex_hub/AGENTS.md"
+assert_file "$codex_hub/STATION.md"
 assert_file "$codex_hub/.codex/config.toml"
+assert_file "$codex_hub/.codex/hooks/session-context.sh"
+assert_file "$codex_hub/.codex/hooks/stop-reminder.sh"
 assert_file "$codex_hub/.piper/plugin/commands/ralph.md"
+assert_file "$codex_hub/.piper/plugin/commands/work-on.md"
+assert_file "$codex_hub/.piper/plugin/commands/compact-handoff.md"
 assert_file "$codex_hub/.piper/plugin/skills/ralph-loop/SKILL.md"
+assert_file "$codex_hub/.piper/lib/bootstrap/add-project.sh"
+assert_executable "$codex_hub/bin/add-project"
+assert_executable "$codex_hub/.codex/hooks/session-context.sh"
 assert_not_exists "$codex_hub/CLAUDE.md"
 assert_not_exists "$codex_hub/.claude"
+assert_file_count "$codex_hub/.piper/plugin/skills" "SKILL.md" 5
 assert_contains "$codex_hub/.piper/hub-manifest.json" '"codex"'
 assert_not_contains "$codex_hub/.piper/hub-manifest.json" '"claude"'
+assert_contains "$codex_hub/.piper/plugin/commands/work-on.md" "argument-hint"
+assert_not_contains "$codex_hub/.piper/plugin/commands/work-on.md" "argument-hint: \\["
+assert_contains "$codex_hub/.piper/plugin/commands/work-on.md" 'argument-hint: "'
+assert_contains "$codex_hub/.piper/plugin/commands/work-on.md" "piper-project:start"
+assert_contains "$codex_hub/.piper/plugin/commands/work-on.md" "This command is prompt-driven routing"
+assert_contains "$codex_hub/.piper/plugin/commands/ralph.md" "Implementation Review Gate"
+assert_contains "$codex_hub/.piper/plugin/commands/ralph.md" "queued foundational work"
+assert_contains "$codex_hub/.piper/plugin/commands/ralph.md" "review debt"
+assert_contains "$codex_hub/.piper/plugin/commands/compact-handoff.md" "Required Compact Resume Packet"
+assert_contains "$codex_hub/.piper/plugin/commands/compact-handoff.md" "Broad-search triggers"
+assert_contains "$codex_hub/.piper/plugin/skills/ralph-loop/SKILL.md" "Review gate examples"
+assert_contains "$codex_hub/.piper/plugin/skills/ralph-loop/SKILL.md" "Post-Compact Resume"
+assert_contains "$codex_hub/.piper/plugin/skills/ralph-loop/SKILL.md" "changed code or diff"
+assert_contains "$codex_hub/.piper/plugin/skills/superpowers-planning/SKILL.md" "Make it better"
+assert_contains "$codex_hub/STATION.md" "designed resume anchors"
+assert_contains "$codex_hub/STATION.md" "Do not claim"
+assert_not_contains "$codex_hub/.piper/plugin/commands/superpowers.md" "Force Superpowers"
+assert_not_contains "$codex_hub/STATION.md" "does not bring back"
+assert_not_exists "$codex_hub/.piper/plugin/skills/planning/SKILL.md"
+assert_not_exists "$codex_hub/.piper/plugin/skills/implementation-loop/SKILL.md"
 python3 -m json.tool "$codex_hub/.piper/hub-manifest.json" >/dev/null
+(cd "$codex_hub" && sh .codex/hooks/session-context.sh) > "$TMP_ROOT/codex-session-start.log"
+assert_contains "$TMP_ROOT/codex-session-start.log" "hub-lite is active"
+printf '{"hook_event_name":"SessionStart","source":"resume"}' | (cd "$codex_hub" && sh .codex/hooks/session-context.sh) > "$TMP_ROOT/codex-session-resume.log"
+assert_contains "$TMP_ROOT/codex-session-resume.log" "Resume guidance"
 
 claude_hub="$TMP_ROOT/claude-hub"
 "$BOOTSTRAP" --runtime claude "$claude_hub" > "$TMP_ROOT/claude.log"
 assert_file "$claude_hub/CLAUDE.md"
+assert_file "$claude_hub/STATION.md"
 assert_file "$claude_hub/.claude/settings.json"
+assert_file "$claude_hub/.claude/hooks/session-context.sh"
+assert_file "$claude_hub/.claude/hooks/pre-compact-protection.sh"
+assert_file "$claude_hub/.claude/hooks/post-compact-resume.sh"
 assert_file "$claude_hub/.claude/commands/ralph.md"
+assert_file "$claude_hub/.claude/commands/work-on.md"
+assert_file "$claude_hub/.claude/commands/compact-handoff.md"
 assert_file "$claude_hub/.claude/skills/ralph-loop/SKILL.md"
+assert_file "$claude_hub/.piper/lib/bootstrap/add-project.sh"
+assert_executable "$claude_hub/bin/add-project"
+assert_executable "$claude_hub/.claude/hooks/session-context.sh"
+assert_file_count "$claude_hub/.claude/commands" "*.md" 5
+assert_file_count "$claude_hub/.claude/skills" "SKILL.md" 5
 assert_not_exists "$claude_hub/AGENTS.md"
 assert_not_exists "$claude_hub/.codex"
 assert_not_exists "$claude_hub/.piper/plugin"
 assert_contains "$claude_hub/.piper/hub-manifest.json" '"claude"'
+assert_not_contains "$claude_hub/.piper/hub-manifest.json" '"codex"'
+assert_contains "$claude_hub/.claude/commands/work-on.md" 'argument-hint: "<project-id> \[request\]"'
+assert_contains "$claude_hub/.claude/commands/compact-handoff.md" 'argument-hint: "\[project-id\] \[current task\]"'
+assert_contains "$claude_hub/.claude/commands/work-on.md" "/add-dir"
+assert_contains "$claude_hub/.claude/commands/work-on.md" "piper-project:start"
+assert_contains "$claude_hub/.claude/commands/ralph.md" "Implementation Review Gate"
+assert_contains "$claude_hub/.claude/commands/ralph.md" "Risk tier controls approval before execution, not review selection"
+assert_contains "$claude_hub/.claude/commands/compact-handoff.md" "Required Compact Resume Packet"
+assert_contains "$claude_hub/.claude/commands/compact-handoff.md" "Do not say"
+assert_contains "$claude_hub/.claude/skills/hub-workflow/SKILL.md" "/add-dir"
+assert_contains "$claude_hub/.claude/skills/ralph-loop/SKILL.md" "Claude Code session"
+assert_contains "$claude_hub/.claude/skills/ralph-loop/SKILL.md" "read-only reviewer agent"
+assert_contains "$claude_hub/.claude/settings.json" "PreCompact"
+assert_contains "$claude_hub/STATION.md" "compact-ready"
+assert_not_contains "$claude_hub/.claude/commands/superpowers.md" "Force Superpowers"
 python3 -m json.tool "$claude_hub/.piper/hub-manifest.json" >/dev/null
+printf '{"hook_event_name":"SessionStart","source":"compact"}' | (cd "$claude_hub" && sh .claude/hooks/session-context.sh) > "$TMP_ROOT/claude-session-compact.log"
+assert_contains "$TMP_ROOT/claude-session-compact.log" "Resume guidance"
+(cd "$claude_hub" && sh .claude/hooks/pre-compact-protection.sh) > "$TMP_ROOT/claude-pre-compact.log"
+assert_contains "$TMP_ROOT/claude-pre-compact.log" "systemMessage"
 
 both_hub="$TMP_ROOT/both-hub"
 "$BOOTSTRAP" --runtime codex,claude "$both_hub" > "$TMP_ROOT/both.log"
@@ -91,6 +156,11 @@ assert_not_exists "$both_hub/.codex/hooks/old-managed.sh"
 "$BOOTSTRAP" --runtime claude "$both_hub" > "$TMP_ROOT/stale-claude.log"
 assert_not_exists "$both_hub/.claude/hooks/old-managed.sh"
 
+invalid_hub="$TMP_ROOT/invalid-runtime"
+if "$BOOTSTRAP" --runtime codex,bad "$invalid_hub" > "$TMP_ROOT/invalid-runtime.log" 2>&1; then fail "bootstrap should reject unsupported runtime"; fi
+assert_contains "$TMP_ROOT/invalid-runtime.log" "unsupported runtime: bad"
+assert_not_exists "$invalid_hub"
+
 project_repo="$TMP_ROOT/project-repo"
 mkdir -p "$project_repo"
 init_git_repo "$project_repo"
@@ -103,7 +173,28 @@ assert_file "$both_hub/projects/sample-project/decisions.md"
 assert_not_exists "$both_hub/projects/sample-project/work"
 assert_file "$project_repo/.piper/project.json"
 assert_file "$project_repo/PIPER.md"
+assert_contains "$project_repo/.piper/project.json" '"hub_lite": true'
+assert_not_contains "$project_repo/.piper/project.json" '"runtime"'
 python3 -m json.tool "$project_repo/.piper/project.json" >/dev/null
+
+legacy_repo="$TMP_ROOT/legacy-repo"
+mkdir -p "$legacy_repo/.piper"
+init_git_repo "$legacy_repo"
+(cd "$legacy_repo" && printf 'legacy
+' > README.md && git add README.md && git commit -m "Initial legacy" >/dev/null)
+printf '{
+  "schema_version": 1,
+  "project_id": "legacy-project",
+  "display_name": "Legacy Project",
+  "hub_lite": true,
+  "runtime": "claude-code"
+}
+' > "$legacy_repo/.piper/project.json"
+"$ADD_PROJECT" --hub "$both_hub" --repo "$legacy_repo" --project-id legacy-project --display-name "Legacy Project" > "$TMP_ROOT/legacy-add-project.log"
+assert_file "$both_hub/projects/legacy-project/project.md"
+assert_contains "$TMP_ROOT/legacy-add-project.log" "update: .piper/project.json"
+assert_not_contains "$legacy_repo/.piper/project.json" '"runtime"'
+python3 -m json.tool "$legacy_repo/.piper/project.json" >/dev/null
 
 hub_only_repo="$TMP_ROOT/hub-only-repo"
 mkdir -p "$hub_only_repo"
@@ -123,6 +214,8 @@ assert_dir "$git_hub/.git"
 
 if "$BOOTSTRAP" --runtime codex "$ROOT" > "$TMP_ROOT/source-refuse.log" 2>&1; then fail "bootstrap should refuse source repo"; fi
 assert_contains "$TMP_ROOT/source-refuse.log" "refusing to initialize the bootstrap source"
+if grep -R -n '{{' "$ROOT/generated" > "$TMP_ROOT/placeholders.log"; then cat "$TMP_ROOT/placeholders.log" >&2; fail "unrendered template placeholder found"; fi
+if grep -R -n '^argument-hint: [^"]' "$ROOT/generated/codex/.piper/plugin/commands" "$ROOT/generated/claude/.claude/commands" > "$TMP_ROOT/frontmatter.log"; then cat "$TMP_ROOT/frontmatter.log" >&2; fail "unquoted argument-hint frontmatter found"; fi
 
 git -C "$ROOT" diff --check
 

@@ -26,19 +26,35 @@ RUNTIME_CONFIG = {
         "command_dir": ".piper/plugin/commands",
         "skill_dir": ".piper/plugin/skills",
         "frontmatter": {
-            "add-project.md": "---\ndescription: Register a project repo with this Piper Station hub\nallowed-tools: [Read, Write, Bash]\n---\n\n",
-            "work-on.md": "---\ndescription: Orient to a registered project and route work through Piper Station modes\nallowed-tools: [Read, Bash]\n---\n\n",
-            "superpowers.md": "---\ndescription: Enter Superpowers Mode for discovery, specification, and planning\nallowed-tools: [Read, Write, Bash]\n---\n\n",
-            "ralph.md": "---\ndescription: Enter Ralph Mode for one scoped implementation slice\nallowed-tools: [Read, Write, Bash]\n---\n\n",
-            "compact-handoff.md": "---\ndescription: Prepare compact-safe project work records\nallowed-tools: [Read, Write, Bash]\n---\n\n",
+            "add-project.md": "---\ndescription: Register a project repo with this Piper Station hub\nargument-hint: \"[repo path and optional project id]\"\nallowed-tools: [Read, Write, Bash]\n---\n\n",
+            "work-on.md": "---\ndescription: Orient to a registered project and route work through Piper Station modes\nargument-hint: \"[project id or repo path and request]\"\nallowed-tools: [Read, Bash]\n---\n\n",
+            "superpowers.md": "---\ndescription: Enter Superpowers Mode for discovery, specification, and planning\nargument-hint: \"[project id or repo path and request]\"\nallowed-tools: [Read, Write, Bash]\n---\n\n",
+            "ralph.md": "---\ndescription: Enter Ralph Mode for one scoped implementation slice\nargument-hint: \"[project id and optional task id]\"\nallowed-tools: [Read, Write, Bash]\n---\n\n",
+            "compact-handoff.md": "---\ndescription: Prepare compact-safe project work records\nargument-hint: \"[project id and current task]\"\nallowed-tools: [Read, Write, Bash]\n---\n\n",
         },
+        "runtime_native": "Codex-native",
+        "runtime_session": "Codex session",
+        "workspace_access": "If the project repo is outside the current workspace or sandbox, ask the user to make it accessible before editing.",
+        "registration_entrypoints": "`./bin/add-project`",
+        "review_helper": "read-only reviewer subagent",
     },
     "claude": {
         "runtime_name": "Claude Code",
         "instruction_doc": "CLAUDE.md",
         "command_dir": ".claude/commands",
         "skill_dir": ".claude/skills",
-        "frontmatter": {name: "" for name in COMMANDS},
+        "frontmatter": {
+            "add-project.md": "---\ndescription: Register a project repo with this Piper Station hub\nargument-hint: \"<repo-path> [project-id]\"\n---\n\n",
+            "work-on.md": "---\ndescription: Orient to a registered project and route the request through Intent, Superpowers, Ralph, Review, or Finish modes\nargument-hint: \"<project-id> [request]\"\n---\n\n",
+            "superpowers.md": "---\ndescription: Enter Superpowers Mode for discovery, specification, and planning\nargument-hint: \"<project-id> [request]\"\n---\n\n",
+            "ralph.md": "---\ndescription: Enter Ralph Mode for one scoped implementation slice\nargument-hint: \"<project-id> [task id or description]\"\n---\n\n",
+            "compact-handoff.md": "---\ndescription: Prepare compact-safe project work records before /compact\nargument-hint: \"[project-id] [current task]\"\n---\n\n",
+        },
+        "runtime_native": "Claude Code-native",
+        "runtime_session": "Claude Code session",
+        "workspace_access": "If the repo is outside the hub, ensure Claude Code has workspace access through `/add-dir <repo-path>` or `claude --add-dir <repo-path>` before editing.",
+        "registration_entrypoints": "`/add-project` or `./bin/add-project`",
+        "review_helper": "read-only reviewer agent",
     },
 }
 
@@ -68,6 +84,11 @@ def render_text(text: str, runtime: str, frontmatter: str = "") -> str:
         text.replace("{{RUNTIME_NAME}}", cfg["runtime_name"])
         .replace("{{INSTRUCTION_DOC}}", cfg["instruction_doc"])
         .replace("{{FRONTMATTER}}", frontmatter)
+        .replace("{{RUNTIME_NATIVE}}", cfg["runtime_native"])
+        .replace("{{RUNTIME_SESSION}}", cfg["runtime_session"])
+        .replace("{{WORKSPACE_ACCESS}}", cfg["workspace_access"])
+        .replace("{{REGISTRATION_ENTRYPOINTS}}", cfg["registration_entrypoints"])
+        .replace("{{REVIEW_HELPER}}", cfg["review_helper"])
     )
 
 
