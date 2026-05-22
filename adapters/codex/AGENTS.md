@@ -1,7 +1,7 @@
 # Piper Station Agent Instructions
 
 This directory is a Piper Station hub-lite workspace. It is the central launch
-point for Codex work across registered project repositories.
+point for Codex and OpenCode work across registered project repositories.
 
 ## Operating Contract
 
@@ -14,8 +14,8 @@ point for Codex work across registered project repositories.
   commit, push, install dependencies, or edit project source files.
 - Work on project source code only in the real repo path recorded in
   `projects/<project-id>/project.md`.
-- Use Codex native behavior for planning, implementation, review, testing,
-  subagents, handoff, and git operations.
+- Use the active runtime's native behavior for planning, implementation,
+  review, testing, subagents, handoff, and git operations.
 
 ## Required Reading
 
@@ -39,7 +39,7 @@ projects/<project-id>/
   project.md
   memory.md
   decisions.md
-  work/              # optional, created by Codex only when useful
+  work/              # optional, created by the active runtime only when useful
 ```
 
 - `project.md` binds the project id to the real repo path and stores a small
@@ -54,8 +54,8 @@ projects/<project-id>/
 Do not put routine progress logs, command output, temporary plans, secrets, or
 raw sensitive logs into `memory.md` or `decisions.md`.
 
-Registration must not create `work/`. Codex may create it during active work
-when continuity is useful.
+Registration must not create `work/`. Codex or OpenCode may create it during
+active work when continuity is useful.
 
 ## Mode Routing
 
@@ -132,15 +132,14 @@ pausing or handing off. If context is low or the next slice needs a clean
 context, pause and tell the user the state is compact-ready and they may run
 `/compact`.
 
-Do not claim `/compact` was run unless the user or Codex actually ran it.
+Do not claim `/compact` was run unless the user or active runtime actually ran
+it.
 
-Future runtime-style auto-compact protection could snapshot minimal active
-state to `projects/<project-id>/work/` immediately before automatic
-compaction. Codex CLI does not currently provide pre-compact or post-compact
-hooks, so that stronger behavior would need Codex app-server/runtime support,
-a reliable active-project/session-state source, and explicit ownership rules
-for hook- or runtime-written records. Treat this as future design work, not
-current hub-lite behavior.
+Codex currently handles compaction through prompt/session guidance. OpenCode
+supports automatic compaction when enabled in `opencode.json`. Because this
+file is shared by both AGENTS.md-based runtimes, compact-protection behavior
+must remain grounded in compact-safe work records rather than runtime-specific
+shell hooks.
 
 ## Approval Boundaries
 

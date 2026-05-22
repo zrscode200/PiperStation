@@ -26,6 +26,7 @@ python3 -m json.tool "$ROOT/generated/codex/.codex/hooks.json" >/dev/null
 python3 -m json.tool "$ROOT/generated/codex/.piper/plugin/.codex-plugin/plugin.json" >/dev/null
 python3 -m json.tool "$ROOT/generated/claude/.claude/settings.json" >/dev/null
 python3 -m json.tool "$ROOT/generated/opencode/opencode.json" >/dev/null
+cmp -s "$ROOT/generated/codex/AGENTS.md" "$ROOT/generated/opencode/AGENTS.md" || fail "Codex and OpenCode AGENTS.md must stay runtime-neutral"
 
 codex_hub="$TMP_ROOT/codex-hub"
 "$BOOTSTRAP" --runtime codex "$codex_hub" > "$TMP_ROOT/codex.log"
@@ -50,6 +51,8 @@ assert_executable "$codex_hub/.codex/hooks/session-context.sh"
 assert_not_exists "$codex_hub/CLAUDE.md"
 assert_not_exists "$codex_hub/.claude"
 assert_not_exists "$codex_hub/.mcp.json"
+assert_contains "$codex_hub/AGENTS.md" "Codex and OpenCode work"
+assert_not_contains "$codex_hub/AGENTS.md" "point for Codex work"
 assert_file_count "$codex_hub/.codex/agents" "*.toml" 6
 assert_file_count "$codex_hub/.piper/plugin/skills" "SKILL.md" 5
 assert_contains "$codex_hub/.piper/hub-manifest.json" '"codex"'
@@ -172,11 +175,17 @@ assert_contains "$opencode_hub/.opencode/skills/ralph-loop/SKILL.md" "read-only 
 assert_contains "$opencode_hub/.opencode/agents/README.md" "same helper role set as the Codex and Claude Code"
 assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "OpenAI developer"
 assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "docs MCP server"
-assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "mcpServers"
+assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "openaiDeveloperDocs_\\*: allow"
+assert_not_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "mcpServers"
 assert_contains "$opencode_hub/.opencode/agents/security-reviewer.md" "Authentication and authorization"
 assert_contains "$opencode_hub/STATION.md" "opencode.json"
+assert_contains "$opencode_hub/AGENTS.md" "Codex and OpenCode work"
+assert_not_contains "$opencode_hub/AGENTS.md" "point for OpenCode work"
 assert_contains "$opencode_hub/opencode.json" '"compaction"'
 assert_contains "$opencode_hub/opencode.json" '"permission"'
+assert_contains "$opencode_hub/opencode.json" "\"openaiDeveloperDocs_\\*\": \"deny\""
+assert_contains "$opencode_hub/opencode.json" '"type": "remote"'
+assert_contains "$opencode_hub/opencode.json" '"enabled": true'
 assert_not_contains "$opencode_hub/.opencode/commands/superpowers.md" "Force Superpowers"
 python3 -m json.tool "$opencode_hub/.piper/hub-manifest.json" >/dev/null
 python3 -m json.tool "$opencode_hub/opencode.json" >/dev/null
@@ -190,6 +199,19 @@ assert_file "$both_hub/.claude/settings.json"
 assert_contains "$both_hub/STATION.md" "A hub may have both surfaces installed"
 assert_contains "$both_hub/.piper/hub-manifest.json" '"codex"'
 assert_contains "$both_hub/.piper/hub-manifest.json" '"claude"'
+
+codex_opencode_hub="$TMP_ROOT/codex-opencode-hub"
+"$BOOTSTRAP" --runtime codex,opencode "$codex_opencode_hub" > "$TMP_ROOT/codex-opencode.log"
+opencode_codex_hub="$TMP_ROOT/opencode-codex-hub"
+"$BOOTSTRAP" --runtime opencode,codex "$opencode_codex_hub" > "$TMP_ROOT/opencode-codex.log"
+assert_file "$codex_opencode_hub/AGENTS.md"
+assert_file "$opencode_codex_hub/AGENTS.md"
+cmp -s "$codex_opencode_hub/AGENTS.md" "$opencode_codex_hub/AGENTS.md" || fail "Codex/OpenCode AGENTS.md must not depend on runtime order"
+assert_contains "$codex_opencode_hub/AGENTS.md" "Codex and OpenCode work"
+assert_not_contains "$codex_opencode_hub/AGENTS.md" "point for Codex work"
+assert_not_contains "$codex_opencode_hub/AGENTS.md" "point for OpenCode work"
+assert_contains "$codex_opencode_hub/.piper/hub-manifest.json" '"codex"'
+assert_contains "$codex_opencode_hub/.piper/hub-manifest.json" '"opencode"'
 
 opencode_claude_hub="$TMP_ROOT/opencode-claude-hub"
 "$BOOTSTRAP" --runtime opencode,claude "$opencode_claude_hub" > "$TMP_ROOT/opencode-claude.log"
@@ -209,6 +231,9 @@ assert_file "$triple_hub/opencode.json"
 assert_file "$triple_hub/.codex/config.toml"
 assert_file "$triple_hub/.claude/settings.json"
 assert_file "$triple_hub/.opencode/agents/reviewer.md"
+assert_contains "$triple_hub/AGENTS.md" "Codex and OpenCode work"
+assert_not_contains "$triple_hub/AGENTS.md" "point for Codex work"
+assert_not_contains "$triple_hub/AGENTS.md" "point for OpenCode work"
 assert_contains "$triple_hub/.piper/hub-manifest.json" '"codex"'
 assert_contains "$triple_hub/.piper/hub-manifest.json" '"claude"'
 assert_contains "$triple_hub/.piper/hub-manifest.json" '"opencode"'

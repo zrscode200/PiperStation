@@ -16,13 +16,14 @@
   ],
   "permission": {
     "edit": "ask",
-    "bash": "ask"
+    "bash": "ask",
+    "openaiDeveloperDocs_*": "deny"
   },
   "mcp": {
     "openaiDeveloperDocs": {
-      "type": "http",
+      "type": "remote",
       "url": "https://developers.openai.com/mcp",
-      "enabled": false
+      "enabled": true
     }
   }
 }

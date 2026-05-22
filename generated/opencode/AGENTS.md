@@ -1,7 +1,7 @@
 # Piper Station Agent Instructions
 
 This directory is a Piper Station hub-lite workspace. It is the central launch
-point for OpenCode work across registered project repositories.
+point for Codex and OpenCode work across registered project repositories.
 
 ## Operating Contract
 
@@ -14,8 +14,8 @@ point for OpenCode work across registered project repositories.
   commit, push, install dependencies, or edit project source files.
 - Work on project source code only in the real repo path recorded in
   `projects/<project-id>/project.md`.
-- Use OpenCode native behavior for planning, implementation, review, testing,
-  subagents, handoff, and git operations.
+- Use the active runtime's native behavior for planning, implementation,
+  review, testing, subagents, handoff, and git operations.
 
 ## Required Reading
 
@@ -39,7 +39,7 @@ projects/<project-id>/
   project.md
   memory.md
   decisions.md
-  work/              # optional, created by OpenCode only when useful
+  work/              # optional, created by the active runtime only when useful
 ```
 
 - `project.md` binds the project id to the real repo path and stores a small
@@ -54,8 +54,8 @@ projects/<project-id>/
 Do not put routine progress logs, command output, temporary plans, secrets, or
 raw sensitive logs into `memory.md` or `decisions.md`.
 
-Registration must not create `work/`. OpenCode may create it during active work
-when continuity is useful.
+Registration must not create `work/`. Codex or OpenCode may create it during
+active work when continuity is useful.
 
 ## Mode Routing
 
@@ -132,13 +132,14 @@ pausing or handing off. If context is low or the next slice needs a clean
 context, pause and tell the user the state is compact-ready and they may run
 `/compact`.
 
-Do not claim `/compact` was run unless the user or OpenCode actually ran it.
+Do not claim `/compact` was run unless the user or active runtime actually ran
+it.
 
-OpenCode supports automatic compaction (enabled in `opencode.json`). When
-context is full, OpenCode will compact the session. Piper Station handles this
-through the compaction setting and compact-safe work records. There are no
-pre-compact or post-compact hooks in OpenCode, so all compact-protection
-behavior is handled through the work record discipline described above.
+Codex currently handles compaction through prompt/session guidance. OpenCode
+supports automatic compaction when enabled in `opencode.json`. Because this
+file is shared by both AGENTS.md-based runtimes, compact-protection behavior
+must remain grounded in compact-safe work records rather than runtime-specific
+shell hooks.
 
 ## Approval Boundaries
 
