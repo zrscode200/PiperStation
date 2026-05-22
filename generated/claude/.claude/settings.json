@@ -1,0 +1,57 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git -C * status:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git -C * rev-parse:*)",
+      "Bash(git log:*)",
+      "Bash(git -C * log:*)",
+      "Bash(git diff:*)",
+      "Bash(git -C * diff:*)",
+      "Bash(git branch:*)",
+      "Bash(git -C * branch:*)",
+      "Bash(git symbolic-ref:*)",
+      "Bash(git -C * symbolic-ref:*)",
+      "Bash(ls:*)",
+      "Bash(./bin/add-project:*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'hook=\"${CLAUDE_PROJECT_DIR:-$PWD}/.claude/hooks/session-context.sh\"; [ -f \"$hook\" ] && sh \"$hook\" || true'",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "manual|auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'hook=\"${CLAUDE_PROJECT_DIR:-$PWD}/.claude/hooks/pre-compact-protection.sh\"; [ -f \"$hook\" ] && sh \"$hook\" || true'",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'hook=\"${CLAUDE_PROJECT_DIR:-$PWD}/.claude/hooks/post-compact-resume.sh\"; [ -f \"$hook\" ] && sh \"$hook\" || true'",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'dir=$PWD; while [ \"$dir\" != \"/\" ] && [ ! -f \"$dir/STATION.md\" ]; do dir=$(dirname \"$dir\"); done; hook=\"$dir/.codex/hooks/session-context.sh\"; [ -f \"$hook\" ] && sh \"$hook\" || true'",
+            "timeout": 10,
+            "statusMessage": "Loading Piper Station hub context"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'dir=$PWD; while [ \"$dir\" != \"/\" ] && [ ! -f \"$dir/STATION.md\" ]; do dir=$(dirname \"$dir\"); done; hook=\"$dir/.codex/hooks/stop-reminder.sh\"; [ -f \"$hook\" ] && sh \"$hook\" || true'",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

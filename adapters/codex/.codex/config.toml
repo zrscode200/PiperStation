@@ -1,0 +1,44 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+
+model = "gpt-5.5"
+model_reasoning_effort = "medium"
+review_model = "gpt-5.5"
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+experimental_compact_prompt_file = "compact-prompt.md"
+
+[features]
+multi_agent = true
+hooks = true
+memories = true
+
+[memories]
+use_memories = true
+generate_memories = true
+
+[agents]
+max_threads = 6
+max_depth = 1
+
+[[skills.config]]
+path = "../.piper/plugin/skills/hub-workflow"
+enabled = true
+
+[[skills.config]]
+path = "../.piper/plugin/skills/automation-policy"
+enabled = true
+
+[[skills.config]]
+path = "../.piper/plugin/skills/superpowers-planning"
+enabled = true
+
+[[skills.config]]
+path = "../.piper/plugin/skills/ralph-loop"
+enabled = true
+
+[[skills.config]]
+path = "../.piper/plugin/skills/review"
+enabled = true
+
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"

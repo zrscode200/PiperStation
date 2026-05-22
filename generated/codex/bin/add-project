@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+set -eu
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+HUB_DIR=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd -P)
+HELPER="$HUB_DIR/.piper/lib/bootstrap/add-project.sh"
+
+for arg in "$@"; do
+  if [ "$arg" = "--hub" ]; then
+    echo "Error: hub-local commands infer --hub; do not pass --hub explicitly." >&2
+    exit 1
+  fi
+done
+
+if [ ! -x "$HELPER" ]; then
+  echo "Error: missing Piper Station helper: $HELPER" >&2
+  exit 1
+fi
+
+exec "$HELPER" --hub "$HUB_DIR" "$@"
