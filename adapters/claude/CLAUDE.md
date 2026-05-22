@@ -122,7 +122,12 @@ The Claude Code layer is intentionally small:
 
 - Commands are user entry points under `.claude/commands/`.
 - Skills are behavior guides under `.claude/skills/`.
-- Subagents live under `.claude/agents/` for implementation, review, and testing support.
+- Subagents live under `.claude/agents/` for the same helper role set as the
+  Codex surface: reviewer, implementer, tester, architect, docs-researcher, and
+  security-reviewer.
+- The docs-researcher wires the OpenAI developer docs MCP server in its own
+  subagent frontmatter, matching the Codex docs-researcher role without making
+  every Claude Code session load that server.
 
 Root docs are the canonical references. Skills should point back to these docs instead of duplicating the whole station manual.
 
