@@ -1,12 +1,14 @@
 ---
 name: hub-workflow
-description: Use when registering projects or working from a Piper Station hub across registered project repos.
+description: Use as the broad Piper Station hub reference for registration, project-record lookup, and repo orientation after a command or user request has selected hub work.
 ---
 
 # Hub Workflow
 
-Use this skill whenever project work is coordinated from a Piper Station
-hub-lite directory.
+Use this skill as the broad Piper Station hub reference after the user or a
+command has selected hub registration, project-record lookup, or repo
+orientation. This skill is not the mode router; `STATION.md` and `/work-on`
+own dispatch.
 
 Read `AGENTS.md` and `STATION.md` first. Use the other root docs as
 the canonical reference layer when product, architecture, convention, testing,
@@ -36,9 +38,10 @@ security, or automation-policy details matter.
    and the files relevant to the request.
 6. If the project repo is outside the current working directory, open OpenCode from the project directory or adjust workspace access before editing.
 7. Treat uncommitted changes as user-owned unless the user says otherwise.
-8. Route the request through Intent, Superpowers, Ralph, Review, or Finish
-   Mode. See `STATION.md`.
-9. Implement in the real repo using normal OpenCode behavior.
+8. If no mode is selected yet, use the dispatch contract in `STATION.md` or
+   `/work-on`; do not let this skill become a second router.
+9. Implement in the real repo using normal OpenCode behavior only when
+   the selected mode allows implementation.
 10. Run the narrowest meaningful verification.
 
 ## Durable Context

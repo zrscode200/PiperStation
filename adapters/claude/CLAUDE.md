@@ -49,6 +49,11 @@ Use `--hub-only` when repo marker files are not wanted.
 
 ## Mode Routing
 
+Commands own dispatch. Skills, agents, hooks, and docs are supporting
+references after a command or user request has selected a mode. Use `/work-on`
+as the default router for ambiguous project work; use narrower commands only
+when the user explicitly asks for that mode.
+
 Route each request through the smallest mode that fits.
 
 - Intent Mode - identify the project, user goal, scope tier, risk tier, and next safe mode.
@@ -56,6 +61,12 @@ Route each request through the smallest mode that fits.
 - Ralph Mode - execute one scoped task at a time, verify, drift-check, and use an implementation review gate for substantial slices.
 - Review Mode - first check whether the work matches the request/spec/plan, then check code quality.
 - Finish Mode - report verification, residual risk, changed files, and commit or pull request options without mutating git automatically.
+
+Supporting skills and agents should not become independent routers. Use
+`hub-workflow` for hub orientation, `superpowers-planning` after Superpowers
+Mode is selected, `ralph-loop` after Ralph Mode is selected for one clear task,
+`review` for explicit review work, and `automation-policy` only before
+protected automation or external actions.
 
 ### Scope Tiers
 

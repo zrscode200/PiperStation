@@ -59,6 +59,11 @@ active work when continuity is useful.
 
 ## Mode Routing
 
+Commands own dispatch. Skills, agents, hooks, and docs are supporting
+references after a command or user request has selected a mode. Use `/work-on`
+as the default router for ambiguous project work; use narrower commands only
+when the user explicitly asks for that mode.
+
 Route each request through the smallest mode that fits:
 
 - Intent Mode: classify the request, project, scope tier, risk tier, and
@@ -71,6 +76,12 @@ Route each request through the smallest mode that fits:
   then check code quality.
 - Finish Mode: verify, summarize, and present commit or PR options without
   mutating git automatically.
+
+Supporting skills should not become independent routers. Use `hub-workflow`
+for hub orientation, `superpowers-planning` after Superpowers Mode is selected,
+`ralph-loop` after Ralph Mode is selected for one clear task, `review` for
+explicit review work, and `automation-policy` only before protected automation
+or external actions.
 
 Scope tiers:
 

@@ -10,6 +10,10 @@ Piper mode.
 
 The user invoked this command with: `$ARGUMENTS`
 
+`/work-on` is the default router for ambiguous project work. Use skills as
+supporting references after this command chooses a mode; do not let automatic
+skill matching choose the mode independently.
+
 ## Steps
 
 1. Read `CLAUDE.md` and `STATION.md`.
@@ -31,6 +35,8 @@ The user invoked this command with: `$ARGUMENTS`
    - `S2+` or ambiguous substantial work should enter Superpowers Mode first.
    - A ready queue can enter Ralph Mode for one scoped task.
    - Review requests should enter Review Mode.
+   - Commit, PR, dependency, network, CI, destructive, or external automation
+     requests should use the automation approval flow.
 9. State the chosen mode and next concrete action. Wait for go-ahead unless the
    routing is unambiguous and the user clearly asked for direct work.
 

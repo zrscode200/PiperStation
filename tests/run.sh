@@ -199,6 +199,22 @@ assert_not_contains "$opencode_hub/.opencode/commands/superpowers.md" "Force Sup
 python3 -m json.tool "$opencode_hub/.piper/hub-manifest.json" >/dev/null
 python3 -m json.tool "$opencode_hub/opencode.json" >/dev/null
 
+for hub in "$codex_hub" "$claude_hub" "$opencode_hub"; do
+  assert_contains "$hub/STATION.md" "Commands own dispatch"
+  assert_contains "$hub/STATION.md" "Use this dispatch table"
+done
+assert_contains "$codex_hub/AGENTS.md" "Supporting skills should not become independent routers"
+assert_contains "$claude_hub/CLAUDE.md" "Supporting skills and agents should not become independent routers"
+assert_contains "$opencode_hub/AGENTS.md" "Supporting skills should not become independent routers"
+for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$opencode_hub/.opencode/skills"; do
+  assert_contains "$skill_dir/hub-workflow/SKILL.md" "not the mode router"
+  assert_contains "$skill_dir/superpowers-planning/SKILL.md" "Use this skill only after"
+  assert_contains "$skill_dir/ralph-loop/SKILL.md" "not the initial router"
+  assert_contains "$skill_dir/review/SKILL.md" "Do not use this skill for general repo orientation"
+  assert_contains "$skill_dir/automation-policy/SKILL.md" "Do not use this skill for ordinary local inspection"
+  assert_not_contains "$skill_dir/hub-workflow/SKILL.md" "Route the request through Intent"
+done
+
 both_hub="$TMP_ROOT/both-hub"
 "$BOOTSTRAP" --runtime codex,claude "$both_hub" > "$TMP_ROOT/both.log"
 assert_file "$both_hub/AGENTS.md"

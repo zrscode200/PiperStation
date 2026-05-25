@@ -1,6 +1,6 @@
 ---
 name: automation-policy
-description: Use before commits, worktrees, pull requests, CI repair loops, dependency installs, networked commands, or other automation that mutates project or external state.
+description: Use only before commits, worktrees, pull requests, CI repair loops, dependency installs, networked commands, destructive git actions, or other automation that mutates project or external state.
 ---
 
 # Automation Policy
@@ -11,6 +11,10 @@ automation that mutates project or external state.
 
 `automation-policy.md` is the canonical policy. This skill is the short
 execution checklist.
+
+Do not use this skill for ordinary local inspection, planning, implementation,
+or review unless the next action would mutate git history, dependencies, CI, an
+external system, or other protected state.
 
 ## Workflow
 

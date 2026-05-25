@@ -32,6 +32,27 @@ stay shared under `projects/`.
 A hub may have multiple runtime surfaces installed. Use one harness actively on
 a project at a time unless the user explicitly coordinates parallel work.
 
+## Dispatch Contract
+
+Commands own dispatch. Skills, agents, hooks, and docs are supporting
+references after a command or user request has selected a mode. Do not rely on
+automatic skill or agent matching as the primary router.
+
+Use this dispatch table when intent is unclear:
+
+| User intent | Entry point or mode | Supporting guide |
+| --- | --- | --- |
+| Register a repo | `/add-project` or `./bin/add-project` | `hub-workflow` |
+| Orient to a repo or ambiguous request | `/work-on` | `hub-workflow` |
+| Discover, specify, or plan substantial work | `/superpowers` or Superpowers Mode | `superpowers-planning` |
+| Execute one clear queued task | `/ralph` or Ralph Mode | `ralph-loop` |
+| Review code or an implemented slice | Review Mode | `review` |
+| Commit, PR, dependency, network, CI, destructive, or external action | Finish Mode or explicit approval flow | `automation-policy` |
+| Pause or compact active work | `/compact-handoff` | `ralph-loop` when Ralph work is active |
+
+If a skill appears relevant but the mode is not selected, route back through
+`/work-on` or this table instead of letting the skill become a second router.
+
 ## Project Records
 
 Each registered project has:
@@ -52,7 +73,7 @@ Registration must not create `work/`.
 
 ## Mode Routing
 
-Route requests through the smallest mode that fits:
+Route requests through command entrypoints and the smallest mode that fits:
 
 - Intent Mode: identify the project, user goal, scope tier, risk tier, and next
   safe mode.

@@ -1,14 +1,15 @@
 # Repository Operating Instructions
 
 This repository builds Piper Station Unified Bootstrap. It is the upstream
-source for rendering Codex and Claude Code hub surfaces from one shared Piper
-behavior core.
+source for rendering Codex, Claude Code, and OpenCode hub surfaces from one
+shared Piper behavior core.
 
 ## Required Behavior
 
 - Treat this repo as the source distribution, not as a generated hub.
 - Put shared behavior and docs in `core/`.
-- Put harness mechanics in `adapters/codex/` and `adapters/claude/`.
+- Put harness mechanics in `adapters/codex/`, `adapters/claude/`, and
+  `adapters/opencode/`.
 - Run `./scripts/render-templates.sh` after changing `core/` or adapters.
 - Do not edit `generated/` directly except to inspect output.
 - Preserve the hub ownership model: generated hub files outside `projects/` are
