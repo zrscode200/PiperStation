@@ -23,7 +23,6 @@ sh -n "$ADD_PROJECT"
 sh -n "$ROOT/scripts/render-templates.sh"
 python3 "$ROOT/scripts/render_templates.py" --check >/dev/null
 python3 -m json.tool "$ROOT/generated/codex/.codex/hooks.json" >/dev/null
-python3 -m json.tool "$ROOT/generated/codex/.piper/plugin/.codex-plugin/plugin.json" >/dev/null
 python3 -m json.tool "$ROOT/generated/claude/.claude/settings.json" >/dev/null
 python3 -m json.tool "$ROOT/generated/opencode/opencode.json" >/dev/null
 cmp -s "$ROOT/generated/codex/AGENTS.md" "$ROOT/generated/opencode/AGENTS.md" || fail "Codex and OpenCode AGENTS.md must stay runtime-neutral"
@@ -41,42 +40,45 @@ assert_file "$codex_hub/.codex/agents/security-reviewer.toml"
 assert_file "$codex_hub/.codex/agents/tester.toml"
 assert_file "$codex_hub/.codex/hooks/session-context.sh"
 assert_file "$codex_hub/.codex/hooks/stop-reminder.sh"
-assert_file "$codex_hub/.piper/plugin/commands/ralph.md"
-assert_file "$codex_hub/.piper/plugin/commands/work-on.md"
-assert_file "$codex_hub/.piper/plugin/commands/compact-handoff.md"
-assert_file "$codex_hub/.piper/plugin/skills/ralph-loop/SKILL.md"
+assert_file "$codex_hub/.codex/commands/ralph.md"
+assert_file "$codex_hub/.codex/commands/work-on.md"
+assert_file "$codex_hub/.codex/commands/compact-handoff.md"
+assert_file "$codex_hub/.codex/skills/ralph-loop/SKILL.md"
 assert_file "$codex_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$codex_hub/bin/add-project"
 assert_executable "$codex_hub/.codex/hooks/session-context.sh"
 assert_not_exists "$codex_hub/CLAUDE.md"
 assert_not_exists "$codex_hub/.claude"
 assert_not_exists "$codex_hub/.mcp.json"
+assert_not_exists "$codex_hub/.piper/plugin"
 assert_contains "$codex_hub/AGENTS.md" "Codex and OpenCode work"
 assert_not_contains "$codex_hub/AGENTS.md" "point for Codex work"
 assert_file_count "$codex_hub/.codex/agents" "*.toml" 6
-assert_file_count "$codex_hub/.piper/plugin/skills" "SKILL.md" 5
+assert_file_count "$codex_hub/.codex/commands" "*.md" 5
+assert_file_count "$codex_hub/.codex/skills" "SKILL.md" 5
+assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/hub-workflow"'
 assert_contains "$codex_hub/.piper/hub-manifest.json" '"codex"'
 assert_not_contains "$codex_hub/.piper/hub-manifest.json" '"claude"'
-assert_contains "$codex_hub/.piper/plugin/commands/work-on.md" "argument-hint"
-assert_not_contains "$codex_hub/.piper/plugin/commands/work-on.md" "argument-hint: \\["
-assert_contains "$codex_hub/.piper/plugin/commands/work-on.md" 'argument-hint: "'
-assert_contains "$codex_hub/.piper/plugin/commands/work-on.md" "piper-project:start"
-assert_contains "$codex_hub/.piper/plugin/commands/work-on.md" "This command is prompt-driven routing"
-assert_contains "$codex_hub/.piper/plugin/commands/ralph.md" "Implementation Review Gate"
-assert_contains "$codex_hub/.piper/plugin/commands/ralph.md" "queued foundational work"
-assert_contains "$codex_hub/.piper/plugin/commands/ralph.md" "review debt"
-assert_contains "$codex_hub/.piper/plugin/commands/compact-handoff.md" "Required Compact Resume Packet"
-assert_contains "$codex_hub/.piper/plugin/commands/compact-handoff.md" "Broad-search triggers"
-assert_contains "$codex_hub/.piper/plugin/skills/ralph-loop/SKILL.md" "Review gate examples"
-assert_contains "$codex_hub/.piper/plugin/skills/ralph-loop/SKILL.md" "Post-Compact Resume"
-assert_contains "$codex_hub/.piper/plugin/skills/ralph-loop/SKILL.md" "changed code or diff"
-assert_contains "$codex_hub/.piper/plugin/skills/superpowers-planning/SKILL.md" "Make it better"
+assert_contains "$codex_hub/.codex/commands/work-on.md" "argument-hint"
+assert_not_contains "$codex_hub/.codex/commands/work-on.md" "argument-hint: \\["
+assert_contains "$codex_hub/.codex/commands/work-on.md" 'argument-hint: "'
+assert_contains "$codex_hub/.codex/commands/work-on.md" "piper-project:start"
+assert_contains "$codex_hub/.codex/commands/work-on.md" "This command is prompt-driven routing"
+assert_contains "$codex_hub/.codex/commands/ralph.md" "Implementation Review Gate"
+assert_contains "$codex_hub/.codex/commands/ralph.md" "queued foundational work"
+assert_contains "$codex_hub/.codex/commands/ralph.md" "review debt"
+assert_contains "$codex_hub/.codex/commands/compact-handoff.md" "Required Compact Resume Packet"
+assert_contains "$codex_hub/.codex/commands/compact-handoff.md" "Broad-search triggers"
+assert_contains "$codex_hub/.codex/skills/ralph-loop/SKILL.md" "Review gate examples"
+assert_contains "$codex_hub/.codex/skills/ralph-loop/SKILL.md" "Post-Compact Resume"
+assert_contains "$codex_hub/.codex/skills/ralph-loop/SKILL.md" "changed code or diff"
+assert_contains "$codex_hub/.codex/skills/superpowers-planning/SKILL.md" "Make it better"
 assert_contains "$codex_hub/STATION.md" "designed resume anchors"
 assert_contains "$codex_hub/STATION.md" "Do not claim"
-assert_not_contains "$codex_hub/.piper/plugin/commands/superpowers.md" "Force Superpowers"
+assert_not_contains "$codex_hub/.codex/commands/superpowers.md" "Force Superpowers"
 assert_not_contains "$codex_hub/STATION.md" "does not bring back"
-assert_not_exists "$codex_hub/.piper/plugin/skills/planning/SKILL.md"
-assert_not_exists "$codex_hub/.piper/plugin/skills/implementation-loop/SKILL.md"
+assert_not_exists "$codex_hub/.codex/skills/planning/SKILL.md"
+assert_not_exists "$codex_hub/.codex/skills/implementation-loop/SKILL.md"
 python3 -m json.tool "$codex_hub/.piper/hub-manifest.json" >/dev/null
 (cd "$codex_hub" && sh .codex/hooks/session-context.sh) > "$TMP_ROOT/codex-session-start.log"
 assert_contains "$TMP_ROOT/codex-session-start.log" "hub-lite is active"
@@ -196,7 +198,7 @@ assert_file "$both_hub/AGENTS.md"
 assert_file "$both_hub/CLAUDE.md"
 assert_file "$both_hub/.codex/config.toml"
 assert_file "$both_hub/.claude/settings.json"
-assert_contains "$both_hub/STATION.md" "A hub may have both surfaces installed"
+assert_contains "$both_hub/STATION.md" "multiple runtime surfaces"
 assert_contains "$both_hub/.piper/hub-manifest.json" '"codex"'
 assert_contains "$both_hub/.piper/hub-manifest.json" '"claude"'
 
@@ -246,11 +248,13 @@ assert_contains "$both_hub/projects/README.md" "local note"
 assert_file "$both_hub/.claude/settings.json"
 assert_contains "$both_hub/.piper/hub-manifest.json" '"claude"'
 
-mkdir -p "$both_hub/.claude/hooks" "$both_hub/.codex/hooks"
+mkdir -p "$both_hub/.claude/hooks" "$both_hub/.codex/hooks" "$both_hub/.piper/plugin/commands"
 printf 'old claude
 ' > "$both_hub/.claude/hooks/old-managed.sh"
 printf 'old codex
 ' > "$both_hub/.codex/hooks/old-managed.sh"
+printf 'old codex plugin
+' > "$both_hub/.piper/plugin/commands/old-managed.md"
 {
   printf '{
 '
@@ -258,7 +262,9 @@ printf 'old codex
 '
   printf '    ".claude/hooks/old-managed.sh",
 '
-  printf '    ".codex/hooks/old-managed.sh"
+  printf '    ".codex/hooks/old-managed.sh",
+'
+  printf '    ".piper/plugin/commands/old-managed.md"
 '
   printf '  ]
 '
@@ -268,6 +274,7 @@ printf 'old codex
 "$BOOTSTRAP" --runtime codex "$both_hub" > "$TMP_ROOT/stale-codex.log"
 assert_file "$both_hub/.claude/hooks/old-managed.sh"
 assert_not_exists "$both_hub/.codex/hooks/old-managed.sh"
+assert_not_exists "$both_hub/.piper/plugin/commands/old-managed.md"
 "$BOOTSTRAP" --runtime claude "$both_hub" > "$TMP_ROOT/stale-claude.log"
 assert_not_exists "$both_hub/.claude/hooks/old-managed.sh"
 
@@ -330,7 +337,7 @@ assert_dir "$git_hub/.git"
 if "$BOOTSTRAP" --runtime codex "$ROOT" > "$TMP_ROOT/source-refuse.log" 2>&1; then fail "bootstrap should refuse source repo"; fi
 assert_contains "$TMP_ROOT/source-refuse.log" "refusing to initialize the bootstrap source"
 if grep -R -n '{{' "$ROOT/generated/codex" "$ROOT/generated/claude" "$ROOT/generated/opencode" > "$TMP_ROOT/placeholders.log"; then cat "$TMP_ROOT/placeholders.log" >&2; fail "unrendered template placeholder found"; fi
-if grep -R -n '^argument-hint: [^"]' "$ROOT/generated/codex/.piper/plugin/commands" "$ROOT/generated/claude/.claude/commands" "$ROOT/generated/opencode/.opencode/commands" > "$TMP_ROOT/frontmatter.log"; then cat "$TMP_ROOT/frontmatter.log" >&2; fail "unquoted argument-hint frontmatter found"; fi
+if grep -R -n '^argument-hint: [^"]' "$ROOT/generated/codex/.codex/commands" "$ROOT/generated/claude/.claude/commands" "$ROOT/generated/opencode/.opencode/commands" > "$TMP_ROOT/frontmatter.log"; then cat "$TMP_ROOT/frontmatter.log" >&2; fail "unquoted argument-hint frontmatter found"; fi
 
 git -C "$ROOT" diff --check
 

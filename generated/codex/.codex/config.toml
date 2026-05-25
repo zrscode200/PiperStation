@@ -21,23 +21,23 @@ max_threads = 6
 max_depth = 1
 
 [[skills.config]]
-path = "../.piper/plugin/skills/hub-workflow"
+path = "./skills/hub-workflow"
 enabled = true
 
 [[skills.config]]
-path = "../.piper/plugin/skills/automation-policy"
+path = "./skills/automation-policy"
 enabled = true
 
 [[skills.config]]
-path = "../.piper/plugin/skills/superpowers-planning"
+path = "./skills/superpowers-planning"
 enabled = true
 
 [[skills.config]]
-path = "../.piper/plugin/skills/ralph-loop"
+path = "./skills/ralph-loop"
 enabled = true
 
 [[skills.config]]
-path = "../.piper/plugin/skills/review"
+path = "./skills/review"
 enabled = true
 
 [mcp_servers.openaiDeveloperDocs]

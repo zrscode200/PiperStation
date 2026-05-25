@@ -3,8 +3,8 @@
 | Capability | Codex | Claude Code | OpenCode | Raygent |
 | --- | --- | --- | --- | --- |
 | Root instructions | `AGENTS.md` | `CLAUDE.md` | `AGENTS.md` | Future |
-| Commands | Plugin commands | `.claude/commands` | `.opencode/commands` | Future |
-| Skills | Plugin skills | `.claude/skills` | `.opencode/skills` | Future |
+| Commands | `.codex/commands` | `.claude/commands` | `.opencode/commands` | Future |
+| Skills | `.codex/skills` | `.claude/skills` | `.opencode/skills` | Future |
 | Subagents | `.codex/agents` | `.claude/agents` | `.opencode/agents` | Future |
 | Compact hooks | Prompt/session guidance | Pre/Post compact hooks | Auto-compaction config | Possible runtime feature |
 | Shared project ledger | Supported | Supported | Supported | Future |

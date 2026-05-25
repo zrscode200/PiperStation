@@ -23,8 +23,8 @@ RUNTIME_CONFIG = {
     "codex": {
         "runtime_name": "Codex",
         "instruction_doc": "AGENTS.md",
-        "command_dir": ".piper/plugin/commands",
-        "skill_dir": ".piper/plugin/skills",
+        "command_dir": ".codex/commands",
+        "skill_dir": ".codex/skills",
         "frontmatter": {
             "add-project.md": "---\ndescription: Register a project repo with this Piper Station hub\nargument-hint: \"[repo path and optional project id]\"\nallowed-tools: [Read, Write, Bash]\n---\n\n",
             "work-on.md": "---\ndescription: Orient to a registered project and route work through Piper Station modes\nargument-hint: \"[project id or repo path and request]\"\nallowed-tools: [Read, Bash]\n---\n\n",

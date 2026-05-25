@@ -4,9 +4,9 @@ This directory is a Piper Station hub-lite workspace. It coordinates assisted
 development across registered project repositories using one shared project
 ledger and one or more native harness surfaces.
 
-Installed runtime surfaces may include Codex, Claude Code, or both. Runtime
-files provide native entry points; project records stay shared under
-`projects/`.
+Installed runtime surfaces may include Codex, Claude Code, OpenCode, or any
+combination of them. Runtime files provide native entry points; project records
+stay shared under `projects/`.
 
 ## Required Behavior
 
@@ -25,12 +25,12 @@ files provide native entry points; project records stay shared under
 
 ## Runtime Surfaces
 
-- Codex: `AGENTS.md`, `.codex/`, and `.piper/plugin/`.
+- Codex: `AGENTS.md` and `.codex/`.
 - Claude Code: `CLAUDE.md` and `.claude/`.
 - OpenCode: `opencode.json` and `.opencode/`.
 
-A hub may have both surfaces installed. Use one harness actively on a project at
-a time unless the user explicitly coordinates parallel work.
+A hub may have multiple runtime surfaces installed. Use one harness actively on
+a project at a time unless the user explicitly coordinates parallel work.
 
 ## Project Records
 
