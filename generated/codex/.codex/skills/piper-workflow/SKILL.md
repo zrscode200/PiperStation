@@ -1,6 +1,6 @@
 ---
 name: piper-workflow
-description: Use for natural-language Piper Station project work: register or orient to projects, resolve repo context, choose Intent/Superpowers/Ralph/Review/Finish, and route to the right supporting behavior.
+description: "Use for natural-language Piper Station project work: register or orient to projects, resolve repo context, choose Intent/Superpowers/Ralph/Review/Finish, and route to the right supporting behavior."
 ---
 
 # Piper Workflow
