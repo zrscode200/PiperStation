@@ -248,13 +248,19 @@ assert_contains "$both_hub/projects/README.md" "local note"
 assert_file "$both_hub/.claude/settings.json"
 assert_contains "$both_hub/.piper/hub-manifest.json" '"claude"'
 
-mkdir -p "$both_hub/.claude/hooks" "$both_hub/.codex/hooks" "$both_hub/.piper/plugin/commands"
+mkdir -p "$both_hub/.claude/hooks" "$both_hub/.codex/hooks" "$both_hub/.piper/plugin/.codex-plugin" "$both_hub/.piper/plugin/commands" "$both_hub/.piper/plugin/skills/old-skill"
 printf 'old claude
 ' > "$both_hub/.claude/hooks/old-managed.sh"
 printf 'old codex
 ' > "$both_hub/.codex/hooks/old-managed.sh"
+printf '{"name":"old-codex-plugin"}
+' > "$both_hub/.piper/plugin/.codex-plugin/plugin.json"
+printf '{"mcpServers":{}}
+' > "$both_hub/.piper/plugin/.mcp.json"
 printf 'old codex plugin
 ' > "$both_hub/.piper/plugin/commands/old-managed.md"
+printf 'old codex skill
+' > "$both_hub/.piper/plugin/skills/old-skill/SKILL.md"
 {
   printf '{
 '
@@ -264,7 +270,13 @@ printf 'old codex plugin
 '
   printf '    ".codex/hooks/old-managed.sh",
 '
-  printf '    ".piper/plugin/commands/old-managed.md"
+  printf '    ".piper/plugin/.codex-plugin/plugin.json",
+'
+  printf '    ".piper/plugin/.mcp.json",
+'
+  printf '    ".piper/plugin/commands/old-managed.md",
+'
+  printf '    ".piper/plugin/skills/old-skill/SKILL.md"
 '
   printf '  ]
 '
@@ -274,7 +286,11 @@ printf 'old codex plugin
 "$BOOTSTRAP" --runtime codex "$both_hub" > "$TMP_ROOT/stale-codex.log"
 assert_file "$both_hub/.claude/hooks/old-managed.sh"
 assert_not_exists "$both_hub/.codex/hooks/old-managed.sh"
+assert_not_exists "$both_hub/.piper/plugin/.codex-plugin/plugin.json"
+assert_not_exists "$both_hub/.piper/plugin/.mcp.json"
 assert_not_exists "$both_hub/.piper/plugin/commands/old-managed.md"
+assert_not_exists "$both_hub/.piper/plugin/skills/old-skill/SKILL.md"
+assert_not_exists "$both_hub/.piper/plugin"
 "$BOOTSTRAP" --runtime claude "$both_hub" > "$TMP_ROOT/stale-claude.log"
 assert_not_exists "$both_hub/.claude/hooks/old-managed.sh"
 
