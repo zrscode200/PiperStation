@@ -15,6 +15,9 @@ downloads/
 eggs/
 .eggs/
 lib/
+!generated/*/.piper/lib/
+!generated/*/.piper/lib/bootstrap/
+!generated/*/.piper/lib/bootstrap/add-project.sh
 lib64/
 parts/
 sdist/

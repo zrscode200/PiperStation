@@ -22,6 +22,13 @@ sh -n "$BOOTSTRAP"
 sh -n "$ADD_PROJECT"
 sh -n "$ROOT/scripts/render-templates.sh"
 python3 "$ROOT/scripts/render_templates.py" --check >/dev/null
+for runtime in codex claude opencode; do
+  helper="generated/$runtime/.piper/lib/bootstrap/add-project.sh"
+  assert_file "$ROOT/$helper"
+  if git -C "$ROOT" check-ignore -q "$helper"; then
+    fail "generated add-project helper must not be ignored: $helper"
+  fi
+done
 python3 -m json.tool "$ROOT/generated/codex/.codex/hooks.json" >/dev/null
 python3 -m json.tool "$ROOT/generated/claude/.claude/settings.json" >/dev/null
 python3 -m json.tool "$ROOT/generated/opencode/opencode.json" >/dev/null
