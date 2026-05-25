@@ -50,6 +50,7 @@ assert_file "$codex_hub/.codex/hooks/stop-reminder.sh"
 assert_file "$codex_hub/.codex/commands/ralph.md"
 assert_file "$codex_hub/.codex/commands/work-on.md"
 assert_file "$codex_hub/.codex/commands/compact-handoff.md"
+assert_file "$codex_hub/.codex/skills/piper-workflow/SKILL.md"
 assert_file "$codex_hub/.codex/skills/ralph-loop/SKILL.md"
 assert_file "$codex_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$codex_hub/bin/add-project"
@@ -63,7 +64,7 @@ assert_not_contains "$codex_hub/AGENTS.md" "point for Codex work"
 assert_file_count "$codex_hub/.codex/agents" "*.toml" 6
 assert_file_count "$codex_hub/.codex/commands" "*.md" 5
 assert_file_count "$codex_hub/.codex/skills" "SKILL.md" 5
-assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/hub-workflow"'
+assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/piper-workflow"'
 assert_contains "$codex_hub/.piper/hub-manifest.json" '"codex"'
 assert_not_contains "$codex_hub/.piper/hub-manifest.json" '"claude"'
 assert_contains "$codex_hub/.codex/commands/work-on.md" "argument-hint"
@@ -86,6 +87,7 @@ assert_not_contains "$codex_hub/.codex/commands/superpowers.md" "Force Superpowe
 assert_not_contains "$codex_hub/STATION.md" "does not bring back"
 assert_not_exists "$codex_hub/.codex/skills/planning/SKILL.md"
 assert_not_exists "$codex_hub/.codex/skills/implementation-loop/SKILL.md"
+assert_not_exists "$codex_hub/.codex/skills/hub-workflow/SKILL.md"
 python3 -m json.tool "$codex_hub/.piper/hub-manifest.json" >/dev/null
 (cd "$codex_hub" && sh .codex/hooks/session-context.sh) > "$TMP_ROOT/codex-session-start.log"
 assert_contains "$TMP_ROOT/codex-session-start.log" "hub-lite is active"
@@ -109,6 +111,7 @@ assert_file "$claude_hub/.claude/hooks/post-compact-resume.sh"
 assert_file "$claude_hub/.claude/commands/ralph.md"
 assert_file "$claude_hub/.claude/commands/work-on.md"
 assert_file "$claude_hub/.claude/commands/compact-handoff.md"
+assert_file "$claude_hub/.claude/skills/piper-workflow/SKILL.md"
 assert_file "$claude_hub/.claude/skills/ralph-loop/SKILL.md"
 assert_file "$claude_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$claude_hub/bin/add-project"
@@ -130,7 +133,7 @@ assert_contains "$claude_hub/.claude/commands/ralph.md" "Implementation Review G
 assert_contains "$claude_hub/.claude/commands/ralph.md" "Risk tier controls approval before execution, not review selection"
 assert_contains "$claude_hub/.claude/commands/compact-handoff.md" "Required Compact Resume Packet"
 assert_contains "$claude_hub/.claude/commands/compact-handoff.md" "Do not say"
-assert_contains "$claude_hub/.claude/skills/hub-workflow/SKILL.md" "/add-dir"
+assert_contains "$claude_hub/.claude/skills/piper-workflow/SKILL.md" "/add-dir"
 assert_contains "$claude_hub/.claude/skills/ralph-loop/SKILL.md" "Claude Code session"
 assert_contains "$claude_hub/.claude/skills/ralph-loop/SKILL.md" "read-only reviewer agent"
 assert_contains "$claude_hub/.claude/agents/README.md" "same helper role set as the Codex surface"
@@ -162,6 +165,7 @@ assert_file "$opencode_hub/.opencode/agents/tester.md"
 assert_file "$opencode_hub/.opencode/commands/ralph.md"
 assert_file "$opencode_hub/.opencode/commands/work-on.md"
 assert_file "$opencode_hub/.opencode/commands/compact-handoff.md"
+assert_file "$opencode_hub/.opencode/skills/piper-workflow/SKILL.md"
 assert_file "$opencode_hub/.opencode/skills/ralph-loop/SKILL.md"
 assert_file "$opencode_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$opencode_hub/bin/add-project"
@@ -200,19 +204,24 @@ python3 -m json.tool "$opencode_hub/.piper/hub-manifest.json" >/dev/null
 python3 -m json.tool "$opencode_hub/opencode.json" >/dev/null
 
 for hub in "$codex_hub" "$claude_hub" "$opencode_hub"; do
-  assert_contains "$hub/STATION.md" "Commands own dispatch"
-  assert_contains "$hub/STATION.md" "Use this dispatch table"
+  assert_contains "$hub/STATION.md" "piper-workflow"
+  assert_contains "$hub/STATION.md" "owns natural-language dispatch"
 done
-assert_contains "$codex_hub/AGENTS.md" "Supporting skills should not become independent routers"
-assert_contains "$claude_hub/CLAUDE.md" "Supporting skills and agents should not become independent routers"
-assert_contains "$opencode_hub/AGENTS.md" "Supporting skills should not become independent routers"
+assert_contains "$codex_hub/AGENTS.md" "piper-workflow"
+assert_contains "$codex_hub/AGENTS.md" "owns natural-language dispatch"
+assert_contains "$claude_hub/CLAUDE.md" "piper-workflow"
+assert_contains "$claude_hub/CLAUDE.md" "owns natural-language dispatch"
+assert_contains "$opencode_hub/AGENTS.md" "piper-workflow"
+assert_contains "$opencode_hub/AGENTS.md" "owns natural-language dispatch"
 for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$opencode_hub/.opencode/skills"; do
-  assert_contains "$skill_dir/hub-workflow/SKILL.md" "not the mode router"
-  assert_contains "$skill_dir/superpowers-planning/SKILL.md" "Use this skill only after"
-  assert_contains "$skill_dir/ralph-loop/SKILL.md" "not the initial router"
+  assert_contains "$skill_dir/piper-workflow/SKILL.md" "Piper Workflow owns natural-language dispatch"
+  assert_contains "$skill_dir/piper-workflow/SKILL.md" "Register"
+  assert_contains "$skill_dir/piper-workflow/SKILL.md" "Orient"
+  assert_contains "$skill_dir/superpowers-planning/SKILL.md" "piper-workflow"
+  assert_contains "$skill_dir/ralph-loop/SKILL.md" "piper-workflow"
   assert_contains "$skill_dir/review/SKILL.md" "Do not use this skill for general repo orientation"
   assert_contains "$skill_dir/automation-policy/SKILL.md" "Do not use this skill for ordinary local inspection"
-  assert_not_contains "$skill_dir/hub-workflow/SKILL.md" "Route the request through Intent"
+  assert_not_exists "$skill_dir/hub-workflow/SKILL.md"
 done
 
 both_hub="$TMP_ROOT/both-hub"

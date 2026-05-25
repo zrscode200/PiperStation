@@ -10,9 +10,9 @@ Piper mode.
 
 The user invoked this command with: `$ARGUMENTS`
 
-`/work-on` is the default router for ambiguous project work. Use skills as
-supporting references after this command chooses a mode; do not let automatic
-skill matching choose the mode independently.
+`/work-on` is an explicit shortcut for `piper-workflow` routing. Ordinary
+natural-language project work can route through `piper-workflow` without this
+command; when invoked, follow the same dispatch logic here.
 
 ## Steps
 
@@ -37,8 +37,10 @@ skill matching choose the mode independently.
    - Review requests should enter Review Mode.
    - Commit, PR, dependency, network, CI, destructive, or external automation
      requests should use the automation approval flow.
-9. State the chosen mode and next concrete action. Wait for go-ahead unless the
-   routing is unambiguous and the user clearly asked for direct work.
+9. State the chosen mode and next concrete action. Proceed naturally when the
+   route is clear and safe; wait for go-ahead when confirmation is required,
+   risk is `L2`, the request is ambiguous, or the user asked only for
+   orientation.
 
 Rules:
 

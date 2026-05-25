@@ -49,10 +49,10 @@ Use `--hub-only` when repo marker files are not wanted.
 
 ## Mode Routing
 
-Commands own dispatch. Skills, agents, hooks, and docs are supporting
-references after a command or user request has selected a mode. Use `/work-on`
-as the default router for ambiguous project work; use narrower commands only
-when the user explicitly asks for that mode.
+`piper-workflow` owns natural-language dispatch for ordinary project work.
+Slash commands are explicit shortcuts into the same behavior. Use `/work-on`
+when the user explicitly wants the routing command; otherwise let
+`piper-workflow` handle project-work requests directly.
 
 Route each request through the smallest mode that fits.
 
@@ -62,11 +62,10 @@ Route each request through the smallest mode that fits.
 - Review Mode - first check whether the work matches the request/spec/plan, then check code quality.
 - Finish Mode - report verification, residual risk, changed files, and commit or pull request options without mutating git automatically.
 
-Supporting skills and agents should not become independent routers. Use
-`hub-workflow` for hub orientation, `superpowers-planning` after Superpowers
-Mode is selected, `ralph-loop` after Ralph Mode is selected for one clear task,
-`review` for explicit review work, and `automation-policy` only before
-protected automation or external actions.
+Use supporting skills and agents after the route is selected:
+`superpowers-planning` for Superpowers Mode, `ralph-loop` for one clear Ralph
+task, `review` for explicit review work or review gates, and
+`automation-policy` before protected automation or external actions.
 
 ### Scope Tiers
 

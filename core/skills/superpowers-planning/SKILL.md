@@ -1,14 +1,14 @@
 ---
 name: superpowers-planning
-description: Use only after Superpowers Mode is selected for substantial discovery, specification, implementation planning, or Ralph-ready task queue creation.
+description: Use after the user, piper-workflow, or /superpowers selects Superpowers Mode for substantial discovery, specification, implementation planning, or Ralph-ready task queue creation.
 ---
 
 # Superpowers Planning
 
-Use this skill only after the user or `/work-on` has selected Superpowers Mode.
-It carries the Superpowers discipline as hub-lite agent behavior: discover the
-request, classify scope and risk, write a spec when warranted, and turn the spec
-into a Ralph-executable plan.
+Use this skill after the user, `piper-workflow`, or `/superpowers` has selected
+Superpowers Mode. It carries the Superpowers discipline as hub-lite agent
+behavior: discover the request, classify scope and risk, write a spec when
+warranted, and turn the spec into a Ralph-executable plan.
 
 Do not use this skill for general repo orientation, implementation, review, or
 automation approval. Route those through the dispatch contract in `STATION.md`.

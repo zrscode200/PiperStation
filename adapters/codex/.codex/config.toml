@@ -21,7 +21,7 @@ max_threads = 6
 max_depth = 1
 
 [[skills.config]]
-path = "./skills/hub-workflow"
+path = "./skills/piper-workflow"
 enabled = true
 
 [[skills.config]]

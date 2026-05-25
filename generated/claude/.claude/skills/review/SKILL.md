@@ -1,6 +1,6 @@
 ---
 name: review
-description: Use only for explicit code review, implementation review, or a Ralph review gate; first check whether the work matches the request/spec/plan, then check whether it is built well.
+description: Use for explicit code review, piper-workflow Review Mode, implementation review, or a Ralph review gate; first check whether the work matches the request/spec/plan, then check whether it is built well.
 ---
 
 # Review
@@ -14,8 +14,8 @@ Read the request, active spec or plan, task queue, verification logs, changed
 code or diff, and relevant surrounding code before reporting findings.
 
 Do not use this skill for general repo orientation, planning, implementation,
-or automation approval. Route those through the dispatch contract in
-`STATION.md`.
+or automation approval. Route those through `piper-workflow` and the dispatch
+contract in `STATION.md`.
 
 Prioritize findings by severity. Anchor findings to concrete files, lines,
 behavior, missing verification, or drift from the request/spec/plan.

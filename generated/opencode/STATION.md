@@ -34,24 +34,26 @@ a project at a time unless the user explicitly coordinates parallel work.
 
 ## Dispatch Contract
 
-Commands own dispatch. Skills, agents, hooks, and docs are supporting
-references after a command or user request has selected a mode. Do not rely on
-automatic skill or agent matching as the primary router.
+`piper-workflow` owns natural-language dispatch for ordinary project work.
+Slash commands are explicit shortcuts into the same behavior. Skills, agents,
+hooks, and docs provide supporting behavior after `piper-workflow` or a command
+has selected the route.
 
 Use this dispatch table when intent is unclear:
 
-| User intent | Entry point or mode | Supporting guide |
+| User intent | Route | Supporting behavior |
 | --- | --- | --- |
-| Register a repo | `/add-project` or `./bin/add-project` | `hub-workflow` |
-| Orient to a repo or ambiguous request | `/work-on` | `hub-workflow` |
-| Discover, specify, or plan substantial work | `/superpowers` or Superpowers Mode | `superpowers-planning` |
-| Execute one clear queued task | `/ralph` or Ralph Mode | `ralph-loop` |
+| Register a repo | `piper-workflow`, `/add-project`, or `./bin/add-project` | deterministic registration helper |
+| Orient to a repo or ambiguous request | `piper-workflow` or `/work-on` | `piper-workflow` |
+| Discover, specify, or plan substantial work | Superpowers Mode or `/superpowers` | `superpowers-planning` |
+| Execute one clear queued task | Ralph Mode or `/ralph` | `ralph-loop` |
 | Review code or an implemented slice | Review Mode | `review` |
 | Commit, PR, dependency, network, CI, destructive, or external action | Finish Mode or explicit approval flow | `automation-policy` |
 | Pause or compact active work | `/compact-handoff` | `ralph-loop` when Ralph work is active |
 
-If a skill appears relevant but the mode is not selected, route back through
-`/work-on` or this table instead of letting the skill become a second router.
+If a normal project-work request arrives without a slash command, treat it as
+an implicit `piper-workflow` request. Use visible mode names when they help
+continuity, but do not make the user operate the mode layer.
 
 ## Project Records
 
@@ -73,7 +75,8 @@ Registration must not create `work/`.
 
 ## Mode Routing
 
-Route requests through command entrypoints and the smallest mode that fits:
+Route requests through `piper-workflow`, command shortcuts, and the smallest
+mode that fits:
 
 - Intent Mode: identify the project, user goal, scope tier, risk tier, and next
   safe mode.

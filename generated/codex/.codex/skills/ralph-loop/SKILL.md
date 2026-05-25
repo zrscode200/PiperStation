@@ -1,13 +1,13 @@
 ---
 name: ralph-loop
-description: Use only after Ralph Mode is selected to execute one clear scoped task from a plan or task queue with verification, drift checks, review gate, and compact-safe updates.
+description: Use after the user, piper-workflow, or /ralph selects Ralph Mode to execute one clear scoped task from a plan or task queue with verification, drift checks, review gate, and compact-safe updates.
 ---
 
 # Ralph Loop
 
 Ralph is prompt and skill behavior in Codex. It is not a shell
-runner and not the initial router. Use this skill only after the user or
-`/work-on` has selected Ralph Mode and a task is clear or
+runner and not the initial router. Use this skill after the user,
+`piper-workflow`, or `/ralph` has selected Ralph Mode and a task is clear or
 `projects/<id>/work/task-queue.md` is ready.
 
 Do not use this skill for discovery, broad planning, general review, or

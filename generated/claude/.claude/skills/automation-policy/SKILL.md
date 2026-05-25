@@ -1,6 +1,6 @@
 ---
 name: automation-policy
-description: Use only before commits, worktrees, pull requests, CI repair loops, dependency installs, networked commands, destructive git actions, or other automation that mutates project or external state.
+description: Use when the user, piper-workflow, or a command is about to commit, use worktrees, open pull requests, run CI repair loops, install dependencies, run networked commands, take destructive git actions, or mutate external state.
 ---
 
 # Automation Policy
