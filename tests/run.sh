@@ -64,6 +64,14 @@ assert_file_count "$codex_hub/.codex/agents" "*.toml" 6
 assert_file_count "$codex_hub/.codex/commands" "*.md" 5
 assert_file_count "$codex_hub/.codex/skills" "SKILL.md" 3
 assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/piper-workflow"'
+assert_not_contains "$codex_hub/.codex/config.toml" 'skills/hub-workflow'
+assert_not_contains "$codex_hub/.codex/config.toml" 'skills/superpowers-planning'
+assert_not_contains "$codex_hub/.codex/config.toml" 'skills/ralph-loop'
+while IFS= read -r skill_path; do
+  assert_file "$codex_hub/.codex/${skill_path#./}/SKILL.md"
+done <<EOF
+$(sed -n 's/^[[:space:]]*path = "\(.*skills\/[^"]*\)"/\1/p' "$codex_hub/.codex/config.toml")
+EOF
 assert_contains "$codex_hub/.piper/hub-manifest.json" '"codex"'
 assert_not_contains "$codex_hub/.piper/hub-manifest.json" '"claude"'
 assert_contains "$codex_hub/.codex/commands/work-on.md" "argument-hint"

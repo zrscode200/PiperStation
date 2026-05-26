@@ -29,14 +29,6 @@ path = "./skills/automation-policy"
 enabled = true
 
 [[skills.config]]
-path = "./skills/superpowers-planning"
-enabled = true
-
-[[skills.config]]
-path = "./skills/ralph-loop"
-enabled = true
-
-[[skills.config]]
 path = "./skills/review"
 enabled = true
 

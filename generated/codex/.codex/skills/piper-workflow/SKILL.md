@@ -61,6 +61,10 @@ Choose the smallest safe path that fits:
 | Commit, PR, dependency, network, CI, destructive, or external action | Finish Mode or approval flow | `automation-policy` |
 | Pause or compact active work | compact handoff | `/compact-handoff` and compact sections in `STATION.md` |
 
+When routing into Superpowers, Ralph, or compact handoff from natural language,
+read and follow the matching command file before acting; those commands hold
+the detailed operating procedure.
+
 Use visible mode names only when they help continuity. Prefer consequence
 language such as "I will keep this read-only" or "I will create Ralph-ready
 work records" over ceremonial mode announcements. If the route is clear and
