@@ -94,6 +94,25 @@ projects/<project-id>/
 
 Registration must not create `work/`.
 
+### Work Artifact Reference
+
+Create these only under `projects/<project-id>/work/`, never in the registered
+project repo. Use the active files for the current scope; use the archive
+directories only when substantial work needs preserved history.
+
+| Artifact | Purpose | Create or update when |
+| --- | --- | --- |
+| `active-spec.md` | Current problem statement, goals, non-goals, acceptance criteria, risks, and open questions. | Work is `S2+`, requirements need durable agreement, or Ralph needs a stable target. |
+| `active-plan.md` | Current implementation approach, ordered slices, tradeoffs, dependencies, and verification strategy. | Work is `S1+` and the plan must survive compaction or handoff. |
+| `task-queue.md` | Ralph-ready task list with ids, status, risk, acceptance criteria, verification, and expected diff boundary. | There are clear executable slices for Ralph or future sessions. |
+| `context-pack.md` | Compact/resume anchor with goal, current task, next exact action, key files, branch/HEAD/status, verification state, review state, drift, blockers, and stop reason. | Active work records are in use and the session may continue after pause or compact. |
+| `progress.md` | Chronological durable progress, completed tasks, blockers, review debt, and next action. | Active work spans multiple turns or someone needs to audit what changed. |
+| `verification.md` | Commands run, results, failures, fallbacks, skipped checks, and remaining verification gaps. | Planning defines verification, Ralph runs checks, or verification is blocked. |
+| `handoff.md` | Short handoff for a human or fresh agent: current state, what to inspect first, and what to do next. | Pausing, compacting, blocking, or handing off execution. |
+| `specs/` | Archived or named specs for milestones or alternatives. | `S3` or long-running work needs more than one durable spec. |
+| `plans/` | Archived or named plans for milestones, alternatives, or superseded approaches. | `S3` or long-running work needs plan history beyond `active-plan.md`. |
+| `runs/` | Optional per-run notes for substantial Ralph iterations or review/verification cycles. | A single `progress.md` entry would be too dense to preserve useful execution detail. |
+
 ## Mode Routing
 
 Route requests through `piper-workflow`, command shortcuts, and the smallest
