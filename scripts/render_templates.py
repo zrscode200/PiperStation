@@ -14,10 +14,8 @@ RUNTIMES = ("codex", "claude", "opencode")
 COMMANDS = ("add-project.md", "work-on.md", "superpowers.md", "ralph.md", "compact-handoff.md")
 SKILLS = (
     "piper-workflow/SKILL.md",
-    "automation-policy/SKILL.md",
-    "superpowers-planning/SKILL.md",
-    "ralph-loop/SKILL.md",
     "review/SKILL.md",
+    "automation-policy/SKILL.md",
 )
 RUNTIME_CONFIG = {
     "codex": {

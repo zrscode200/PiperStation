@@ -35,9 +35,9 @@ a project at a time unless the user explicitly coordinates parallel work.
 ## Dispatch Contract
 
 `piper-workflow` owns natural-language dispatch for ordinary project work.
-Slash commands are explicit shortcuts into the same behavior. Skills, agents,
-hooks, and docs provide supporting behavior after `piper-workflow` or a command
-has selected the route.
+Slash commands are explicit shortcuts into the same behavior. Commands, narrow
+skills, agents, hooks, and docs provide supporting behavior after
+`piper-workflow` or a command has selected the route.
 
 Use this dispatch table when intent is unclear:
 
@@ -45,15 +45,36 @@ Use this dispatch table when intent is unclear:
 | --- | --- | --- |
 | Register a repo | `piper-workflow`, `/add-project`, or `./bin/add-project` | deterministic registration helper |
 | Orient to a repo or ambiguous request | `piper-workflow` or `/work-on` | `piper-workflow` |
-| Discover, specify, or plan substantial work | Superpowers Mode or `/superpowers` | `superpowers-planning` |
-| Execute one clear queued task | Ralph Mode or `/ralph` | `ralph-loop` |
+| Discover, specify, or plan substantial work | Superpowers Mode or `/superpowers` | `piper-workflow`, `/superpowers`, and this guide |
+| Execute one clear queued task | Ralph Mode or `/ralph` | `/ralph` and this guide |
 | Review code or an implemented slice | Review Mode | `review` |
 | Commit, PR, dependency, network, CI, destructive, or external action | Finish Mode or explicit approval flow | `automation-policy` |
-| Pause or compact active work | `/compact-handoff` | `ralph-loop` when Ralph work is active |
+| Pause or compact active work | `/compact-handoff` | compact handoff guidance |
 
 If a normal project-work request arrives without a slash command, treat it as
 an implicit `piper-workflow` request. Use visible mode names when they help
-continuity, but do not make the user operate the mode layer.
+continuity, but do not make the user operate the mode layer. Prefer consequence
+language such as "I will keep this read-only" or "I will create Ralph-ready
+work records" over ceremonial mode announcements.
+
+### Artifact Signal Policy
+
+Infer durable artifacts from the user's intent signal and state the consequence
+when it matters:
+
+| User signal | Interpretation | Durable writes | Assistant stance |
+| --- | --- | --- | --- |
+| "review this repo", "understand what this does", "what is this project", or a repo path with an explanation or review request | Orientation or review | None by default | Inspect the repo in place. Say the work is read-only and that registration or hub records will wait unless asked. |
+| "what would it take", "how should we approach", "compare this to", or "plan the refactor" before registration | Conversational planning | None by default | Produce a grounded plan in chat. Avoid hub records unless the user asks to formalize. |
+| "register this", "track this project", or "this is formal work now" | Registration | `project.md`, `memory.md`, and `decisions.md` only | Use the registration helper. Prefer hub-only records unless repo marker files are explicitly wanted. Do not create `work/` or start implementation. |
+| "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Create the durable record set the scope needs, such as active spec, active plan, task queue, context pack, progress, and verification. State that source remains untouched. |
+| "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the real project repo | Confirm the selected task, diff boundary, risk, verification, and writable repo access before editing. Execute one scoped slice. |
+| "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/destructive action | Finish or protected automation | Only after explicit approval where required | Summarize state, verification, and risk first. Ask for approval before protected state changes. |
+
+Ambiguous signals must not silently escalate durable writes. If the next step
+would create hub records, edit project source, or take protected action and the
+user's intent is unclear, state the assumption and ask or choose the less
+durable action.
 
 ## Project Records
 
@@ -104,6 +125,11 @@ Risk tiers:
 - `L3`: forbidden inside Ralph; stop and ask.
 
 ## Ralph Review Gate
+
+Before Ralph edits project source, verify the real project repo is writable in
+the active session. If the repo is outside the current workspace or sandbox,
+state that writable access is required before execution instead of declaring
+the task Ralph-ready.
 
 During Ralph Mode, run a read-only implementation review after substantial
 slices are implemented and initially verified, before marking the slice

@@ -31,5 +31,44 @@ task decomposition before substantial implementation.
 
 Registration must not create `projects/<project-id>/work/`; Claude Code
 creates these files only when useful for active work. Keep Superpowers as
-Claude Code-native prompt and skill behavior; do not introduce shell lifecycle
+Claude Code-native prompt and command behavior; do not introduce shell lifecycle
 machinery for planning.
+
+## Work Artifacts
+
+Create only when useful:
+
+- `active-spec.md`
+- `active-plan.md`
+- `task-queue.md`
+- `context-pack.md`
+- `progress.md`
+- `verification.md`
+- `handoff.md`
+- `specs/`, `plans/`, and `runs/` for substantial work
+
+Keep stable facts in `memory.md` and durable decisions in `decisions.md`.
+Registration must not create active work artifacts.
+
+## Spec Shape
+
+Include problem or opportunity, goals and non-goals, users and workflows,
+proposed behavior, acceptance criteria, approach and tradeoffs, risks and
+guardrails, verification expectations, and open questions.
+
+## Task Shape
+
+Each queued Ralph task should include id, title, status, risk, likely files or
+areas, acceptance criteria, verification command or documented fallback,
+expected diff boundary, context needed by a fresh session or reviewer, and
+dependencies.
+
+## Guardrails
+
+- Do not implement while discovering or planning.
+- Mark assumptions separately from confirmed facts.
+- Keep plans concrete enough for a fresh Claude Code session to continue cold.
+- Do not store secrets or sensitive raw logs in hub records.
+- Record meaningful approach, scope, risk, or verification decisions in
+  `projects/<project-id>/decisions.md`.
+- "Make it better" is not an acceptance criterion; force a testable one.

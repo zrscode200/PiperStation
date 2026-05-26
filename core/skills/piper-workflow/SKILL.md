@@ -1,6 +1,6 @@
 ---
 name: piper-workflow
-description: "Use for natural-language Piper Station project work: register or orient to projects, resolve repo context, choose Intent/Superpowers/Ralph/Review/Finish, and route to the right supporting behavior."
+description: "Use for natural-language Piper Station project work: register or orient to projects, resolve repo context, infer artifact needs, choose Intent/Superpowers/Ralph/Review/Finish behavior, and route to commands or narrow skills when needed."
 ---
 
 # Piper Workflow
@@ -10,8 +10,11 @@ Slash commands are explicit shortcuts into the same behavior. Use this skill
 when the user asks to register a repo, work on a registered project, plan,
 implement, review, finish, compact, or perform protected automation.
 
-This skill routes. It does not replace the detailed behavior in
-`superpowers-planning`, `ralph-loop`, `review`, or `automation-policy`.
+This skill routes ordinary project work. Superpowers and Ralph are disciplines
+implemented through `STATION.md`, `/superpowers`, and `/ralph`, not competing
+broad natural-language skills. Use narrow skills only when their specific
+consequence applies: `review` for explicit review or review gates and
+`automation-policy` before protected automation or external state changes.
 
 Read `{{INSTRUCTION_DOC}}` and `STATION.md` first. Use the other root docs as
 canonical references when product, architecture, convention, testing, security,
@@ -51,17 +54,40 @@ Choose the smallest safe path that fits:
 | User intent | Route | Supporting behavior |
 | --- | --- | --- |
 | Register a repo | registration | helper described above |
-| Orient to a repo or ambiguous request | Intent Mode | this skill |
-| Discover, specify, or plan substantial work | Superpowers Mode | `superpowers-planning` |
-| Execute one clear queued task | Ralph Mode | `ralph-loop` |
+| Orient to a repo or ambiguous request | Intent Mode | this skill; keep it read-only unless the user asks for durable work |
+| Discover, specify, or plan substantial work | Superpowers discipline | this skill and `/superpowers` behavior |
+| Execute one clear queued task | Ralph discipline | `/ralph` behavior and Ralph sections in `STATION.md` |
 | Review code or an implemented slice | Review Mode | `review` |
 | Commit, PR, dependency, network, CI, destructive, or external action | Finish Mode or approval flow | `automation-policy` |
-| Pause or compact active work | compact handoff | `/compact-handoff`; `ralph-loop` when Ralph work is active |
+| Pause or compact active work | compact handoff | `/compact-handoff` and compact sections in `STATION.md` |
 
-Use visible mode names when they help continuity, but do not make the user
-operate the mode layer. If the route is clear and safe, proceed naturally.
-Wait for go-ahead when the selected path requires confirmation, risk is `L2`,
-the request is ambiguous, or the user asked only for orientation.
+Use visible mode names only when they help continuity. Prefer consequence
+language such as "I will keep this read-only" or "I will create Ralph-ready
+work records" over ceremonial mode announcements. If the route is clear and
+safe, proceed naturally. Wait for go-ahead when the selected path requires
+confirmation, risk is `L2`, the request is ambiguous, or the user asked only
+for orientation.
+
+## Artifact Signal Policy
+
+Infer durable artifacts from the user's intent signal. Adjacent requests can
+sound similar but imply different writes, so state the consequence when it
+matters.
+
+| User signal | Interpretation | Durable writes | Assistant stance |
+| --- | --- | --- | --- |
+| "review this repo", "understand what this does", "what is this project", or a repo path with an explanation or review request | Orientation or review | None by default | Inspect the repo in place. Say the work is read-only and that registration or hub records will wait unless asked. |
+| "what would it take", "how should we approach", "compare this to", or "plan the refactor" before registration | Conversational planning | None by default | Produce a grounded plan in chat. Use references and live repo inspection, but avoid hub records unless the user asks to formalize. |
+| "register this", "track this project", or "this is formal work now" | Registration | `project.md`, `memory.md`, and `decisions.md` only | Use the registration helper. Prefer hub-only records unless repo marker files are explicitly wanted. Do not create `work/` or start implementation. |
+| "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Create the durable record set the scope needs, such as active spec, active plan, task queue, context pack, progress, and verification. State that this is durable prep and that project source remains untouched. |
+| "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the real project repo | Confirm the selected task, diff boundary, risk, verification, and writable repo access before editing. Execute one scoped slice. |
+| "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/destructive action | Finish or protected automation | Only after explicit approval where required | Summarize state, verification, and risk first. Ask for approval before protected state changes. |
+
+Ambiguous signals must not silently escalate durable writes. If the next step
+would create hub records, edit project source, or take protected action and the
+user's intent is unclear, state the assumption and ask or choose the less
+durable action. Read-only inspection and conversational planning can proceed
+when clearly safe.
 
 ## Scope And Risk
 
@@ -95,13 +121,19 @@ conversation unless substantial active work needs continuity under
 Create `projects/<project-id>/work/` only when useful. Registration must not
 create active work artifacts.
 
+Before Ralph execution, verify the real project repo is writable in the active
+session. If it is outside the current workspace or sandbox, tell the user that
+writable access is required before execution instead of declaring the task
+Ralph-ready.
+
 ## Guardrails
 
 - Do not copy source code into the hub.
 - Do not write hub active work records into registered project repos.
 - Do not add sessions, checkpoints, dashboards, queue managers, or lifecycle
   shell workflows.
-- Keep planning, Ralph, review, and compaction as prompt and skill behavior.
-  The deterministic shell helper is for project registration.
+- Keep planning, Ralph, review, and compaction as prompt, command, and narrow
+  consequence-specific behavior. The deterministic shell helper is for project
+  registration.
 - Do not commit, push, merge, delete, install dependencies, or run external
   automation without explicit user approval; see `automation-policy.md`.

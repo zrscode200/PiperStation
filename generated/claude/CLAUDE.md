@@ -62,10 +62,12 @@ Route each request through the smallest mode that fits.
 - Review Mode - first check whether the work matches the request/spec/plan, then check code quality.
 - Finish Mode - report verification, residual risk, changed files, and commit or pull request options without mutating git automatically.
 
-Use supporting skills and agents after the route is selected:
-`superpowers-planning` for Superpowers Mode, `ralph-loop` for one clear Ralph
-task, `review` for explicit review work or review gates, and
-`automation-policy` before protected automation or external actions.
+Use `piper-workflow` as the only broad natural-language project-work router.
+Use `/superpowers` for explicit formal planning, `/ralph` for explicit one-task
+execution, `review` for explicit review work or review gates, and
+`automation-policy` before protected automation or external actions. Prefer
+consequence language such as "I will keep this read-only" or "I will create
+Ralph-ready work records" over ceremonial mode announcements.
 
 ### Scope Tiers
 
@@ -122,9 +124,10 @@ Before editing a registered project:
 5. If the repo is outside the hub, ensure Claude Code has workspace access through `/add-dir <repo-path>` or by launching with `claude --add-dir <repo-path>` before editing.
 6. State any uncommitted or recent user changes that affect the task.
 7. Make a short task-specific plan unless the user has asked only for review or explanation.
-8. Implement in the real project repo, using the repo's own conventions and verification commands.
-9. Update `projects/<project-id>/work/` only when active continuity is useful.
-10. Update hub `memory.md` or `decisions.md` only when durable context changed.
+8. Before Ralph execution or source edits, verify the real project repo is writable in the active session or state that writable access is required.
+9. Implement in the real project repo, using the repo's own conventions and verification commands.
+10. Update `projects/<project-id>/work/` only when active continuity is useful.
+11. Update hub `memory.md` or `decisions.md` only when durable context changed.
 
 ## Skills And Agents
 

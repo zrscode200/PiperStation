@@ -77,10 +77,12 @@ Route each request through the smallest mode that fits:
 - Finish Mode: verify, summarize, and present commit or PR options without
   mutating git automatically.
 
-Use supporting skills after the route is selected: `superpowers-planning` for
-Superpowers Mode, `ralph-loop` for one clear Ralph task, `review` for explicit
-review work or review gates, and `automation-policy` before protected
-automation or external actions.
+Use `piper-workflow` as the only broad natural-language project-work router.
+Use `/superpowers` for explicit formal planning, `/ralph` for explicit one-task
+execution, `review` for explicit review work or review gates, and
+`automation-policy` before protected automation or external actions. Prefer
+consequence language such as "I will keep this read-only" or "I will create
+Ralph-ready work records" over ceremonial mode announcements.
 
 Scope tiers:
 
@@ -108,10 +110,12 @@ Before editing a registered project:
 5. State any uncommitted or recent user changes that affect the task.
 6. Make a short task-specific plan unless the user has asked only for review or
    explanation.
-7. Implement in the real project repo, using the repo's own conventions and
+7. Before Ralph execution or source edits, verify the real project repo is
+   writable in the active session or state that writable access is required.
+8. Implement in the real project repo, using the repo's own conventions and
    verification commands.
-8. Update `projects/<project-id>/work/` only when active continuity is useful.
-9. Update hub `memory.md` or `decisions.md` only when durable context changed.
+9. Update `projects/<project-id>/work/` only when active continuity is useful.
+10. Update hub `memory.md` or `decisions.md` only when durable context changed.
 
 ## Ralph Review Gate
 
