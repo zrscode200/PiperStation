@@ -20,6 +20,24 @@ generate_memories = true
 max_threads = 6
 max_depth = 1
 
+[agents.architect]
+config_file = "./agents/architect.toml"
+
+[agents.docs_researcher]
+config_file = "./agents/docs-researcher.toml"
+
+[agents.implementer]
+config_file = "./agents/implementer.toml"
+
+[agents.reviewer]
+config_file = "./agents/reviewer.toml"
+
+[agents.security_reviewer]
+config_file = "./agents/security-reviewer.toml"
+
+[agents.tester]
+config_file = "./agents/tester.toml"
+
 [[skills.config]]
 path = "./skills/piper-workflow"
 enabled = true

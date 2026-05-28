@@ -1,14 +1,10 @@
----
-description: Register a project repo with this Piper Station hub
-argument-hint: "[repo path and optional project id]"
-allowed-tools: [Read, Write, Bash]
----
-
 # Add Project
 
 Register a project repo with this Piper Station hub.
 
-The user invoked this command with: `$ARGUMENTS`
+The `piper-workflow` skill routes here when the user asks to register, track,
+or formalize a project. Use the request context to determine the repo path,
+project id, and optional display name.
 
 Use the deterministic helper unless the user only wants an explanation:
 

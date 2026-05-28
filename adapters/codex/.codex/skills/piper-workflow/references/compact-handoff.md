@@ -1,19 +1,14 @@
----
-description: Prepare compact-safe project work records
-argument-hint: "[project id and current task]"
-allowed-tools: [Read, Write, Bash]
----
-
 # Compact Handoff
 
 Prepare prompt-driven continuity before compacting, pausing, or handing off.
 
-The user invoked this command with: `$ARGUMENTS`
+The `piper-workflow` skill routes here when the user signals a pause,
+handoff, or compact-ready state on a registered project.
 
 ## Steps
 
-1. Read `AGENTS.md` and the project record: `project.md`,
-   `memory.md`, and `decisions.md`.
+1. Read `AGENTS.md` and the project record: `project.md`, `memory.md`, and
+   `decisions.md`.
 2. Read relevant files under `projects/<project-id>/work/`, especially
    `active-spec.md`, `active-plan.md`, `task-queue.md`, `progress.md`,
    `verification.md`, and `context-pack.md`.

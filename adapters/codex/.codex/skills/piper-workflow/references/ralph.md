@@ -1,24 +1,20 @@
----
-description: Enter Ralph Mode for one scoped implementation slice
-argument-hint: "[project id and optional task id]"
-allowed-tools: [Read, Write, Bash]
----
-
 # Ralph
 
 Enter Ralph Mode for one scoped task.
 
-The user invoked this command with: `$ARGUMENTS`
+The `piper-workflow` skill routes here when the user asks to execute a task,
+build a slice, or work through a Ralph-ready task queue. Determine the
+selected task from the request context (a task id, a description, or the top
+ready item in `task-queue.md`).
 
-Ralph is prompt and command behavior in Codex. It selects one task,
-states the diff boundary, implements that task, verifies, drift-checks, applies
-the Implementation Review Gate when required or expected, and updates
-compact-safe records when active work records are in use.
+Ralph is prompt and skill behavior in Codex. It selects one task, states the
+diff boundary, implements that task, verifies, drift-checks, applies the
+Implementation Review Gate when required or expected, and updates compact-safe
+records when active work records are in use.
 
 Ralph is not a shell runner and not a general planner. Use it after a task is
-clear or `projects/<project-id>/work/task-queue.md` is ready. Natural-language
-routing can choose this behavior through `piper-workflow`; protected actions
-still route through `automation-policy`.
+clear or `projects/<project-id>/work/task-queue.md` is ready. Protected
+actions still route through the `automation-policy` skill.
 
 ## Steps
 
@@ -26,13 +22,14 @@ still route through `automation-policy`.
 2. Read relevant files under `projects/<project-id>/work/`, especially
    `active-spec.md`, `active-plan.md`, `task-queue.md`, and
    `context-pack.md`.
-3. Select one pending or active task: the task matching `$ARGUMENTS` if
+3. Select one pending or active task: the task matching the user's request if
    specified, otherwise the top ready task in the queue.
 4. Confirm the task has acceptance criteria, a verification command or fallback,
    risk tier, and expected diff boundary.
 5. Verify the real project repo is writable in the active session. If the repo
-   is outside the current workspace or sandbox, state that writable access is
-   required before execution instead of declaring the task Ralph-ready.
+   is outside the current Codex sandbox, state that writable access is
+   required (e.g. start Codex with `--add-dir <project-repo>`) before
+   execution instead of declaring the task Ralph-ready.
 6. State the selected task and expected diff boundary before editing.
 7. Mark the task active in `projects/<project-id>/work/task-queue.md` when a
    queue exists and active work records are in use.
@@ -96,15 +93,16 @@ Review gate examples:
 - `L2` dependency or CI action: get approval before execution; choose the gate
   from scope and impact.
 
-When the gate runs, use the read-only reviewer subagent. The reviewer inspects the actual
-changed code or diff and relevant surrounding code first, using the active
-spec, plan, task queue, build or test logs, and known non-goals as supporting
-context. The reviewer reports correctness, regression, security, reliability,
-missing-test, convention, and drift findings ordered by severity with file and
-line references when possible.
+When the gate runs, spawn the `reviewer` subagent (declared in
+`.codex/config.toml`). The reviewer inspects the actual changed code or diff
+and relevant surrounding code first, using the active spec, plan, task queue,
+build or test logs, and known non-goals as supporting context. The reviewer
+reports correctness, regression, security, reliability, missing-test,
+convention, and drift findings ordered by severity with file and line
+references when possible.
 
-The main Codex session stays responsible for the work. Verify each
-reviewer finding before acting. Apply only valid in-scope fixes. Turn valid
+The main Codex session stays responsible for the work. Verify each reviewer
+finding before acting. Apply only valid in-scope fixes. Turn valid
 out-of-scope findings into follow-up notes or tasks. Briefly record rejected
 false positives when that helps future readers. If a required review gate
 cannot run, stop and tell the user what is missing unless the user explicitly
@@ -157,9 +155,11 @@ cache, and `.git` directories.
 
 ## Helper Use
 
-- Ralph may use read-only reviewer or tester helpers for substantial work.
+- Ralph may spawn the `reviewer`, `tester`, `security_reviewer`,
+  `docs_researcher`, or `architect` subagents for substantial work. They are
+  read-only roles defined in `.codex/agents/`.
 - Implementation stays with the main session unless the user explicitly asks
-  for implementer delegation.
+  for `implementer` delegation.
 - Verify all helper findings in the main session before acting on them.
 
 ## Output

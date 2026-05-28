@@ -32,7 +32,8 @@ done
 python3 -m json.tool "$ROOT/generated/codex/.codex/hooks.json" >/dev/null
 python3 -m json.tool "$ROOT/generated/claude/.claude/settings.json" >/dev/null
 python3 -m json.tool "$ROOT/generated/opencode/opencode.json" >/dev/null
-cmp -s "$ROOT/generated/codex/AGENTS.md" "$ROOT/generated/opencode/AGENTS.md" || fail "Codex and OpenCode AGENTS.md must stay runtime-neutral"
+# Codex AGENTS.md is Codex-native and intentionally diverges from OpenCode's.
+# (Previously: cmp -s assertion that Codex and OpenCode AGENTS.md were byte-identical.)
 
 codex_hub="$TMP_ROOT/codex-hub"
 "$BOOTSTRAP" --runtime codex "$codex_hub" > "$TMP_ROOT/codex.log"
@@ -46,10 +47,14 @@ assert_file "$codex_hub/.codex/agents/reviewer.toml"
 assert_file "$codex_hub/.codex/agents/security-reviewer.toml"
 assert_file "$codex_hub/.codex/agents/tester.toml"
 assert_file "$codex_hub/.codex/hooks/session-context.sh"
-assert_file "$codex_hub/.codex/hooks/stop-reminder.sh"
-assert_file "$codex_hub/.codex/commands/ralph.md"
-assert_file "$codex_hub/.codex/commands/work-on.md"
-assert_file "$codex_hub/.codex/commands/compact-handoff.md"
+assert_file "$codex_hub/.codex/hooks/pre-compact-protection.sh"
+assert_file "$codex_hub/.codex/hooks/post-compact-resume.sh"
+assert_not_exists "$codex_hub/.codex/hooks/stop-reminder.sh"
+assert_executable "$codex_hub/.codex/hooks/pre-compact-protection.sh"
+assert_executable "$codex_hub/.codex/hooks/post-compact-resume.sh"
+assert_file "$codex_hub/.codex/skills/piper-workflow/references/ralph.md"
+assert_file "$codex_hub/.codex/skills/piper-workflow/references/work-on.md"
+assert_file "$codex_hub/.codex/skills/piper-workflow/references/compact-handoff.md"
 assert_file "$codex_hub/.codex/skills/piper-workflow/SKILL.md"
 assert_file "$codex_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$codex_hub/bin/add-project"
@@ -58,10 +63,14 @@ assert_not_exists "$codex_hub/CLAUDE.md"
 assert_not_exists "$codex_hub/.claude"
 assert_not_exists "$codex_hub/.mcp.json"
 assert_not_exists "$codex_hub/.piper/plugin"
-assert_contains "$codex_hub/AGENTS.md" "Codex and OpenCode work"
-assert_not_contains "$codex_hub/AGENTS.md" "point for Codex work"
+assert_contains "$codex_hub/AGENTS.md" "Codex Discovery Surfaces"
+assert_contains "$codex_hub/AGENTS.md" "Codex auto-loads this"
+assert_not_contains "$codex_hub/AGENTS.md" "Codex and OpenCode work"
+assert_contains "$codex_hub/AGENTS.md" "piper-workflow"
+assert_contains "$codex_hub/AGENTS.md" "--add-dir"
 assert_file_count "$codex_hub/.codex/agents" "*.toml" 6
-assert_file_count "$codex_hub/.codex/commands" "*.md" 5
+assert_file_count "$codex_hub/.codex/skills/piper-workflow/references" "*.md" 5
+assert_not_exists "$codex_hub/.codex/commands"
 assert_file_count "$codex_hub/.codex/skills" "SKILL.md" 3
 assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/piper-workflow"'
 assert_not_contains "$codex_hub/.codex/config.toml" 'skills/hub-workflow'
@@ -74,34 +83,41 @@ $(sed -n 's/^[[:space:]]*path = "\(.*skills\/[^"]*\)"/\1/p' "$codex_hub/.codex/c
 EOF
 assert_contains "$codex_hub/.piper/hub-manifest.json" '"codex"'
 assert_not_contains "$codex_hub/.piper/hub-manifest.json" '"claude"'
-assert_contains "$codex_hub/.codex/commands/work-on.md" "argument-hint"
-assert_not_contains "$codex_hub/.codex/commands/work-on.md" "argument-hint: \\["
-assert_contains "$codex_hub/.codex/commands/work-on.md" 'argument-hint: "'
-assert_contains "$codex_hub/.codex/commands/work-on.md" "piper-project:start"
-assert_contains "$codex_hub/.codex/commands/work-on.md" "This command is prompt-driven routing"
-assert_contains "$codex_hub/.codex/commands/ralph.md" "Implementation Review Gate"
-assert_contains "$codex_hub/.codex/commands/ralph.md" "queued foundational work"
-assert_contains "$codex_hub/.codex/commands/ralph.md" "review debt"
-assert_contains "$codex_hub/.codex/commands/ralph.md" "writable access is"
-assert_contains "$codex_hub/.codex/commands/ralph.md" "Drift And Stop Conditions"
-assert_contains "$codex_hub/.codex/commands/ralph.md" "Mark the task active"
-assert_contains "$codex_hub/.codex/commands/ralph.md" "Review gate examples"
-assert_contains "$codex_hub/.codex/commands/ralph.md" "Post-Compact Resume"
-assert_contains "$codex_hub/.codex/commands/ralph.md" "Ralph may use read-only reviewer or tester helpers"
-assert_contains "$codex_hub/.codex/commands/superpowers.md" "Make it better"
-assert_contains "$codex_hub/.codex/commands/superpowers.md" "current problem, goals"
-assert_contains "$codex_hub/.codex/commands/superpowers.md" "Ralph-ready task list"
-assert_contains "$codex_hub/.codex/commands/superpowers.md" "If you cannot articulate what"
-assert_contains "$codex_hub/.codex/commands/superpowers.md" "established docs location"
-assert_contains "$codex_hub/.codex/commands/compact-handoff.md" "Required Compact Resume Packet"
-assert_contains "$codex_hub/.codex/commands/compact-handoff.md" "Broad-search triggers"
+assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/work-on.md" "argument-hint"
+assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/work-on.md" "allowed-tools"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/work-on.md" "piper-project:start"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/work-on.md" "This procedure is prompt-driven routing"
+assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/work-on.md" '\$ARGUMENTS'
+assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/work-on.md" '`/work-on`'
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Implementation Review Gate"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "queued foundational work"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "review debt"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "writable access is"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Drift And Stop Conditions"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Mark the task active"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Review gate examples"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Post-Compact Resume"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Ralph may spawn the"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "reviewer"
+assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" '\$ARGUMENTS'
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "Make it better"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "current problem, goals"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "Ralph-ready task list"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "If you cannot articulate what"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "established docs location"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/compact-handoff.md" "Required Compact Resume Packet"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/compact-handoff.md" "Broad-search triggers"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/SKILL.md" "Artifact Signal Policy"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/SKILL.md" "writable repo access"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/SKILL.md" "Piper Workflow (Codex)"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/SKILL.md" "Codex CLI does not surface"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/SKILL.md" "references/work-on.md"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/SKILL.md" "--add-dir"
 assert_contains "$codex_hub/STATION.md" "designed resume anchors"
 assert_contains "$codex_hub/STATION.md" "Do not claim"
 assert_contains "$codex_hub/STATION.md" "Work Artifact Reference"
 assert_contains "$codex_hub/STATION.md" "Create these only under"
-assert_not_contains "$codex_hub/.codex/commands/superpowers.md" "Force Superpowers"
+assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "Force Superpowers"
 assert_not_contains "$codex_hub/STATION.md" "does not bring back"
 assert_not_exists "$codex_hub/.codex/skills/superpowers-planning/SKILL.md"
 assert_not_exists "$codex_hub/.codex/skills/ralph-loop/SKILL.md"
@@ -109,10 +125,35 @@ assert_not_exists "$codex_hub/.codex/skills/planning/SKILL.md"
 assert_not_exists "$codex_hub/.codex/skills/implementation-loop/SKILL.md"
 assert_not_exists "$codex_hub/.codex/skills/hub-workflow/SKILL.md"
 python3 -m json.tool "$codex_hub/.piper/hub-manifest.json" >/dev/null
+python3 -m json.tool "$codex_hub/.codex/hooks.json" >/dev/null
+assert_contains "$codex_hub/.codex/hooks.json" '"PreCompact"'
+assert_contains "$codex_hub/.codex/hooks.json" '"PostCompact"'
+assert_contains "$codex_hub/.codex/hooks.json" '"startup|resume|compact"'
+assert_not_contains "$codex_hub/.codex/hooks.json" '"Stop"'
+assert_contains "$codex_hub/.codex/config.toml" '[agents.architect]'
+assert_contains "$codex_hub/.codex/config.toml" '[agents.docs_researcher]'
+assert_contains "$codex_hub/.codex/config.toml" '[agents.implementer]'
+assert_contains "$codex_hub/.codex/config.toml" '[agents.reviewer]'
+assert_contains "$codex_hub/.codex/config.toml" '[agents.security_reviewer]'
+assert_contains "$codex_hub/.codex/config.toml" '[agents.tester]'
 (cd "$codex_hub" && sh .codex/hooks/session-context.sh) > "$TMP_ROOT/codex-session-start.log"
 assert_contains "$TMP_ROOT/codex-session-start.log" "hub-lite is active"
+assert_contains "$TMP_ROOT/codex-session-start.log" '"hookSpecificOutput"'
+assert_contains "$TMP_ROOT/codex-session-start.log" '"additionalContext"'
+assert_contains "$TMP_ROOT/codex-session-start.log" '"systemMessage"'
+python3 -m json.tool "$TMP_ROOT/codex-session-start.log" >/dev/null
 printf '{"hook_event_name":"SessionStart","source":"resume"}' | (cd "$codex_hub" && sh .codex/hooks/session-context.sh) > "$TMP_ROOT/codex-session-resume.log"
 assert_contains "$TMP_ROOT/codex-session-resume.log" "Resume guidance"
+python3 -m json.tool "$TMP_ROOT/codex-session-resume.log" >/dev/null
+printf '{"hook_event_name":"SessionStart","source":"compact"}' | (cd "$codex_hub" && sh .codex/hooks/session-context.sh) > "$TMP_ROOT/codex-session-compact.log"
+assert_contains "$TMP_ROOT/codex-session-compact.log" "Resume guidance"
+python3 -m json.tool "$TMP_ROOT/codex-session-compact.log" >/dev/null
+(cd "$codex_hub" && sh .codex/hooks/pre-compact-protection.sh) > "$TMP_ROOT/codex-pre-compact.log"
+assert_contains "$TMP_ROOT/codex-pre-compact.log" '"systemMessage"'
+python3 -m json.tool "$TMP_ROOT/codex-pre-compact.log" >/dev/null
+(cd "$codex_hub" && sh .codex/hooks/post-compact-resume.sh) > "$TMP_ROOT/codex-post-compact.log"
+assert_contains "$TMP_ROOT/codex-post-compact.log" '"systemMessage"'
+python3 -m json.tool "$TMP_ROOT/codex-post-compact.log" >/dev/null
 
 claude_hub="$TMP_ROOT/claude-hub"
 "$BOOTSTRAP" --runtime claude "$claude_hub" > "$TMP_ROOT/claude.log"
@@ -275,10 +316,13 @@ opencode_codex_hub="$TMP_ROOT/opencode-codex-hub"
 "$BOOTSTRAP" --runtime opencode,codex "$opencode_codex_hub" > "$TMP_ROOT/opencode-codex.log"
 assert_file "$codex_opencode_hub/AGENTS.md"
 assert_file "$opencode_codex_hub/AGENTS.md"
-cmp -s "$codex_opencode_hub/AGENTS.md" "$opencode_codex_hub/AGENTS.md" || fail "Codex/OpenCode AGENTS.md must not depend on runtime order"
-assert_contains "$codex_opencode_hub/AGENTS.md" "Codex and OpenCode work"
-assert_not_contains "$codex_opencode_hub/AGENTS.md" "point for Codex work"
-assert_not_contains "$codex_opencode_hub/AGENTS.md" "point for OpenCode work"
+# Codex AGENTS.md is now Codex-native; OpenCode AGENTS.md is unchanged.
+# In a mixed hub the first-listed runtime's AGENTS.md wins (init.sh template_source order).
+# (Previously: cmp -s asserted order-independence when both files were byte-identical.)
+assert_contains "$codex_opencode_hub/AGENTS.md" "Codex Discovery Surfaces"
+assert_not_contains "$codex_opencode_hub/AGENTS.md" "Codex and OpenCode work"
+assert_contains "$opencode_codex_hub/AGENTS.md" "Codex and OpenCode work"
+assert_not_contains "$opencode_codex_hub/AGENTS.md" "Codex Discovery Surfaces"
 assert_contains "$codex_opencode_hub/.piper/hub-manifest.json" '"codex"'
 assert_contains "$codex_opencode_hub/.piper/hub-manifest.json" '"opencode"'
 
@@ -300,9 +344,9 @@ assert_file "$triple_hub/opencode.json"
 assert_file "$triple_hub/.codex/config.toml"
 assert_file "$triple_hub/.claude/settings.json"
 assert_file "$triple_hub/.opencode/agents/reviewer.md"
-assert_contains "$triple_hub/AGENTS.md" "Codex and OpenCode work"
-assert_not_contains "$triple_hub/AGENTS.md" "point for Codex work"
-assert_not_contains "$triple_hub/AGENTS.md" "point for OpenCode work"
+# triple_hub uses --runtime codex,claude,opencode; Codex is first-listed so its AGENTS.md wins.
+assert_contains "$triple_hub/AGENTS.md" "Codex Discovery Surfaces"
+assert_not_contains "$triple_hub/AGENTS.md" "Codex and OpenCode work"
 assert_contains "$triple_hub/.piper/hub-manifest.json" '"codex"'
 assert_contains "$triple_hub/.piper/hub-manifest.json" '"claude"'
 assert_contains "$triple_hub/.piper/hub-manifest.json" '"opencode"'
@@ -420,7 +464,8 @@ assert_dir "$git_hub/.git"
 if "$BOOTSTRAP" --runtime codex "$ROOT" > "$TMP_ROOT/source-refuse.log" 2>&1; then fail "bootstrap should refuse source repo"; fi
 assert_contains "$TMP_ROOT/source-refuse.log" "refusing to initialize the bootstrap source"
 if grep -R -n '{{' "$ROOT/generated/codex" "$ROOT/generated/claude" "$ROOT/generated/opencode" > "$TMP_ROOT/placeholders.log"; then cat "$TMP_ROOT/placeholders.log" >&2; fail "unrendered template placeholder found"; fi
-if grep -R -n '^argument-hint: [^"]' "$ROOT/generated/codex/.codex/commands" "$ROOT/generated/claude/.claude/commands" "$ROOT/generated/opencode/.opencode/commands" > "$TMP_ROOT/frontmatter.log"; then cat "$TMP_ROOT/frontmatter.log" >&2; fail "unquoted argument-hint frontmatter found"; fi
+if grep -R -n '^argument-hint: [^"]' "$ROOT/generated/claude/.claude/commands" "$ROOT/generated/opencode/.opencode/commands" > "$TMP_ROOT/frontmatter.log"; then cat "$TMP_ROOT/frontmatter.log" >&2; fail "unquoted argument-hint frontmatter found"; fi
+if grep -R -n '^argument-hint:\|^allowed-tools:\|^description:' "$ROOT/generated/codex/.codex/skills/piper-workflow/references" > "$TMP_ROOT/codex-refs-frontmatter.log"; then cat "$TMP_ROOT/codex-refs-frontmatter.log" >&2; fail "Codex piper-workflow references must not carry slash-command frontmatter"; fi
 if grep -R -n '^description: [^"].*: ' "$ROOT/core/skills" "$ROOT/generated/codex/.codex/skills" "$ROOT/generated/claude/.claude/skills" "$ROOT/generated/opencode/.opencode/skills" > "$TMP_ROOT/skill-frontmatter.log"; then cat "$TMP_ROOT/skill-frontmatter.log" >&2; fail "unquoted skill description frontmatter with colon found"; fi
 
 git -C "$ROOT" diff --check

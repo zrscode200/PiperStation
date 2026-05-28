@@ -1,33 +1,27 @@
----
-description: Orient to a registered project and route work through Piper Station modes
-argument-hint: "[project id or repo path and request]"
-allowed-tools: [Read, Bash]
----
-
 # Work On
 
 Orient to a registered project and route the request through the smallest safe
 Piper mode.
 
-The user invoked this command with: `$ARGUMENTS`
-
-`/work-on` is an explicit shortcut for `piper-workflow` routing. Ordinary
-natural-language project work can route through `piper-workflow` without this
-command; when invoked, follow the same dispatch logic here.
+The `piper-workflow` skill routes here when the user names a registered
+project or repo path and asks for project work. Determine the project id or
+repo path from the request context.
 
 ## Steps
 
 1. Read `AGENTS.md` and `STATION.md`.
-2. Identify the project id or repo path from `$ARGUMENTS`. If the project is
-   not registered, ask whether to run `./bin/add-project --repo <path>
-   --project-id <id>` first.
+2. Identify the project id or repo path from the user's request. If the
+   project is not registered, ask whether to run `./bin/add-project --repo
+   <path> --project-id <id>` first.
 3. Read `projects/<project-id>/project.md`, `memory.md`, and `decisions.md`.
    Extract the repo path from the `Path:` line inside the
    `<!-- piper-project:start -->` registry block.
 4. Read `projects/<project-id>/work/context-pack.md` when present.
 5. Inspect the real repo path with `git status --short`, current branch,
    current HEAD, and the files relevant to the request.
-6. If the project repo is outside the current workspace or sandbox, ask the user to make it accessible before editing.
+6. If the project repo is outside the current Codex sandbox, ensure Codex was
+   started with `--add-dir <project-repo>` or that the sandbox otherwise
+   grants writable access before editing.
 7. State uncommitted or recent user changes that affect the task. Treat them as
    user-owned unless the user says otherwise.
 8. Classify intent, scope, and risk:
@@ -50,4 +44,4 @@ Rules:
 - Do not commit, push, install dependencies, or run external automation without
   explicit user approval; see `automation-policy.md`.
 - Do not start implementation as a side effect of orientation.
-- This command is prompt-driven routing, not a shell workflow engine.
+- This procedure is prompt-driven routing, not a shell workflow engine.

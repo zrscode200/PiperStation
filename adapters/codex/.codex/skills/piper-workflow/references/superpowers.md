@@ -1,27 +1,19 @@
----
-description: Enter Superpowers Mode for discovery, specification, and planning
-argument-hint: "[project id or repo path and request]"
-allowed-tools: [Read, Write, Bash]
----
-
 # Superpowers
 
 Enter Superpowers Mode for a registered project.
 
-The user invoked this command with: `$ARGUMENTS`
+The `piper-workflow` skill routes here when the user asks for formal
+discovery, specification, planning, or Ralph-ready task decomposition before
+substantial implementation.
 
-Use Superpowers Mode for discovery, specification, planning, and Ralph-ready
-task decomposition before substantial implementation.
-
-Use this command for formal planning, not for general repo orientation,
-implementation, review, or automation approval. Natural-language routing can
-choose this behavior through `piper-workflow`; protected actions still route
-through `automation-policy`.
+Use this procedure for formal planning, not for general repo orientation,
+implementation, review, or automation approval. Protected actions still route
+through the `automation-policy` skill.
 
 ## Steps
 
 1. Read `AGENTS.md`, `STATION.md`, and the relevant project record.
-2. Identify the project id or repo path from `$ARGUMENTS`.
+2. Identify the project id or repo path from the user's request.
 3. Inspect the real repo enough to ground discovery in current code.
 4. Classify scope as `S0`, `S1`, `S2`, or `S3`.
 5. Classify risk as `L0`, `L1`, `L2`, or `L3`.
@@ -39,10 +31,10 @@ through `automation-policy`.
     records are in use.
 11. Stop before implementation unless the user explicitly asks to proceed.
 
-Registration must not create `projects/<project-id>/work/`; Codex
-creates these files only when useful for active work. Keep Superpowers as
-Codex-native prompt and command behavior; do not introduce shell lifecycle
-machinery for planning.
+Registration must not create `projects/<project-id>/work/`; Codex creates
+these files only when useful for active work. Keep Superpowers as Codex-native
+prompt and skill behavior; do not introduce shell lifecycle machinery for
+planning.
 
 ## Work Artifacts
 
