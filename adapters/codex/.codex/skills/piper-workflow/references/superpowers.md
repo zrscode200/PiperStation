@@ -12,8 +12,11 @@ through the `automation-policy` skill.
 
 ## Steps
 
-1. Read `AGENTS.md`, `STATION.md`, and the relevant project record.
-2. Identify the project id or repo path from the user's request.
+1. Read `AGENTS.md` and `STATION.md`.
+2. Identify the project id or repo path from the user's request. Look up the
+   project in `projects/registry.json` to confirm registration and resolve
+   `repo_path`, then read `projects/<project-id>/project.md`, `memory.md`, and
+   `decisions.md` for the rich record.
 3. Inspect the real repo enough to ground discovery in current code.
 4. Classify scope as `S0`, `S1`, `S2`, or `S3`.
 5. Classify risk as `L0`, `L1`, `L2`, or `L3`.

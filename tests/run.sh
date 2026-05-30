@@ -85,7 +85,7 @@ assert_contains "$codex_hub/.piper/hub-manifest.json" '"codex"'
 assert_not_contains "$codex_hub/.piper/hub-manifest.json" '"claude"'
 assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/work-on.md" "argument-hint"
 assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/work-on.md" "allowed-tools"
-assert_contains "$codex_hub/.codex/skills/piper-workflow/references/work-on.md" "piper-project:start"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/work-on.md" "projects/registry.json"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/work-on.md" "This procedure is prompt-driven routing"
 assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/work-on.md" '\$ARGUMENTS'
 assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/work-on.md" '`/work-on`'
@@ -188,7 +188,7 @@ assert_not_contains "$claude_hub/.piper/hub-manifest.json" '"codex"'
 assert_contains "$claude_hub/.claude/commands/work-on.md" 'argument-hint: "<project-id> \[request\]"'
 assert_contains "$claude_hub/.claude/commands/compact-handoff.md" 'argument-hint: "\[project-id\] \[current task\]"'
 assert_contains "$claude_hub/.claude/commands/work-on.md" "/add-dir"
-assert_contains "$claude_hub/.claude/commands/work-on.md" "piper-project:start"
+assert_contains "$claude_hub/.claude/commands/work-on.md" "projects/registry.json"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "Implementation Review Gate"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "Risk tier controls approval before execution, not review selection"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "writable access is"
@@ -247,7 +247,7 @@ assert_contains "$opencode_hub/.piper/hub-manifest.json" '"opencode"'
 assert_not_contains "$opencode_hub/.piper/hub-manifest.json" '"codex"'
 assert_not_contains "$opencode_hub/.piper/hub-manifest.json" '"claude"'
 assert_contains "$opencode_hub/.opencode/commands/work-on.md" "argument-hint"
-assert_contains "$opencode_hub/.opencode/commands/work-on.md" "piper-project:start"
+assert_contains "$opencode_hub/.opencode/commands/work-on.md" "projects/registry.json"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "Implementation Review Gate"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "writable access is"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "Review gate examples"
@@ -452,6 +452,70 @@ init_git_repo "$hub_only_repo"
 assert_file "$both_hub/projects/hub-only/project.md"
 assert_not_exists "$both_hub/projects/hub-only/work"
 assert_not_exists "$hub_only_repo/.piper/project.json"
+
+# --- Project registry index ---
+for hub in "$codex_hub" "$claude_hub" "$opencode_hub" "$both_hub" "$triple_hub"; do
+  assert_file "$hub/projects/registry.json"
+  python3 -m json.tool "$hub/projects/registry.json" >/dev/null
+done
+assert_contains "$codex_hub/projects/registry.json" '"schema_version": 1'
+empty_count=$(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))["projects"]))' "$codex_hub/projects/registry.json")
+[ "$empty_count" = "0" ] || fail "expected fresh registry to be empty, got $empty_count entries"
+
+# Three registrations in both_hub at this point: sample-project, legacy-project, hub-only.
+both_count=$(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))["projects"]))' "$both_hub/projects/registry.json")
+[ "$both_count" = "3" ] || fail "expected 3 registry entries in both_hub, got $both_count"
+assert_contains "$both_hub/projects/registry.json" '"project_id": "sample-project"'
+assert_contains "$both_hub/projects/registry.json" '"project_id": "legacy-project"'
+assert_contains "$both_hub/projects/registry.json" '"project_id": "hub-only"'
+project_repo_real=$(CDPATH= cd -- "$project_repo" && pwd -P)
+assert_contains "$both_hub/projects/registry.json" "\"repo_path\": \"$project_repo_real\""
+
+# Re-registering the same project_id is idempotent in the index.
+"$ADD_PROJECT" --hub "$both_hub" --repo "$project_repo" --project-id sample-project --display-name "Sample Project" > "$TMP_ROOT/re-add.log"
+both_count_after=$(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))["projects"]))' "$both_hub/projects/registry.json")
+[ "$both_count_after" = "3" ] || fail "re-registration changed entry count to $both_count_after"
+
+# --description round-trips into the index.
+desc_repo="$TMP_ROOT/desc-repo"
+mkdir -p "$desc_repo"
+init_git_repo "$desc_repo"
+(cd "$desc_repo" && printf 'd
+' > README.md && git add README.md && git commit -m "Initial desc" >/dev/null)
+"$ADD_PROJECT" --hub "$both_hub" --repo "$desc_repo" --project-id desc-project --display-name "Desc Project" --description "Project for description test" > "$TMP_ROOT/desc-add.log"
+assert_contains "$both_hub/projects/registry.json" '"description": "Project for description test"'
+
+# Description over 120 chars is rejected.
+long_desc="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+if "$ADD_PROJECT" --hub "$both_hub" --repo "$desc_repo" --project-id desc-project --description "$long_desc" > "$TMP_ROOT/desc-long.log" 2>&1; then
+  fail "add-project should reject description over 120 chars"
+fi
+assert_contains "$TMP_ROOT/desc-long.log" "description must be 120 characters or fewer"
+
+# A second project_id pointing at an already-registered repo_path is rejected (via the registry, not the repo marker).
+dup_repo="$TMP_ROOT/dup-repo"
+mkdir -p "$dup_repo"
+init_git_repo "$dup_repo"
+(cd "$dup_repo" && printf 'd
+' > README.md && git add README.md && git commit -m "Initial dup" >/dev/null)
+"$ADD_PROJECT" --hub "$both_hub" --repo "$dup_repo" --project-id dup-a --hub-only > "$TMP_ROOT/dup-a.log"
+if "$ADD_PROJECT" --hub "$both_hub" --repo "$dup_repo" --project-id dup-b --hub-only > "$TMP_ROOT/dup-b.log" 2>&1; then
+  fail "add-project should reject second project_id at same repo_path"
+fi
+assert_contains "$TMP_ROOT/dup-b.log" "already registered as project id 'dup-a'"
+
+# --rebuild regenerates the index from project.md scan, dropping orphaned entries.
+rm -rf "$both_hub/projects/desc-project"
+"$ADD_PROJECT" --hub "$both_hub" --rebuild > "$TMP_ROOT/rebuild.log"
+assert_contains "$TMP_ROOT/rebuild.log" "rebuild: projects/registry.json"
+assert_not_contains "$both_hub/projects/registry.json" '"project_id": "desc-project"'
+assert_contains "$both_hub/projects/registry.json" '"project_id": "sample-project"'
+python3 -m json.tool "$both_hub/projects/registry.json" >/dev/null
+
+# Dry-run does not mutate the registry.
+"$ADD_PROJECT" --hub "$both_hub" --repo "$desc_repo" --project-id desc-project --description "Re-added" --dry-run > "$TMP_ROOT/desc-dry.log"
+assert_contains "$TMP_ROOT/desc-dry.log" "would update: projects/registry.json"
+assert_not_contains "$both_hub/projects/registry.json" "Re-added"
 
 "$BOOTSTRAP" --runtime codex --dry-run "$TMP_ROOT/dry-new" > "$TMP_ROOT/dry.log"
 assert_contains "$TMP_ROOT/dry.log" "would create managed hub file: STATION.md"

@@ -11,8 +11,9 @@ skill is the entry point. Detailed procedures live as reference files in this
 skill directory.
 
 Trigger this skill by invoking `$piper-workflow ...` or by stating the project
-intent directly. Read `AGENTS.md` and `STATION.md` first, then the matching
-reference below.
+intent directly. Read `AGENTS.md` and `STATION.md` first, look up the project
+in `projects/registry.json` to resolve `project_id` to `repo_path`, then load
+the matching reference below.
 
 ## References
 

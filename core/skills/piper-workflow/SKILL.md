@@ -26,21 +26,29 @@ or automation-policy details matter.
 2. Register with {{REGISTRATION_ENTRYPOINTS}} or the deterministic helper:
 
    ```sh
-   ./bin/add-project --repo <repo-path> --project-id <project-id>
+   ./bin/add-project --repo <repo-path> --project-id <project-id> [--description "<one-line summary>"]
    ```
 
-3. Registration only creates or updates hub project records and optional repo
-   markers. It must not start implementation work.
-4. Do not manually recreate the helper's file writes in a prompt.
+3. Registration creates or updates hub project records, upserts
+   `projects/registry.json`, and writes optional repo markers. It must not
+   start implementation work.
+4. Do not manually recreate the helper's file writes in a prompt. If the
+   registry has drifted (a project directory was removed by hand, for
+   example), regenerate it with `./bin/add-project --rebuild` rather than
+   editing `registry.json` by hand.
 
 ## Orient
 
 1. Identify the project id or repo path from the user request.
-2. If the repo is not registered and the user wants project work, ask whether
+2. Look up the project in `projects/registry.json` to confirm it is registered
+   and to resolve `repo_path`. If the user's id is ambiguous or absent, list
+   the registered `project_id` entries (with `description` where present) from
+   the index and ask which one to use.
+3. If the repo is not registered and the user wants project work, ask whether
    to register it first.
-3. Read `projects/<project-id>/project.md`, `memory.md`, and `decisions.md`.
-4. Read the repo path from the `Path:` line in `project.md`'s
-   `<!-- piper-project:start -->` registry block.
+4. Read `projects/<project-id>/project.md`, `memory.md`, and `decisions.md` for
+   the canonical rich record. Treat the registry as the lookup index; treat
+   `project.md` as the authoritative project record.
 5. Read `projects/<project-id>/work/context-pack.md` when it exists.
 6. Inspect the real repo path with `git status`, current branch, current HEAD,
    and the files relevant to the request.

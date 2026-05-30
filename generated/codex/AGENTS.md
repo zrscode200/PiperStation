@@ -61,6 +61,11 @@ When working in this hub, use these docs as the canonical references:
 
 ## Project Records
 
+`projects/registry.json` is the hub-owned index of registered projects. Use it
+to resolve a `project_id` to its `repo_path` and to list what this hub knows.
+Per-project files remain the canonical rich record; the index is a derived
+lookup, regenerable via `./bin/add-project --rebuild`.
+
 Each registered project has:
 
 ```text
@@ -132,21 +137,26 @@ Risk tiers:
 Before editing a registered project:
 
 1. Read this file and `STATION.md`.
-2. Read `projects/<project-id>/project.md`, `memory.md`, and `decisions.md`.
-3. Read `projects/<project-id>/work/context-pack.md` when present.
-4. Inspect the real repo path with git status, current branch, current HEAD,
+2. Look up the project in `projects/registry.json` to confirm registration and
+   resolve `repo_path`. If the user's id is ambiguous, list the registered
+   `project_id` entries (with `description` where present) and ask which one
+   to use.
+3. Read `projects/<project-id>/project.md`, `memory.md`, and `decisions.md` for
+   the rich record.
+4. Read `projects/<project-id>/work/context-pack.md` when present.
+5. Inspect the real repo path with git status, current branch, current HEAD,
    and the files relevant to the user request.
-5. State any uncommitted or recent user changes that affect the task.
-6. Make a short task-specific plan unless the user has asked only for review or
+6. State any uncommitted or recent user changes that affect the task.
+7. Make a short task-specific plan unless the user has asked only for review or
    explanation.
-7. Before Ralph execution or source edits, verify the real project repo is
+8. Before Ralph execution or source edits, verify the real project repo is
    writable in the active session. If it is outside the current Codex
    sandbox, ensure Codex was started with `--add-dir <project-repo>` or that
    the sandbox otherwise grants writable access.
-8. Implement in the real project repo, using the repo's own conventions and
+9. Implement in the real project repo, using the repo's own conventions and
    verification commands.
-9. Update `projects/<project-id>/work/` only when active continuity is useful.
-10. Update hub `memory.md` or `decisions.md` only when durable context changed.
+10. Update `projects/<project-id>/work/` only when active continuity is useful.
+11. Update hub `memory.md` or `decisions.md` only when durable context changed.
 
 ## Subagents
 

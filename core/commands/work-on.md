@@ -12,19 +12,21 @@ command; when invoked, follow the same dispatch logic here.
 ## Steps
 
 1. Read `{{INSTRUCTION_DOC}}` and `STATION.md`.
-2. Identify the project id or repo path from `$ARGUMENTS`. If the project is
-   not registered, ask whether to run `./bin/add-project --repo <path>
-   --project-id <id>` first.
-3. Read `projects/<project-id>/project.md`, `memory.md`, and `decisions.md`.
-   Extract the repo path from the `Path:` line inside the
-   `<!-- piper-project:start -->` registry block.
-4. Read `projects/<project-id>/work/context-pack.md` when present.
-5. Inspect the real repo path with `git status --short`, current branch,
+2. Identify the project id or repo path from `$ARGUMENTS`.
+3. Look up the project in `projects/registry.json` to confirm registration and
+   resolve `repo_path`. If `$ARGUMENTS` is ambiguous or absent, list the
+   registered `project_id` entries (with `description` where present) and ask
+   which one to use. If the project is not registered, ask whether to run
+   `./bin/add-project --repo <path> --project-id <id>` first.
+4. Read `projects/<project-id>/project.md`, `memory.md`, and `decisions.md` for
+   the rich record.
+5. Read `projects/<project-id>/work/context-pack.md` when present.
+6. Inspect the real repo path with `git status --short`, current branch,
    current HEAD, and the files relevant to the request.
-6. {{WORKSPACE_ACCESS}}
-7. State uncommitted or recent user changes that affect the task. Treat them as
+7. {{WORKSPACE_ACCESS}}
+8. State uncommitted or recent user changes that affect the task. Treat them as
    user-owned unless the user says otherwise.
-8. Classify intent, scope, and risk:
+9. Classify intent, scope, and risk:
    - `S0` direct work can proceed with a short plan.
    - `S1` should use a short active plan when continuity is useful.
    - `S2+` or ambiguous substantial work should enter Superpowers Mode first.
@@ -32,10 +34,10 @@ command; when invoked, follow the same dispatch logic here.
    - Review requests should enter Review Mode.
    - Commit, PR, dependency, network, CI, destructive, or external automation
      requests should use the automation approval flow.
-9. State the chosen mode and next concrete action. Proceed naturally when the
-   route is clear and safe; wait for go-ahead when confirmation is required,
-   risk is `L2`, the request is ambiguous, or the user asked only for
-   orientation.
+10. State the chosen mode and next concrete action. Proceed naturally when the
+    route is clear and safe; wait for go-ahead when confirmation is required,
+    risk is `L2`, the request is ambiguous, or the user asked only for
+    orientation.
 
 Rules:
 

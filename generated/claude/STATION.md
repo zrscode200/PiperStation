@@ -78,6 +78,12 @@ durable action.
 
 ## Project Records
 
+`projects/registry.json` is the hub-owned index of registered projects. Use it
+to resolve a `project_id` to its `repo_path` and to list the projects this hub
+knows about. Per-project records remain the canonical rich source; the index is
+a derived lookup. If it ever drifts, regenerate it with
+`./bin/add-project --rebuild`.
+
 Each registered project has:
 
 ```text

@@ -27,6 +27,7 @@ Reload on resume:
 
 - `AGENTS.md`
 - `STATION.md`
+- `projects/registry.json` (project lookup index)
 - `projects/<project-id>/project.md`
 - `projects/<project-id>/memory.md`
 - `projects/<project-id>/decisions.md`

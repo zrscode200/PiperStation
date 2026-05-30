@@ -94,6 +94,11 @@ See `automation-policy.md` for full classification.
 
 ## Project Records
 
+`projects/registry.json` is the hub-owned index of registered projects. Use it
+to resolve a `project_id` to its `repo_path` and to list what this hub knows.
+Per-project files remain the canonical rich record; the index is a derived
+lookup, regenerable via `./bin/add-project --rebuild`.
+
 Each registered project has:
 
 ```text
@@ -118,16 +123,17 @@ Registration must not create `work/`. Claude Code may create it during active wo
 Before editing a registered project:
 
 1. Read this file and `STATION.md`.
-2. Read `projects/<project-id>/project.md`, `memory.md`, and `decisions.md`.
-3. Read `projects/<project-id>/work/context-pack.md` when present.
-4. Inspect the real repo path with `git status`, current branch, current HEAD, and the files relevant to the user request.
-5. If the repo is outside the hub, ensure Claude Code has workspace access through `/add-dir <repo-path>` or by launching with `claude --add-dir <repo-path>` before editing.
-6. State any uncommitted or recent user changes that affect the task.
-7. Make a short task-specific plan unless the user has asked only for review or explanation.
-8. Before Ralph execution or source edits, verify the real project repo is writable in the active session or state that writable access is required.
-9. Implement in the real project repo, using the repo's own conventions and verification commands.
-10. Update `projects/<project-id>/work/` only when active continuity is useful.
-11. Update hub `memory.md` or `decisions.md` only when durable context changed.
+2. Look up the project in `projects/registry.json` to confirm registration and resolve `repo_path`. If the user's id is ambiguous, list the registered `project_id` entries (with `description` where present) and ask which one to use.
+3. Read `projects/<project-id>/project.md`, `memory.md`, and `decisions.md` for the rich record.
+4. Read `projects/<project-id>/work/context-pack.md` when present.
+5. Inspect the real repo path with `git status`, current branch, current HEAD, and the files relevant to the user request.
+6. If the repo is outside the hub, ensure Claude Code has workspace access through `/add-dir <repo-path>` or by launching with `claude --add-dir <repo-path>` before editing.
+7. State any uncommitted or recent user changes that affect the task.
+8. Make a short task-specific plan unless the user has asked only for review or explanation.
+9. Before Ralph execution or source edits, verify the real project repo is writable in the active session or state that writable access is required.
+10. Implement in the real project repo, using the repo's own conventions and verification commands.
+11. Update `projects/<project-id>/work/` only when active continuity is useful.
+12. Update hub `memory.md` or `decisions.md` only when durable context changed.
 
 ## Skills And Agents
 

@@ -11,8 +11,9 @@ The user invoked this command with: `$ARGUMENTS`
 
 ## Steps
 
-1. Read `AGENTS.md` and the project record: `project.md`,
-   `memory.md`, and `decisions.md`.
+1. Read `AGENTS.md`. Look up the project in `projects/registry.json`
+   to confirm registration and resolve `repo_path`, then read the project
+   record: `project.md`, `memory.md`, and `decisions.md`.
 2. Read relevant files under `projects/<project-id>/work/`, especially
    `active-spec.md`, `active-plan.md`, `task-queue.md`, `progress.md`,
    `verification.md`, and `context-pack.md`.

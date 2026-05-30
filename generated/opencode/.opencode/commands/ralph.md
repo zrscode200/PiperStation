@@ -21,7 +21,10 @@ still route through `automation-policy`.
 
 ## Steps
 
-1. Read `AGENTS.md`, `STATION.md`, and the relevant project record.
+1. Read `AGENTS.md` and `STATION.md`. Look up the project in
+   `projects/registry.json` to confirm registration and resolve `repo_path`,
+   then read the relevant `projects/<project-id>/project.md`, `memory.md`, and
+   `decisions.md`.
 2. Read relevant files under `projects/<project-id>/work/`, especially
    `active-spec.md`, `active-plan.md`, `task-queue.md`, and
    `context-pack.md`.
