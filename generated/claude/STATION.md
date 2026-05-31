@@ -34,33 +34,44 @@ a project at a time unless the user explicitly coordinates parallel work.
 
 ## Dispatch Contract
 
-`piper-workflow` owns natural-language dispatch for ordinary project work.
-Slash commands are explicit shortcuts into the same behavior. Commands, narrow
-skills, agents, hooks, and docs provide supporting behavior after
-`piper-workflow` or a command has selected the route.
+`brainstorm` owns the decision-quality front door for the divergent phase —
+orientation, framing, divergence, investigation, registration, and routing — and
+stays read-only. `piper-workflow` owns convergent execution once a direction is
+set. Slash commands are explicit shortcuts into the same behavior. Commands,
+narrow skills, agents, hooks, and docs provide supporting behavior after a skill
+or command has selected the route.
+
+The boundary between them is the same verb, different intent: `brainstorm`
+explores to *generate* a direction; `piper-workflow` (Superpowers) verifies that
+direction against the code to *commit* it before durable planning.
 
 Use this dispatch table when intent is unclear:
 
 | User intent | Route | Supporting behavior |
 | --- | --- | --- |
-| Register a repo | `piper-workflow`, `/add-project`, or `./bin/add-project` | deterministic registration helper |
-| Orient to a repo or ambiguous request | `piper-workflow` or `/work-on` | `piper-workflow` |
-| Discover, specify, or plan substantial work | Superpowers Mode or `/superpowers` | `piper-workflow`, `/superpowers`, and this guide |
+| Register a repo | `brainstorm`, `/add-project`, or `./bin/add-project` | deterministic registration helper |
+| Orient, explore, compare options, or decide what to do | `brainstorm` or `/work-on` | `brainstorm` |
+| Verify a direction, specify, or plan substantial work | Superpowers Mode or `/superpowers` | `piper-workflow`, `/superpowers`, and this guide |
 | Execute one clear queued task | Ralph Mode or `/ralph` | `/ralph` and this guide |
 | Review code or an implemented slice | Review Mode | `review` |
 | Commit, PR, dependency, network, CI, destructive, or external action | Finish Mode or explicit approval flow | `automation-policy` |
 | Pause or compact active work | `/compact-handoff` | compact handoff guidance |
 
-If a normal project-work request arrives without a slash command, treat it as
-an implicit `piper-workflow` request. Use visible mode names when they help
-continuity, but do not make the user operate the mode layer. Prefer consequence
-language such as "I will keep this read-only" or "I will create Ralph-ready
-work records" over ceremonial mode announcements.
+If a project-work request is ambiguous or arrives without a slash command, treat
+it as an implicit `brainstorm` request — skill descriptions match by phase
+(explore vs execute), and this contract owns the tie-break for genuine
+ambiguity. Use visible mode names when they help continuity, but do not make the
+user operate the mode layer. Prefer consequence language such as "I will keep
+this read-only" or "I will create Ralph-ready work records" over ceremonial mode
+announcements.
 
 ### Artifact Signal Policy
 
 Infer durable artifacts from the user's intent signal and state the consequence
-when it matters:
+when it matters. `brainstorm` acts on the read-only band (orientation,
+conversational planning, registration); the convergent rows below belong to
+`piper-workflow` (formal planning, Ralph execution) and `automation-policy`
+(finish):
 
 | User signal | Interpretation | Durable writes | Assistant stance |
 | --- | --- | --- | --- |
@@ -121,13 +132,13 @@ directories only when substantial work needs preserved history.
 
 ## Mode Routing
 
-Route requests through `piper-workflow`, command shortcuts, and the smallest
-mode that fits:
+Route requests through `brainstorm` (the front door), `piper-workflow`
+(convergent execution), command shortcuts, and the smallest mode that fits:
 
-- Intent Mode: identify the project, user goal, scope tier, risk tier, and next
-  safe mode.
-- Superpowers Mode: discover, specify, and plan before substantial
-  implementation.
+- Brainstorm (front door): orient, frame the problem, weigh options,
+  investigate, and produce a decision-ready hand-off brief; stay read-only.
+- Superpowers Mode: verify the handed-off direction, then specify and plan
+  before substantial implementation.
 - Ralph Mode: execute one scoped task at a time, verify, drift-check, and use
   an implementation review gate for substantial slices.
 - Review Mode: first check whether the work matches the request/spec/plan, then

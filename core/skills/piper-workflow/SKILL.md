@@ -1,105 +1,71 @@
 ---
 name: piper-workflow
-description: "Use for natural-language Piper Station project work: register or orient to projects, resolve repo context, infer artifact needs, choose Intent/Superpowers/Ralph/Review/Finish behavior, and route to commands or narrow skills when needed."
+description: "Use when executing rather than exploring on a registered Piper Station project: write a formal spec and plan, prepare a Ralph-ready task queue, execute one scoped Ralph slice with verification and review gates, prepare compact-safe handoff, or route a protected finish action. Entered from brainstorm once direction is set, or via /superpowers, /ralph, /compact-handoff."
 ---
 
 # Piper Workflow
 
-Piper Workflow owns natural-language dispatch for Piper Station project work.
-Slash commands are explicit shortcuts into the same behavior. Use this skill
-when the user asks to register a repo, work on a registered project, plan,
-implement, review, finish, compact, or perform protected automation.
+Piper Workflow owns convergent execution for Piper Station project work: formal
+planning, Ralph preparation, Ralph execution, compaction handoff, and finish
+routing. It is entered from the `brainstorm` front door once a request has
+converged on a direction, or directly through `/superpowers`, `/ralph`, and
+`/compact-handoff`.
 
-This skill routes ordinary project work. Superpowers and Ralph are disciplines
-implemented through `STATION.md`, `/superpowers`, and `/ralph`, not competing
-broad natural-language skills. Use narrow skills only when their specific
-consequence applies: `review` for explicit review or review gates and
-`automation-policy` before protected automation or external state changes.
+`brainstorm` owns the divergent phase — orientation, framing, exploration,
+conversational planning, registration, and routing. This skill assumes a
+registered project and a direction that has converged toward durable work. If a
+request is actually still divergent (orienting, exploring, or deciding what to
+do), hand it back to `brainstorm`. Use the narrow skills when their consequence
+applies: `review` for explicit review or review gates, and `automation-policy`
+before protected automation or external state changes.
 
-Read `{{INSTRUCTION_DOC}}` and `STATION.md` first. Use the other root docs as
-canonical references when product, architecture, convention, testing, security,
-or automation-policy details matter.
+Read `{{INSTRUCTION_DOC}}` and `STATION.md` first. Resolve the project in
+`projects/registry.json` to its `repo_path` and read
+`projects/<project-id>/project.md`, `memory.md`, and `decisions.md` before
+executing.
 
-## Register
+## Modes
 
-1. Validate that the target path is a git repo.
-2. Register with {{REGISTRATION_ENTRYPOINTS}} or the deterministic helper:
+Choose the smallest convergent path that fits:
 
-   ```sh
-   ./bin/add-project --repo <repo-path> --project-id <project-id> [--description "<one-line summary>"]
-   ```
-
-3. Registration creates or updates hub project records, upserts
-   `projects/registry.json`, and writes optional repo markers. It must not
-   start implementation work.
-4. Do not manually recreate the helper's file writes in a prompt. If the
-   registry has drifted (a project directory was removed by hand, for
-   example), regenerate it with `./bin/add-project --rebuild` rather than
-   editing `registry.json` by hand.
-
-## Orient
-
-1. Identify the project id or repo path from the user request.
-2. Look up the project in `projects/registry.json` to confirm it is registered
-   and to resolve `repo_path`. If the user's id is ambiguous or absent, list
-   the registered `project_id` entries (with `description` where present) from
-   the index and ask which one to use.
-3. If the repo is not registered and the user wants project work, ask whether
-   to register it first.
-4. Read `projects/<project-id>/project.md`, `memory.md`, and `decisions.md` for
-   the canonical rich record. Treat the registry as the lookup index; treat
-   `project.md` as the authoritative project record.
-5. Read `projects/<project-id>/work/context-pack.md` when it exists.
-6. Inspect the real repo path with `git status`, current branch, current HEAD,
-   and the files relevant to the request.
-7. {{WORKSPACE_ACCESS}}
-8. Treat uncommitted changes as user-owned unless the user says otherwise.
-
-## Route
-
-Choose the smallest safe path that fits:
-
-| User intent | Route | Supporting behavior |
+| User intent | Mode | Supporting behavior |
 | --- | --- | --- |
-| Register a repo | registration | helper described above |
-| Orient to a repo or ambiguous request | Intent Mode | this skill; keep it read-only unless the user asks for durable work |
-| Discover, specify, or plan substantial work | Superpowers discipline | this skill and `/superpowers` behavior |
-| Execute one clear queued task | Ralph discipline | `/ralph` behavior and Ralph sections in `STATION.md` |
-| Review code or an implemented slice | Review Mode | `review` |
-| Commit, PR, dependency, network, CI, destructive, or external action | Finish Mode or approval flow | `automation-policy` |
+| Verify the direction, specify, or plan substantial work | Superpowers | this skill and `/superpowers` |
+| Execute one clear queued task | Ralph | `/ralph` and Ralph sections in `STATION.md` |
+| Review an implemented slice | Review | `review` |
+| Commit, PR, dependency, network, CI, destructive, or external action | Finish or approval flow | `automation-policy` |
 | Pause or compact active work | compact handoff | `/compact-handoff` and compact sections in `STATION.md` |
 
-When routing into Superpowers, Ralph, or compact handoff from natural language,
-read and follow the matching command file before acting; those commands hold
-the detailed operating procedure.
+When routing into Superpowers, Ralph, or compact handoff, read and follow the
+matching command file before acting; those commands hold the detailed operating
+procedure. Prefer consequence language such as "I will create Ralph-ready work
+records" over ceremonial mode announcements. Proceed when the path is clear and
+safe; wait for go-ahead when confirmation is required, risk is `L2`, or the
+request is ambiguous.
 
-Use visible mode names only when they help continuity. Prefer consequence
-language such as "I will keep this read-only" or "I will create Ralph-ready
-work records" over ceremonial mode announcements. If the route is clear and
-safe, proceed naturally. Wait for go-ahead when the selected path requires
-confirmation, risk is `L2`, the request is ambiguous, or the user asked only
-for orientation.
+## Superpowers Entry
+
+Superpowers begins where `brainstorm` ended. Its lead step is verification, not
+open exploration: take the direction from brainstorm's hand-off brief and
+confirm it against the real code — validate the brief's flagged assumptions,
+check the specific files and call sites the work will touch, and confirm the
+acceptance criteria are testable — before locking a durable spec and plan. Open
+exploration belongs to `brainstorm`.
 
 ## Artifact Signal Policy
 
-Infer durable artifacts from the user's intent signal. Adjacent requests can
-sound similar but imply different writes, so state the consequence when it
-matters.
+This skill handles the convergent signals. Brainstorm owns the read-only band;
+when intent reaches these rows, durable writes are expected. The full
+intent-to-writes map lives in `STATION.md`.
 
 | User signal | Interpretation | Durable writes | Assistant stance |
 | --- | --- | --- | --- |
-| "review this repo", "understand what this does", "what is this project", or a repo path with an explanation or review request | Orientation or review | None by default | Inspect the repo in place. Say the work is read-only and that registration or hub records will wait unless asked. |
-| "what would it take", "how should we approach", "compare this to", or "plan the refactor" before registration | Conversational planning | None by default | Produce a grounded plan in chat. Use references and live repo inspection, but avoid hub records unless the user asks to formalize. |
-| "register this", "track this project", or "this is formal work now" | Registration | `project.md`, `memory.md`, and `decisions.md` only | Use the registration helper. Prefer hub-only records unless repo marker files are explicitly wanted. Do not create `work/` or start implementation. |
-| "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Create the durable record set the scope needs, such as active spec, active plan, task queue, context pack, progress, and verification. State that this is durable prep and that project source remains untouched. |
+| "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Verify the handed-off direction, then create the durable record set the scope needs — active spec, active plan, task queue, context pack, progress, verification. State that project source remains untouched. |
 | "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the real project repo | Confirm the selected task, diff boundary, risk, verification, and writable repo access before editing. Execute one scoped slice. |
-| "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/destructive action | Finish or protected automation | Only after explicit approval where required | Summarize state, verification, and risk first. Ask for approval before protected state changes. |
+| "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/destructive action | Finish or protected automation | Only after explicit approval where required | Summarize state, verification, and risk first. Ask for approval before protected state changes; route through `automation-policy`. |
 
-Ambiguous signals must not silently escalate durable writes. If the next step
-would create hub records, edit project source, or take protected action and the
-user's intent is unclear, state the assumption and ask or choose the less
-durable action. Read-only inspection and conversational planning can proceed
-when clearly safe.
+If a request is actually still divergent, hand it back to `brainstorm` rather
+than escalating durable writes.
 
 ## Scope And Risk
 
@@ -130,13 +96,8 @@ Routine progress, command output, and transient notes should stay in the
 conversation unless substantial active work needs continuity under
 `projects/<project-id>/work/`.
 
-Create `projects/<project-id>/work/` only when useful. Registration must not
-create active work artifacts.
-
 Before Ralph execution, verify the real project repo is writable in the active
-session. If it is outside the current workspace or sandbox, tell the user that
-writable access is required before execution instead of declaring the task
-Ralph-ready.
+session. {{WORKSPACE_ACCESS}}
 
 ## Guardrails
 
@@ -147,5 +108,7 @@ Ralph-ready.
 - Keep planning, Ralph, review, and compaction as prompt, command, and narrow
   consequence-specific behavior. The deterministic shell helper is for project
   registration.
+- Orientation and registration belong to `brainstorm`; this skill assumes a
+  registered, converged target.
 - Do not commit, push, merge, delete, install dependencies, or run external
   automation without explicit user approval; see `automation-policy.md`.

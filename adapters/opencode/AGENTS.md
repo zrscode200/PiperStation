@@ -64,17 +64,20 @@ active work when continuity is useful.
 
 ## Mode Routing
 
-`piper-workflow` owns natural-language dispatch for ordinary project work.
-Slash commands are explicit shortcuts into the same behavior. Use `/work-on`
-when the user explicitly wants the routing command; otherwise let
-`piper-workflow` handle project-work requests directly.
+`brainstorm` owns the decision-quality front door for the divergent phase —
+orientation, framing, divergence, investigation, and routing — and stays
+read-only. `piper-workflow` owns convergent execution once a direction is set.
+Slash commands are explicit shortcuts: `/work-on` enters the front door, while
+`/superpowers`, `/ralph`, and `/compact-handoff` enter convergent execution. A
+project-work request that is ambiguous or lacks an explicit execution signal
+enters through `brainstorm`.
 
 Route each request through the smallest mode that fits:
 
-- Intent Mode: classify the request, project, scope tier, risk tier, and
-  whether direct work is safe.
-- Superpowers Mode: discover, specify, and plan before substantial
-  implementation.
+- Brainstorm (front door): orient, frame the problem, weigh options,
+  investigate, and produce a decision-ready hand-off brief. Read-only.
+- Superpowers Mode: verify the handed-off direction, then specify and plan
+  before substantial implementation.
 - Ralph Mode: execute one scoped task at a time from a clear plan or task
   queue, with an implementation review gate for substantial slices.
 - Review Mode: first check whether the work matches the request/spec/plan,
@@ -82,12 +85,12 @@ Route each request through the smallest mode that fits:
 - Finish Mode: verify, summarize, and present commit or PR options without
   mutating git automatically.
 
-Use `piper-workflow` as the only broad natural-language project-work router.
-Use `/superpowers` for explicit formal planning, `/ralph` for explicit one-task
-execution, `review` for explicit review work or review gates, and
-`automation-policy` before protected automation or external actions. Prefer
-consequence language such as "I will keep this read-only" or "I will create
-Ralph-ready work records" over ceremonial mode announcements.
+Use `brainstorm` as the broad natural-language front door and `piper-workflow`
+for convergent execution. Use `/superpowers` for explicit formal planning,
+`/ralph` for explicit one-task execution, `review` for explicit review work or
+review gates, and `automation-policy` before protected automation or external
+actions. Prefer consequence language such as "I will keep this read-only" or "I
+will create Ralph-ready work records" over ceremonial mode announcements.
 
 Scope tiers:
 

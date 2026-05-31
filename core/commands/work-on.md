@@ -5,8 +5,8 @@ Piper mode.
 
 The user invoked this command with: `$ARGUMENTS`
 
-`/work-on` is an explicit shortcut for `piper-workflow` routing. Ordinary
-natural-language project work can route through `piper-workflow` without this
+`/work-on` is an explicit shortcut for `brainstorm` front-door routing. Ordinary
+natural-language project work can route through `brainstorm` without this
 command; when invoked, follow the same dispatch logic here.
 
 ## Steps

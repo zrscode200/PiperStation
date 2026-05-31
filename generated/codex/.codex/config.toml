@@ -39,6 +39,10 @@ config_file = "./agents/security-reviewer.toml"
 config_file = "./agents/tester.toml"
 
 [[skills.config]]
+path = "./skills/brainstorm"
+enabled = true
+
+[[skills.config]]
 path = "./skills/piper-workflow"
 enabled = true
 

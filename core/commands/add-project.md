@@ -1,6 +1,7 @@
 {{FRONTMATTER}}# Add Project
 
-Register a project repo with this Piper Station hub.
+Register a project repo with this Piper Station hub. This is the registration
+route the `brainstorm` front door uses when work becomes formal.
 
 The user invoked this command with: `$ARGUMENTS`
 

@@ -13,15 +13,29 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNTIMES = ("codex", "claude", "opencode")
 COMMANDS = ("add-project.md", "work-on.md", "superpowers.md", "ralph.md", "compact-handoff.md")
 SKILLS = (
+    "brainstorm/SKILL.md",
     "piper-workflow/SKILL.md",
     "review/SKILL.md",
     "automation-policy/SKILL.md",
 )
+# In Codex, slash commands are surfaced as reference files under their owning
+# skill. work-on/add-project belong to the brainstorm front door; the planning
+# and execution commands belong to piper-workflow. Other runtimes render every
+# command into a single flat command_dir.
+CODEX_COMMAND_SKILL = {
+    "add-project.md": "brainstorm",
+    "work-on.md": "brainstorm",
+    "superpowers.md": "piper-workflow",
+    "ralph.md": "piper-workflow",
+    "compact-handoff.md": "piper-workflow",
+}
 RUNTIME_CONFIG = {
     "codex": {
         "runtime_name": "Codex",
         "instruction_doc": "AGENTS.md",
-        "command_dir": ".codex/skills/piper-workflow/references",
+        # Codex resolves command output per-command via CODEX_COMMAND_SKILL
+        # (commands render as references under their owning skill), so no single
+        # command_dir applies here.
         "skill_dir": ".codex/skills",
         "frontmatter": {
             "add-project.md": "",
@@ -108,12 +122,18 @@ def render_text(text: str, runtime: str, frontmatter: str = "") -> str:
     )
 
 
+def command_dir_for(runtime: str, command: str) -> str:
+    if runtime == "codex":
+        return f".codex/skills/{CODEX_COMMAND_SKILL[command]}/references"
+    return RUNTIME_CONFIG[runtime]["command_dir"]
+
+
 def render_behavior(runtime: str, out: Path) -> None:
     cfg = RUNTIME_CONFIG[runtime]
     for command in COMMANDS:
         src = ROOT / "core/commands" / command
         text = render_text(src.read_text(encoding="utf-8"), runtime, cfg["frontmatter"][command])
-        write(out / cfg["command_dir"] / command, text)
+        write(out / command_dir_for(runtime, command) / command, text)
     for skill in SKILLS:
         src = ROOT / "core/skills" / skill
         text = render_text(src.read_text(encoding="utf-8"), runtime)

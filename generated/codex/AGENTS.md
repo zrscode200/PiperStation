@@ -11,7 +11,7 @@ operating contract for project work in this hub.
 - Treat this hub as coordination context, not as a source repo for registered
   projects.
 - Do not copy project source code into the hub.
-- Register project repos with `./bin/add-project` or via the `piper-workflow`
+- Register project repos with `./bin/add-project` or via the `brainstorm`
   skill.
 - Registration only updates hub project records and optional repo marker files.
   It must not start implementation work, create plans, checkpoint state,
@@ -29,13 +29,19 @@ operating contract for project work in this hub.
 
 Codex CLI discovers Piper Station behavior through these surfaces. Codex does
 not auto-surface a `.codex/commands/` directory as slash commands; the
-`piper-workflow` skill is the entry point instead.
+`brainstorm` and `piper-workflow` skills are the entry points instead.
 
 - `AGENTS.md` (this file) — always loaded.
-- `.codex/skills/piper-workflow/SKILL.md` — natural-language dispatch entry.
-  Trigger via `$piper-workflow ...` or by stating the intent.
-- `.codex/skills/piper-workflow/references/` — detailed procedure bodies
-  (register, work-on, superpowers, ralph, compact-handoff) cited by the skill.
+- `.codex/skills/brainstorm/SKILL.md` — decision-quality front door for the
+  divergent phase (orient, frame, diverge, investigate, route). Trigger via
+  `$brainstorm ...` or by stating the intent.
+- `.codex/skills/brainstorm/references/` — orientation and registration
+  procedures (`work-on`, `add-project`) cited by the front door.
+- `.codex/skills/piper-workflow/SKILL.md` — convergent execution entry (formal
+  planning, Ralph, compaction). Trigger via `$piper-workflow ...` once direction
+  is set.
+- `.codex/skills/piper-workflow/references/` — convergent procedure bodies
+  (superpowers, ralph, compact-handoff) cited by the skill.
 - `.codex/skills/review/SKILL.md` — explicit review and Ralph review-gate
   behavior.
 - `.codex/skills/automation-policy/SKILL.md` — protected-action approval gate.
@@ -93,18 +99,19 @@ when continuity is useful.
 
 ## Mode Routing
 
-`piper-workflow` owns natural-language dispatch for ordinary project work in
-Codex. State the intent (or invoke `$piper-workflow ...`); the skill body
-covers register, orient, plan, implement, review, finish, and compact paths.
-The detailed procedures for each path live as references under
-`.codex/skills/piper-workflow/references/`.
+`brainstorm` owns the decision-quality front door for the divergent phase —
+orientation, framing, divergence, investigation, and routing — and stays
+read-only. `piper-workflow` owns convergent execution once a direction is set.
+State the intent (or invoke `$brainstorm ...` / `$piper-workflow ...`); a
+project-work request that is ambiguous or lacks an explicit execution signal
+enters through `brainstorm`.
 
 Route each request through the smallest mode that fits:
 
-- Intent Mode: classify the request, project, scope tier, risk tier, and
-  whether direct work is safe.
-- Superpowers Mode: discover, specify, and plan before substantial
-  implementation.
+- Brainstorm (front door): orient, frame the problem, weigh options, investigate,
+  and produce a decision-ready hand-off brief. Read-only.
+- Superpowers Mode: verify the handed-off direction, then specify and plan
+  before substantial implementation.
 - Ralph Mode: execute one scoped task at a time from a clear plan or task
   queue, with an implementation review gate for substantial slices.
 - Review Mode: first check whether the work matches the request/spec/plan,
@@ -112,11 +119,11 @@ Route each request through the smallest mode that fits:
 - Finish Mode: verify, summarize, and present commit or PR options without
   mutating git automatically.
 
-Use `piper-workflow` as the only broad natural-language project-work router.
-Use the `review` skill for explicit review work or review gates, and
-`automation-policy` before protected automation or external actions. Prefer
-consequence language such as "I will keep this read-only" or "I will create
-Ralph-ready work records" over ceremonial mode announcements.
+Use `brainstorm` as the broad natural-language front door and `piper-workflow`
+for convergent execution. Use the `review` skill for explicit review work or
+review gates, and `automation-policy` before protected automation or external
+actions. Prefer consequence language such as "I will keep this read-only" or "I
+will create Ralph-ready work records" over ceremonial mode announcements.
 
 Scope tiers:
 

@@ -4,13 +4,13 @@ Enter Superpowers Mode for a registered project.
 
 The user invoked this command with: `$ARGUMENTS`
 
-Use Superpowers Mode for discovery, specification, planning, and Ralph-ready
-task decomposition before substantial implementation.
+Use Superpowers Mode to verify a direction, specify, plan, and decompose
+Ralph-ready tasks before substantial implementation.
 
-Use this command for formal planning, not for general repo orientation,
-implementation, review, or automation approval. Natural-language routing can
-choose this behavior through `piper-workflow`; protected actions still route
-through `automation-policy`.
+Use this command for formal planning, not for divergent exploration or general
+repo orientation (those belong to `brainstorm`), implementation, review, or
+automation approval. Natural-language routing reaches this behavior through
+`piper-workflow`; protected actions still route through `automation-policy`.
 
 ## Steps
 
@@ -19,7 +19,11 @@ through `automation-policy`.
    in `projects/registry.json` to confirm registration and resolve `repo_path`,
    then read `projects/<project-id>/project.md`, `memory.md`, and
    `decisions.md` for the rich record.
-3. Inspect the real repo enough to ground discovery in current code.
+3. Verify the direction handed off from `brainstorm` against the real code:
+   confirm the brief's flagged assumptions, inspect the specific files and call
+   sites the work will touch, and check that acceptance criteria are testable.
+   Open exploration belongs to `brainstorm`; this step grounds the chosen
+   direction, it does not re-open it.
 4. Classify scope as `S0`, `S1`, `S2`, or `S3`.
 5. Classify risk as `L0`, `L1`, `L2`, or `L3`.
 6. Ask only blocking clarification questions. If you cannot articulate what

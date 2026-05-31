@@ -1,77 +1,75 @@
 ---
 name: piper-workflow
-description: "Codex natural-language dispatch for Piper Station project work. Use when the user asks to register a project repo, work on a registered project, plan, implement, review, finish, compact, or run protected automation. Routes to the matching procedure under references/."
+description: "Codex convergent execution for Piper Station project work — use when executing rather than exploring. Trigger via $piper-workflow or by stating the intent once direction is set: write a formal spec and plan, prepare a Ralph-ready queue, execute one scoped Ralph slice, prepare compact-safe handoff, or route a protected finish action. Routes to the matching procedure under references/."
 ---
 
 # Piper Workflow (Codex)
 
-Piper Workflow owns natural-language dispatch for Piper Station project work in
-Codex. Codex CLI does not surface `.codex/commands/` as slash commands; this
-skill is the entry point. Detailed procedures live as reference files in this
-skill directory.
+Piper Workflow owns convergent execution for Piper Station project work in
+Codex: formal planning, Ralph preparation, Ralph execution, compaction handoff,
+and finish routing. It is entered from the `brainstorm` front door once a
+request has converged on a direction, or directly by invoking
+`$piper-workflow ...` or stating the intent.
 
-Trigger this skill by invoking `$piper-workflow ...` or by stating the project
-intent directly. Read `AGENTS.md` and `STATION.md` first, look up the project
-in `projects/registry.json` to resolve `project_id` to `repo_path`, then load
-the matching reference below.
+Codex CLI does not surface `.codex/commands/` as slash commands; the detailed
+procedures live as reference files in this skill directory. The divergent phase
+— orientation, framing, exploration, and registration — belongs to `brainstorm`;
+if a request is actually still divergent, hand it back. Read `AGENTS.md` and
+`STATION.md` first, resolve the project in `projects/registry.json` to its
+`repo_path`, and read `projects/<project-id>/project.md`, `memory.md`, and
+`decisions.md` before executing.
 
 ## References
 
-- `references/add-project.md` — register a repo in the hub ledger.
-- `references/work-on.md` — orient to a project and choose the smallest safe
-  route.
-- `references/superpowers.md` — discover, specify, plan, and prepare
-  Ralph-ready work.
+- `references/superpowers.md` — verify the handed-off direction, then specify
+  and plan Ralph-ready work.
 - `references/ralph.md` — execute one scoped implementation slice with review
   discipline.
 - `references/compact-handoff.md` — prepare compact-safe continuity records
   before pause or compaction.
 
-Use the narrow skills only when their specific consequence applies: `review`
-for explicit review or review gates, `automation-policy` before protected
-automation or external state changes.
+Use the narrow skills when their specific consequence applies: `review` for
+explicit review or review gates, `automation-policy` before protected automation
+or external state changes. Orientation and registration route through the
+`brainstorm` skill.
 
 ## Dispatch
 
-Choose the smallest safe path that fits the request:
+Choose the smallest convergent path that fits:
 
 | User intent | Route | Procedure |
 | --- | --- | --- |
-| Register a repo | registration | `references/add-project.md` and `./bin/add-project` |
-| Orient to a repo or ambiguous request | Intent Mode | `references/work-on.md`; stay read-only unless the user asks for durable work |
-| Discover, specify, or plan substantial work | Superpowers Mode | `references/superpowers.md` |
+| Verify direction, specify, or plan substantial work | Superpowers Mode | `references/superpowers.md` |
 | Execute one clear queued task | Ralph Mode | `references/ralph.md` and Ralph sections in `STATION.md` |
 | Review code or an implemented slice | Review Mode | the `review` skill |
 | Commit, PR, dependency, network, CI, destructive, or external action | Finish Mode or approval flow | the `automation-policy` skill |
 | Pause or compact active work | compact handoff | `references/compact-handoff.md` and compact sections in `STATION.md` |
+| Orient, explore, or decide what to do | hand back | the `brainstorm` skill |
 
-Use visible mode names only when they help continuity. Prefer consequence
-language such as "I will keep this read-only" or "I will create Ralph-ready
-work records" over ceremonial mode announcements. Proceed naturally when the
-route is clear and safe; wait for go-ahead when the route requires
-confirmation, risk is `L2`, the request is ambiguous, or the user asked only
-for orientation.
+Prefer consequence language such as "I will create Ralph-ready work records"
+over ceremonial mode announcements. Proceed when the route is clear and safe;
+wait for go-ahead when confirmation is required, risk is `L2`, or the request is
+ambiguous.
+
+## Superpowers Entry
+
+Superpowers begins where `brainstorm` ended. Its lead step is verification, not
+open exploration: take the direction from brainstorm's hand-off brief and
+confirm it against the real code — validate the brief's flagged assumptions,
+check the files and call sites the work will touch, and confirm acceptance
+criteria are testable — before locking a durable spec and plan.
 
 ## Artifact Signal Policy
 
-Infer durable artifacts from the user's intent signal. Adjacent requests can
-sound similar but imply different writes, so state the consequence when it
-matters.
+This skill handles the convergent signals; `brainstorm` owns the read-only band.
+When intent reaches these rows, durable writes are expected. The full
+intent-to-writes map lives in `STATION.md`.
 
 | User signal | Interpretation | Durable writes | Assistant stance |
 | --- | --- | --- | --- |
-| "review this repo", "understand what this does", "what is this project", or a repo path with an explanation or review request | Orientation or review | None by default | Inspect the repo in place. Say the work is read-only and that registration or hub records will wait unless asked. |
-| "what would it take", "how should we approach", "compare this to", or "plan the refactor" before registration | Conversational planning | None by default | Produce a grounded plan in chat. Use references and live repo inspection, but avoid hub records unless the user asks to formalize. |
-| "register this", "track this project", or "this is formal work now" | Registration | `project.md`, `memory.md`, and `decisions.md` only | Use the registration helper. Prefer hub-only records unless repo marker files are explicitly wanted. Do not create `work/` or start implementation. |
-| "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Create the durable record set the scope needs, such as active spec, active plan, task queue, context pack, progress, and verification. State that this is durable prep and that project source remains untouched. |
-| "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the real project repo | Confirm the selected task, diff boundary, risk, verification, and writable repo access before editing. Execute one scoped slice. |
-| "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/destructive action | Finish or protected automation | Only after explicit approval where required | Summarize state, verification, and risk first. Ask for approval before protected state changes. |
-
-Ambiguous signals must not silently escalate durable writes. If the next step
-would create hub records, edit project source, or take protected action and the
-user's intent is unclear, state the assumption and ask or choose the less
-durable action. Read-only inspection and conversational planning can proceed
-when clearly safe.
+| "make this a formal plan", "prepare for Ralph", "create the queue", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Verify the handed-off direction, then create the durable record set the scope needs. State that project source remains untouched. |
+| "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records; edit the real project repo | Confirm the selected task, diff boundary, risk, verification, and writable repo access before editing. Execute one scoped slice. |
+| "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/destructive action | Finish or protected automation | Only after explicit approval where required | Summarize state, verification, and risk first; route through `automation-policy`. |
 
 ## Scope And Risk
 
@@ -103,11 +101,12 @@ The hub declares six Codex subagent roles in `.codex/config.toml`:
 `reviewer`, `implementer`, `tester`, `architect`, `docs_researcher`,
 `security_reviewer`. Spawn the matching role when its specific responsibility
 applies — for example, `reviewer` during a Ralph review gate, or
-`security_reviewer` for auth/permissions changes.
+`security_reviewer` for auth/permissions changes. (`architect` and
+`docs_researcher` also support `brainstorm`'s read-only investigation.)
 
 The main session stays responsible for the work. Verify each subagent finding
-before acting; apply only valid in-scope fixes; turn valid out-of-scope
-findings into follow-up notes or queue items.
+before acting; apply only valid in-scope fixes; turn valid out-of-scope findings
+into follow-up notes or queue items.
 
 ## Durable Context
 
@@ -122,8 +121,8 @@ Routine progress, command output, and transient notes should stay in the
 conversation unless substantial active work needs continuity under
 `projects/<project-id>/work/`.
 
-Create `projects/<project-id>/work/` only when useful. Registration must not
-create active work artifacts.
+Create `projects/<project-id>/work/` only when useful. Registration (in
+`brainstorm`) must not create active work artifacts.
 
 ## Guardrails
 
@@ -131,8 +130,10 @@ create active work artifacts.
 - Do not write hub active work records into registered project repos.
 - Do not add sessions, checkpoints, dashboards, queue managers, or lifecycle
   shell workflows.
-- Keep planning, Ralph, review, and compaction as prompt, skill, reference,
-  and narrow consequence-specific behavior. The deterministic shell helper is
-  for project registration only.
+- Keep planning, Ralph, review, and compaction as prompt, skill, reference, and
+  narrow consequence-specific behavior. The deterministic shell helper is for
+  project registration only.
+- Orientation and registration belong to `brainstorm`; this skill assumes a
+  registered, converged target.
 - Do not commit, push, merge, delete, install dependencies, or run external
   automation without explicit user approval; see `automation-policy.md`.
