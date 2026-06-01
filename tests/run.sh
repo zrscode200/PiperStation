@@ -56,7 +56,6 @@ assert_file "$codex_hub/.codex/skills/piper-workflow/references/ralph.md"
 assert_file "$codex_hub/.codex/skills/piper-workflow/references/compact-handoff.md"
 assert_file "$codex_hub/.codex/skills/piper-workflow/SKILL.md"
 assert_file "$codex_hub/.codex/skills/brainstorm/SKILL.md"
-assert_file "$codex_hub/.codex/skills/brainstorm/references/work-on.md"
 assert_file "$codex_hub/.codex/skills/brainstorm/references/add-project.md"
 assert_file "$codex_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$codex_hub/bin/add-project"
@@ -73,7 +72,7 @@ assert_contains "$codex_hub/AGENTS.md" "brainstorm"
 assert_contains "$codex_hub/AGENTS.md" "--add-dir"
 assert_file_count "$codex_hub/.codex/agents" "*.toml" 6
 assert_file_count "$codex_hub/.codex/skills/piper-workflow/references" "*.md" 3
-assert_file_count "$codex_hub/.codex/skills/brainstorm/references" "*.md" 2
+assert_file_count "$codex_hub/.codex/skills/brainstorm/references" "*.md" 1
 assert_not_exists "$codex_hub/.codex/commands"
 assert_file_count "$codex_hub/.codex/skills" "SKILL.md" 4
 assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/piper-workflow"'
@@ -88,12 +87,6 @@ $(sed -n 's/^[[:space:]]*path = "\(.*skills\/[^"]*\)"/\1/p' "$codex_hub/.codex/c
 EOF
 assert_contains "$codex_hub/.piper/hub-manifest.json" '"codex"'
 assert_not_contains "$codex_hub/.piper/hub-manifest.json" '"claude"'
-assert_not_contains "$codex_hub/.codex/skills/brainstorm/references/work-on.md" "argument-hint"
-assert_not_contains "$codex_hub/.codex/skills/brainstorm/references/work-on.md" "allowed-tools"
-assert_contains "$codex_hub/.codex/skills/brainstorm/references/work-on.md" "projects/registry.json"
-assert_contains "$codex_hub/.codex/skills/brainstorm/references/work-on.md" "This procedure is prompt-driven routing"
-assert_not_contains "$codex_hub/.codex/skills/brainstorm/references/work-on.md" '\$ARGUMENTS'
-assert_not_contains "$codex_hub/.codex/skills/brainstorm/references/work-on.md" '`/work-on`'
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Implementation Review Gate"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "queued foundational work"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "review debt"
@@ -116,7 +109,9 @@ assert_contains "$codex_hub/.codex/skills/piper-workflow/SKILL.md" "Artifact Sig
 assert_contains "$codex_hub/.codex/skills/piper-workflow/SKILL.md" "writable repo access"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/SKILL.md" "Piper Workflow (Codex)"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/SKILL.md" "Codex CLI does not surface"
-assert_contains "$codex_hub/.codex/skills/brainstorm/SKILL.md" "references/work-on.md"
+assert_contains "$codex_hub/.codex/skills/brainstorm/SKILL.md" "references/add-project.md"
+assert_contains "$codex_hub/.codex/skills/brainstorm/SKILL.md" "Orient"
+assert_contains "$codex_hub/.codex/skills/brainstorm/SKILL.md" "projects/registry.json"
 assert_contains "$codex_hub/.codex/skills/brainstorm/SKILL.md" "Brainstorm (Codex)"
 assert_contains "$codex_hub/.codex/skills/brainstorm/SKILL.md" "Divergent Toolkit"
 assert_contains "$codex_hub/.codex/skills/brainstorm/SKILL.md" "rather than execute"
@@ -179,14 +174,13 @@ assert_file "$claude_hub/.claude/hooks/session-context.sh"
 assert_file "$claude_hub/.claude/hooks/pre-compact-protection.sh"
 assert_file "$claude_hub/.claude/hooks/post-compact-resume.sh"
 assert_file "$claude_hub/.claude/commands/ralph.md"
-assert_file "$claude_hub/.claude/commands/work-on.md"
 assert_file "$claude_hub/.claude/commands/compact-handoff.md"
 assert_file "$claude_hub/.claude/skills/piper-workflow/SKILL.md"
 assert_file "$claude_hub/.claude/skills/brainstorm/SKILL.md"
 assert_file "$claude_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$claude_hub/bin/add-project"
 assert_executable "$claude_hub/.claude/hooks/session-context.sh"
-assert_file_count "$claude_hub/.claude/commands" "*.md" 5
+assert_file_count "$claude_hub/.claude/commands" "*.md" 4
 assert_file_count "$claude_hub/.claude/skills" "SKILL.md" 4
 assert_file_count "$claude_hub/.claude/agents" "*.md" 7
 assert_not_exists "$claude_hub/AGENTS.md"
@@ -195,10 +189,7 @@ assert_not_exists "$claude_hub/.piper/plugin"
 assert_not_exists "$claude_hub/.mcp.json"
 assert_contains "$claude_hub/.piper/hub-manifest.json" '"claude"'
 assert_not_contains "$claude_hub/.piper/hub-manifest.json" '"codex"'
-assert_contains "$claude_hub/.claude/commands/work-on.md" 'argument-hint: "<project-id> \[request\]"'
 assert_contains "$claude_hub/.claude/commands/compact-handoff.md" 'argument-hint: "\[project-id\] \[current task\]"'
-assert_contains "$claude_hub/.claude/commands/work-on.md" "/add-dir"
-assert_contains "$claude_hub/.claude/commands/work-on.md" "projects/registry.json"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "Implementation Review Gate"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "Risk tier controls approval before execution, not review selection"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "writable access is"
@@ -242,14 +233,13 @@ assert_file "$opencode_hub/.opencode/agents/reviewer.md"
 assert_file "$opencode_hub/.opencode/agents/security-reviewer.md"
 assert_file "$opencode_hub/.opencode/agents/tester.md"
 assert_file "$opencode_hub/.opencode/commands/ralph.md"
-assert_file "$opencode_hub/.opencode/commands/work-on.md"
 assert_file "$opencode_hub/.opencode/commands/compact-handoff.md"
 assert_file "$opencode_hub/.opencode/skills/piper-workflow/SKILL.md"
 assert_file "$opencode_hub/.opencode/skills/brainstorm/SKILL.md"
 assert_file "$opencode_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$opencode_hub/bin/add-project"
 assert_file_count "$opencode_hub/.opencode/agents" "*.md" 7
-assert_file_count "$opencode_hub/.opencode/commands" "*.md" 5
+assert_file_count "$opencode_hub/.opencode/commands" "*.md" 4
 assert_file_count "$opencode_hub/.opencode/skills" "SKILL.md" 4
 assert_not_exists "$opencode_hub/CLAUDE.md"
 assert_not_exists "$opencode_hub/.codex"
@@ -258,8 +248,6 @@ assert_not_exists "$opencode_hub/.piper/plugin"
 assert_contains "$opencode_hub/.piper/hub-manifest.json" '"opencode"'
 assert_not_contains "$opencode_hub/.piper/hub-manifest.json" '"codex"'
 assert_not_contains "$opencode_hub/.piper/hub-manifest.json" '"claude"'
-assert_contains "$opencode_hub/.opencode/commands/work-on.md" "argument-hint"
-assert_contains "$opencode_hub/.opencode/commands/work-on.md" "projects/registry.json"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "Implementation Review Gate"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "writable access is"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "Review gate examples"
@@ -310,6 +298,8 @@ for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$openc
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Hand-Off Brief"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Register"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Artifact Signal Policy"
+  assert_contains "$skill_dir/brainstorm/SKILL.md" "Orient"
+  assert_contains "$skill_dir/brainstorm/SKILL.md" "projects/registry.json"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Piper Workflow owns convergent execution"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Artifact Signal Policy"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Scope And Risk"

@@ -34,7 +34,6 @@ Use these docs as the canonical human-readable references:
 Slash commands are the user entry points. Run them from this hub directory.
 
 - `/add-project <repo-path> [project-id]` - register a project repo with this hub.
-- `/work-on <project-id> [request]` - orient to a registered project and route through Intent, Superpowers, Ralph, Review, or Finish modes.
 - `/superpowers <project-id> [request]` - enter Superpowers Mode: discovery, spec, and plan.
 - `/ralph <project-id> [task]` - enter Ralph Mode: execute one scoped task with verification, Implementation Review Gate, and compact-safe updates.
 - `/compact-handoff [project-id]` - prepare a project's work records so the user can safely run `/compact`.
@@ -52,10 +51,10 @@ Use `--hub-only` when repo marker files are not wanted.
 `brainstorm` owns the decision-quality front door for the divergent phase —
 orientation, framing, divergence, investigation, and routing — and stays
 read-only. `piper-workflow` owns convergent execution once a direction is set.
-Slash commands are explicit shortcuts: `/work-on` enters the front door, while
-`/superpowers`, `/ralph`, and `/compact-handoff` enter convergent execution. A
-project-work request that is ambiguous or lacks an explicit execution signal
-enters through `brainstorm`.
+Slash commands are explicit shortcuts into convergent execution:
+`/superpowers`, `/ralph`, and `/compact-handoff`. The front door needs no
+command — a project-work request that is ambiguous or lacks an explicit
+execution signal enters through `brainstorm`.
 
 Route each request through the smallest mode that fits.
 

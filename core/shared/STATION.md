@@ -50,7 +50,7 @@ Use this dispatch table when intent is unclear:
 | User intent | Route | Supporting behavior |
 | --- | --- | --- |
 | Register a repo | `brainstorm`, `/add-project`, or `./bin/add-project` | deterministic registration helper |
-| Orient, explore, compare options, or decide what to do | `brainstorm` or `/work-on` | `brainstorm` |
+| Orient, explore, compare options, or decide what to do | `brainstorm` | `brainstorm` |
 | Verify a direction, specify, or plan substantial work | Superpowers Mode or `/superpowers` | `piper-workflow`, `/superpowers`, and this guide |
 | Execute one clear queued task | Ralph Mode or `/ralph` | `/ralph` and this guide |
 | Review code or an implemented slice | Review Mode | `review` |

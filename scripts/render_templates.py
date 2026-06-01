@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIMES = ("codex", "claude", "opencode")
-COMMANDS = ("add-project.md", "work-on.md", "superpowers.md", "ralph.md", "compact-handoff.md")
+COMMANDS = ("add-project.md", "superpowers.md", "ralph.md", "compact-handoff.md")
 SKILLS = (
     "brainstorm/SKILL.md",
     "piper-workflow/SKILL.md",
@@ -19,12 +19,11 @@ SKILLS = (
     "automation-policy/SKILL.md",
 )
 # In Codex, slash commands are surfaced as reference files under their owning
-# skill. work-on/add-project belong to the brainstorm front door; the planning
-# and execution commands belong to piper-workflow. Other runtimes render every
+# skill. add-project belongs to the brainstorm front door; the planning and
+# execution commands belong to piper-workflow. Other runtimes render every
 # command into a single flat command_dir.
 CODEX_COMMAND_SKILL = {
     "add-project.md": "brainstorm",
-    "work-on.md": "brainstorm",
     "superpowers.md": "piper-workflow",
     "ralph.md": "piper-workflow",
     "compact-handoff.md": "piper-workflow",
@@ -39,7 +38,6 @@ RUNTIME_CONFIG = {
         "skill_dir": ".codex/skills",
         "frontmatter": {
             "add-project.md": "",
-            "work-on.md": "",
             "superpowers.md": "",
             "ralph.md": "",
             "compact-handoff.md": "",
@@ -57,7 +55,6 @@ RUNTIME_CONFIG = {
         "skill_dir": ".claude/skills",
         "frontmatter": {
             "add-project.md": "---\ndescription: Register a project repo with this Piper Station hub\nargument-hint: \"<repo-path> [project-id]\"\n---\n\n",
-            "work-on.md": "---\ndescription: Orient to a registered project and route the request through Intent, Superpowers, Ralph, Review, or Finish modes\nargument-hint: \"<project-id> [request]\"\n---\n\n",
             "superpowers.md": "---\ndescription: Enter Superpowers Mode for discovery, specification, and planning\nargument-hint: \"<project-id> [request]\"\n---\n\n",
             "ralph.md": "---\ndescription: Enter Ralph Mode for one scoped implementation slice\nargument-hint: \"<project-id> [task id or description]\"\n---\n\n",
             "compact-handoff.md": "---\ndescription: Prepare compact-safe project work records before /compact\nargument-hint: \"[project-id] [current task]\"\n---\n\n",
@@ -75,7 +72,6 @@ RUNTIME_CONFIG = {
         "skill_dir": ".opencode/skills",
         "frontmatter": {
             "add-project.md": "---\ndescription: Register a project repo with this Piper Station hub\nargument-hint: \"[repo path and optional project id]\"\n---\n\n",
-            "work-on.md": "---\ndescription: Orient to a registered project and route work through Piper Station modes\nargument-hint: \"[project id or repo path and request]\"\n---\n\n",
             "superpowers.md": "---\ndescription: Enter Superpowers Mode for discovery, specification, and planning\nargument-hint: \"[project id or repo path and request]\"\n---\n\n",
             "ralph.md": "---\ndescription: Enter Ralph Mode for one scoped implementation slice\nargument-hint: \"[project id and optional task id]\"\n---\n\n",
             "compact-handoff.md": "---\ndescription: Prepare compact-safe project work records\nargument-hint: \"[project id and current task]\"\n---\n\n",

@@ -67,10 +67,10 @@ active work when continuity is useful.
 `brainstorm` owns the decision-quality front door for the divergent phase —
 orientation, framing, divergence, investigation, and routing — and stays
 read-only. `piper-workflow` owns convergent execution once a direction is set.
-Slash commands are explicit shortcuts: `/work-on` enters the front door, while
-`/superpowers`, `/ralph`, and `/compact-handoff` enter convergent execution. A
-project-work request that is ambiguous or lacks an explicit execution signal
-enters through `brainstorm`.
+Slash commands are explicit shortcuts into convergent execution:
+`/superpowers`, `/ralph`, and `/compact-handoff`. The front door needs no
+command — a project-work request that is ambiguous or lacks an explicit
+execution signal enters through `brainstorm`.
 
 Route each request through the smallest mode that fits:
 

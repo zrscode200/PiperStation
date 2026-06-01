@@ -35,8 +35,8 @@ not auto-surface a `.codex/commands/` directory as slash commands; the
 - `.codex/skills/brainstorm/SKILL.md` — decision-quality front door for the
   divergent phase (orient, frame, diverge, investigate, route). Trigger via
   `$brainstorm ...` or by stating the intent.
-- `.codex/skills/brainstorm/references/` — orientation and registration
-  procedures (`work-on`, `add-project`) cited by the front door.
+- `.codex/skills/brainstorm/references/` — the registration procedure
+  (`add-project`) cited by the front door; orientation is inline in the skill.
 - `.codex/skills/piper-workflow/SKILL.md` — convergent execution entry (formal
   planning, Ralph, compaction). Trigger via `$piper-workflow ...` once direction
   is set.
