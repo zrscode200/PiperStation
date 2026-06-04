@@ -42,7 +42,6 @@ active runtime.
 
 Optional active artifacts may be created under `projects/<id>/work/` only when
 useful: `active-spec.md`, `active-plan.md`, `task-queue.md`, `context-pack.md`,
-`progress.md`, `verification.md`, `handoff.md`, and optional `specs/`, `plans/`,
-and `runs/`.
+`verification.md`, and optional `specs/`, `plans/`, and `runs/`.
 
 Registration must not create active work artifacts.

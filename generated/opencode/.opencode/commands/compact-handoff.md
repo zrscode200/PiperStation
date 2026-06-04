@@ -15,16 +15,15 @@ The user invoked this command with: `$ARGUMENTS`
    to confirm registration and resolve `repo_path`, then read the project
    record: `project.md`, `memory.md`, and `decisions.md`.
 2. Read relevant files under `projects/<project-id>/work/`, especially
-   `active-spec.md`, `active-plan.md`, `task-queue.md`, `progress.md`,
-   `verification.md`, and `context-pack.md`.
+   `active-spec.md`, `active-plan.md`, `task-queue.md`, `verification.md`, and
+   `context-pack.md`.
 3. Inspect the real repo with `git status --short`,
    `git rev-parse --short HEAD`, and `git diff --stat` enough to summarize
    changed files and risks.
 4. Update `projects/<project-id>/work/context-pack.md` with the required
-   compact resume packet below.
-5. Update `projects/<project-id>/work/handoff.md` with the same load-bearing
-   continuation fields when pausing or transferring work.
-6. Report that the project is compact-ready and tell the user they may run
+   compact resume packet below; it also carries the handoff fields when pausing
+   or transferring work.
+5. Report that the project is compact-ready and tell the user they may run
    `/compact`.
 
 ## Required Compact Resume Packet

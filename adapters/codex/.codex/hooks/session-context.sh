@@ -26,7 +26,7 @@ Register repos with ./bin/add-project. Durable hub context stays under projects/
 Natural-language project work enters through the brainstorm skill (\$brainstorm ...) to orient, explore, and decide what is worth doing; it routes to piper-workflow (\$piper-workflow ...) for formal planning and Ralph execution once direction is set. Detailed procedures live under .codex/skills/brainstorm/references/ and .codex/skills/piper-workflow/references/."
 
 resume_context="
-Resume guidance: start from projects/<id>/work/context-pack.md and handoff.md when present, verify branch/HEAD/git status in the real project repo, rebuild the active task neighborhood from named files, changed files, relevant tests, configs, docs, generated surfaces, and known reference paths. Expand beyond that only for concrete triggers such as stale handoff state, missing acceptance criteria, failing verification, generated parity, security/permissions behavior, or review scope."
+Resume guidance: start from projects/<id>/work/context-pack.md when present, verify branch/HEAD/git status in the real project repo, rebuild the active task neighborhood from named files, changed files, relevant tests, configs, docs, generated surfaces, and known reference paths. Expand beyond that only for concrete triggers such as a stale resume packet, missing acceptance criteria, failing verification, generated parity, security/permissions behavior, or review scope."
 
 if [ "$projects_count" -gt 0 ]; then
   projects_block="

@@ -60,7 +60,7 @@ intent-to-writes map lives in `STATION.md`.
 
 | User signal | Interpretation | Durable writes | Assistant stance |
 | --- | --- | --- | --- |
-| "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Verify the handed-off direction, then create the durable record set the scope needs — active spec, active plan, task queue, context pack, progress, verification. State that project source remains untouched. |
+| "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Verify the handed-off direction, then create the durable record set the scope needs — active spec, active plan, task queue, context pack, verification. State that project source remains untouched. |
 | "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the real project repo | Confirm the selected task, diff boundary, risk, verification, and writable repo access before editing. Execute one scoped slice. |
 | "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/destructive action | Finish or protected automation | Only after explicit approval where required | Summarize state, verification, and risk first. Ask for approval before protected state changes; route through `automation-policy`. |
 

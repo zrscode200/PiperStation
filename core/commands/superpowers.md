@@ -56,15 +56,11 @@ Create only under `projects/<project-id>/work/`, and only when useful:
   continuity.
 - `task-queue.md`: Ralph-ready task list with ids, status, risk, acceptance
   criteria, verification, and expected diff boundary.
-- `context-pack.md`: compact/resume anchor with the current task, next exact
-  action, files to inspect first, git state, verification, review state, drift,
-  blockers, and stop reason.
-- `progress.md`: durable progress, completed tasks, blockers, review debt, and
-  next action for multi-turn work.
+- `context-pack.md`: compact/resume and handoff anchor with the current task,
+  next exact action, files to inspect first, git state, verification, review
+  state, drift, blockers, stop reason, and what to hand a human or fresh agent.
 - `verification.md`: commands run, results, failures, fallbacks, skipped
   checks, and remaining verification gaps.
-- `handoff.md`: short handoff for a human or fresh agent when pausing,
-  compacting, blocking, or transferring work.
 - `specs/`, `plans/`, and `runs/`: archived or named records for substantial
   milestones, alternatives, superseded approaches, or dense Ralph iterations.
 

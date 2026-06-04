@@ -114,7 +114,7 @@ projects/<project-id>/
 - `project.md` binds the project id to the real repo path and stores a small project overview.
 - `memory.md` stores durable facts, preferences, stable conventions, and reusable context.
 - `decisions.md` stores meaningful choices, tradeoffs, accepted risks, and policies future work should not silently reopen.
-- `work/` stores optional active continuity such as specs, plans, task queues, progress, verification, handoff notes, and context packs.
+- `work/` stores optional active continuity such as specs, plans, task queues, verification, and context packs.
 
 Do not put routine progress logs, command output, temporary plans, secrets, or raw sensitive logs into `memory.md` or `decisions.md`.
 
@@ -162,9 +162,9 @@ The main Claude Code session must verify reviewer findings before acting, apply 
 
 ## Compaction
 
-Ralph should prepare compact-safe state at natural stopping points by updating `projects/<id>/work/context-pack.md` and, when pausing, `projects/<id>/work/handoff.md`.
+Ralph should prepare compact-safe state at natural stopping points by updating `projects/<id>/work/context-pack.md`, which also carries the handoff fields when pausing.
 
-The compact state must include: goal, last completed task, current task status, next exact action, scope boundary, files to inspect first after compact, known reference paths, verification status, review state, drift result, blockers and risks, git state, broad-search triggers, and stop reason. The next exact action should be a file to open, command to run, or question to answer, specific enough for a fresh Claude Code session to continue cold.
+The compact state must include: goal, last completed task, current task status, next exact action, scope boundary, files to inspect first after compact, known reference paths, verification status, review state, drift result, blockers and risks, git state, broad-search triggers, stop reason, and what to hand a human or fresh agent. The next exact action should be a file to open, command to run, or question to answer, specific enough for a fresh Claude Code session to continue cold.
 
 Compact summary priorities are the fields that reduce expensive resume work: next exact action, scope boundary, files to inspect first, verification state, review state, drift result, git state, blockers, risks, and broad-search triggers. Keep them concise and specific.
 
@@ -178,7 +178,7 @@ require a reliable active-project/session-state source and explicit ownership
 rules for hook-written records. Keep this as future design work, not current
 hub-lite behavior.
 
-After compact, start from the designed resume anchors: `context-pack.md`, `handoff.md`, `task-queue.md`, `active-plan.md`, `verification.md`, project `decisions.md`, and live branch/HEAD/status. Then rebuild enough of the active task neighborhood to work safely. Expand beyond that for concrete triggers such as mismatched handoff state, missing acceptance criteria, failing verification, generated parity, security or permissions behavior, or review scope.
+After compact, start from the designed resume anchors: `context-pack.md`, `task-queue.md`, `active-plan.md`, `verification.md`, project `decisions.md`, and live branch/HEAD/status. Then rebuild enough of the active task neighborhood to work safely. Expand beyond that for concrete triggers such as a stale resume packet, missing acceptance criteria, failing verification, generated parity, security or permissions behavior, or review scope.
 
 ## Project Repos
 

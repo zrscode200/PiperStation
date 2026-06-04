@@ -89,7 +89,7 @@ projects/<project-id>/
 - `decisions.md` stores meaningful choices, tradeoffs, accepted risks, and
   policies future work should not silently reopen.
 - `work/` stores optional active work continuity such as specs, plans, task
-  queues, progress, verification, handoff notes, and context packs.
+  queues, verification, and context packs.
 
 Do not put routine progress logs, command output, temporary plans, secrets, or
 raw sensitive logs into `memory.md` or `decisions.md`.
@@ -217,20 +217,19 @@ post-compact context arrives via the `SessionStart` hook (with
 records, commit, push, or invoke `/compact`.
 
 During Ralph Mode, prepare compact-safe state at natural stopping points by
-updating `projects/<project-id>/work/context-pack.md`, plus `handoff.md` when
-pausing or handing off. If context is low or the next slice needs a clean
-context, pause and tell the user the state is compact-ready and they may run
-`/compact`.
+updating `projects/<project-id>/work/context-pack.md`, which also carries the
+handoff fields when pausing or handing off. If context is low or the next slice
+needs a clean context, pause and tell the user the state is compact-ready and
+they may run `/compact`.
 
 Do not claim `/compact` was run unless the user or Codex actually ran it.
 
 After compact, start from the designed resume anchors: `context-pack.md`,
-`handoff.md`, `task-queue.md`, `active-plan.md`, `verification.md`, project
-`decisions.md`, and live branch/HEAD/status. Then rebuild enough of the active
-task neighborhood to work safely. Expand beyond that for concrete triggers
-such as mismatched handoff state, missing acceptance criteria, failing
-verification, generated parity, security or permissions behavior, or review
-scope.
+`task-queue.md`, `active-plan.md`, `verification.md`, project `decisions.md`,
+and live branch/HEAD/status. Then rebuild enough of the active task
+neighborhood to work safely. Expand beyond that for concrete triggers such as a
+stale resume packet, missing acceptance criteria, failing verification,
+generated parity, security or permissions behavior, or review scope.
 
 ## Approval Boundaries
 

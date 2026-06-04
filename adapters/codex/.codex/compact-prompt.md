@@ -19,7 +19,7 @@ Prioritize:
 - files to inspect first after compaction and known reference paths
 - commands run, verification results, and remaining test gaps
 - review state, blockers, risks, required approvals, and git state
-- broad-search triggers, such as handoff mismatch, missing acceptance criteria,
+- broad-search triggers, such as a stale resume packet, missing acceptance criteria,
   failing verification, unclear generated parity, security/permissions behavior,
   or review scope
 
@@ -32,7 +32,6 @@ Reload on resume:
 - `projects/<project-id>/memory.md`
 - `projects/<project-id>/decisions.md`
 - `projects/<project-id>/work/context-pack.md` when present
-- `projects/<project-id>/work/handoff.md` when present
 - other relevant files under `projects/<project-id>/work/` when present
 - relevant task-neighborhood files in the real project repo
 

@@ -78,7 +78,7 @@ conversational planning, registration); the convergent rows below belong to
 | "review this repo", "understand what this does", "what is this project", or a repo path with an explanation or review request | Orientation or review | None by default | Inspect the repo in place. Say the work is read-only and that registration or hub records will wait unless asked. |
 | "what would it take", "how should we approach", "compare this to", or "plan the refactor" before registration | Conversational planning | None by default | Produce a grounded plan in chat. Avoid hub records unless the user asks to formalize. |
 | "register this", "track this project", or "this is formal work now" | Registration | `project.md`, `memory.md`, and `decisions.md` only | Use the registration helper. Prefer hub-only records unless repo marker files are explicitly wanted. Do not create `work/` or start implementation. |
-| "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Create the durable record set the scope needs, such as active spec, active plan, task queue, context pack, progress, and verification. State that source remains untouched. |
+| "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Create the durable record set the scope needs, such as active spec, active plan, task queue, context pack, and verification. State that source remains untouched. |
 | "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the real project repo | Confirm the selected task, diff boundary, risk, verification, and writable repo access before editing. Execute one scoped slice. |
 | "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/destructive action | Finish or protected automation | Only after explicit approval where required | Summarize state, verification, and risk first. Ask for approval before protected state changes. |
 
@@ -106,8 +106,8 @@ projects/<project-id>/
 ```
 
 `work/` may contain `active-spec.md`, `active-plan.md`, `task-queue.md`,
-`context-pack.md`, `progress.md`, `verification.md`, `handoff.md`, and optional
-`specs/`, `plans/`, and `runs/`.
+`context-pack.md`, `verification.md`, and optional `specs/`, `plans/`, and
+`runs/`.
 
 Registration must not create `work/`.
 
@@ -122,13 +122,11 @@ directories only when substantial work needs preserved history.
 | `active-spec.md` | Current problem statement, goals, non-goals, acceptance criteria, risks, and open questions. | Work is `S2+`, requirements need durable agreement, or Ralph needs a stable target. |
 | `active-plan.md` | Current implementation approach, ordered slices, tradeoffs, dependencies, and verification strategy. | Work is `S1+` and the plan must survive compaction or handoff. |
 | `task-queue.md` | Ralph-ready task list with ids, status, risk, acceptance criteria, verification, and expected diff boundary. | There are clear executable slices for Ralph or future sessions. |
-| `context-pack.md` | Compact/resume anchor with goal, current task, next exact action, key files, branch/HEAD/status, verification state, review state, drift, blockers, and stop reason. | Active work records are in use and the session may continue after pause or compact. |
-| `progress.md` | Chronological durable progress, completed tasks, blockers, review debt, and next action. | Active work spans multiple turns or someone needs to audit what changed. |
+| `context-pack.md` | Compact/resume and handoff anchor: goal, current task, next exact action, key files, what to inspect first, branch/HEAD/status, verification state, review state, drift, blockers, stop reason, and what to hand a human or fresh agent. | Active work records are in use and the session may continue, pause, compact, or hand off. |
 | `verification.md` | Commands run, results, failures, fallbacks, skipped checks, and remaining verification gaps. | Planning defines verification, Ralph runs checks, or verification is blocked. |
-| `handoff.md` | Short handoff for a human or fresh agent: current state, what to inspect first, and what to do next. | Pausing, compacting, blocking, or handing off execution. |
 | `specs/` | Archived or named specs for milestones or alternatives. | `S3` or long-running work needs more than one durable spec. |
 | `plans/` | Archived or named plans for milestones, alternatives, or superseded approaches. | `S3` or long-running work needs plan history beyond `active-plan.md`. |
-| `runs/` | Optional per-run notes for substantial Ralph iterations or review/verification cycles. | A single `progress.md` entry would be too dense to preserve useful execution detail. |
+| `runs/` | Optional per-run notes for substantial Ralph iterations or review/verification cycles. | Per-run execution detail would be too dense to preserve in `context-pack.md`. |
 
 ## Mode Routing
 
@@ -189,8 +187,8 @@ accepted by the user.
 ## Compaction
 
 At natural stopping points, prepare compact-safe state in
-`projects/<id>/work/context-pack.md` and, when pausing,
-`projects/<id>/work/handoff.md`.
+`projects/<id>/work/context-pack.md`, which also carries the handoff fields when
+pausing or transferring work.
 
 Compact-safe state must include goal, last completed task, current task status,
 next exact action, scope boundary, files to inspect first after compact, known
@@ -203,11 +201,11 @@ needs a clean context. Do not claim `/compact` ran unless the user or runtime
 actually ran it.
 
 After compact, start from the designed resume anchors: `context-pack.md`,
-`handoff.md`, `task-queue.md`, `active-plan.md`, `verification.md`, project
-`decisions.md`, and live branch/HEAD/status. Then rebuild enough of the active
-task neighborhood to work safely. Expand beyond that for concrete triggers such
-as mismatched handoff state, missing acceptance criteria, failing verification,
-generated parity, security or permissions behavior, or review scope.
+`task-queue.md`, `active-plan.md`, `verification.md`, project `decisions.md`,
+and live branch/HEAD/status. Then rebuild enough of the active task neighborhood
+to work safely. Expand beyond that for concrete triggers such as a stale resume
+packet, missing acceptance criteria, failing verification, generated parity,
+security or permissions behavior, or review scope.
 
 Future runtime-style auto-compact protection could snapshot minimal active
 state to `projects/<id>/work/` immediately before automatic compaction. Keep

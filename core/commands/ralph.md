@@ -48,7 +48,7 @@ still route through `automation-policy`.
     risky, or cross-cutting behavior.
 13. Drift-check the diff against the selected task, active plan/spec, and user
     request.
-14. Update useful active work records, including `task-queue.md`, `progress.md`,
+14. Update useful active work records, including `task-queue.md`,
     `verification.md`, and `context-pack.md`, when they are in use.
 15. Record material decisions in `projects/<project-id>/decisions.md`.
 16. If a required or expected review gate was skipped, record review debt and do
@@ -117,14 +117,13 @@ next task.
 When active work records are in use:
 
 1. Update `task-queue.md` with the current task status.
-2. Update `progress.md` with completed work, blockers, and next action.
-3. Update `verification.md` with commands, results, and gaps.
-4. Update `context-pack.md` with last completed task, current task status, next
+2. Update `verification.md` with commands, results, and gaps.
+3. Update `context-pack.md` with last completed task, current task status, next
    exact action, scope boundary, files changed, files to inspect first after
    compact, known reference paths, branch, HEAD, `git status --short`,
    verification status, review state, drift result, blockers, risks, broad
-   search triggers, and stop reason when pausing.
-5. Update `handoff.md` when pausing, blocked, or handing off.
+   search triggers, stop reason, and what to hand a human or fresh agent when
+   pausing.
 
 If the next task is safe and context is not a concern, continue normally. If
 context is low, a milestone just finished, or the next slice needs a clean
@@ -136,7 +135,6 @@ they may run `/compact`.
 After compact, resume from designed anchors first:
 
 - `context-pack.md`
-- `handoff.md`
 - `task-queue.md`
 - `active-plan.md`
 - `verification.md`
@@ -146,7 +144,7 @@ After compact, resume from designed anchors first:
 Then rebuild the active task neighborhood before editing. Inspect changed
 files, explicitly named files, related tests, configs, docs, generated
 surfaces, and known reference paths. Expand beyond that when there is a
-concrete reason: handoff mismatch, missing acceptance criteria, failing
+concrete reason: a stale resume packet, missing acceptance criteria, failing
 verification, unclear coupling, generated parity, security or permissions
 behavior, or review scope. When broad search is needed, state why, bound it to
 the active repo and named reference paths, and exclude dependency, build,
