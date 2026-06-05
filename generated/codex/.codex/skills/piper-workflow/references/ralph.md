@@ -157,8 +157,11 @@ cache, and `.git` directories.
 ## Helper Use
 
 - Ralph may spawn the `reviewer`, `tester`, `security_reviewer`,
-  `docs_researcher`, or `architect` subagents for substantial work. They are
-  read-only roles defined in `.codex/agents/`.
+  `verifier`, `security_reviewer`, `docs_researcher`, or `architect` subagents
+  for substantial work. `verifier`, `reviewer`, `security_reviewer`,
+  `docs_researcher`, and `architect` are read-only roles defined in
+  `.codex/agents/`; use `tester` only when explicitly delegating test-layer
+  file, fixture, or test-data edits.
 - Implementation stays with the main session unless the user explicitly asks
   for `implementer` delegation.
 - Verify all helper findings in the main session before acting on them.

@@ -46,6 +46,7 @@ assert_file "$codex_hub/.codex/agents/implementer.toml"
 assert_file "$codex_hub/.codex/agents/reviewer.toml"
 assert_file "$codex_hub/.codex/agents/security-reviewer.toml"
 assert_file "$codex_hub/.codex/agents/tester.toml"
+assert_file "$codex_hub/.codex/agents/verifier.toml"
 assert_file "$codex_hub/.codex/hooks/session-context.sh"
 assert_file "$codex_hub/.codex/hooks/pre-compact-protection.sh"
 assert_file "$codex_hub/.codex/hooks/post-compact-resume.sh"
@@ -70,7 +71,7 @@ assert_not_contains "$codex_hub/AGENTS.md" "Codex and OpenCode work"
 assert_contains "$codex_hub/AGENTS.md" "piper-workflow"
 assert_contains "$codex_hub/AGENTS.md" "brainstorm"
 assert_contains "$codex_hub/AGENTS.md" "--add-dir"
-assert_file_count "$codex_hub/.codex/agents" "*.toml" 6
+assert_file_count "$codex_hub/.codex/agents" "*.toml" 7
 assert_file_count "$codex_hub/.codex/skills/piper-workflow/references" "*.md" 3
 assert_file_count "$codex_hub/.codex/skills/brainstorm/references" "*.md" 1
 assert_not_exists "$codex_hub/.codex/commands"
@@ -140,6 +141,10 @@ assert_contains "$codex_hub/.codex/config.toml" '[agents.implementer]'
 assert_contains "$codex_hub/.codex/config.toml" '[agents.reviewer]'
 assert_contains "$codex_hub/.codex/config.toml" '[agents.security_reviewer]'
 assert_contains "$codex_hub/.codex/config.toml" '[agents.tester]'
+assert_contains "$codex_hub/.codex/config.toml" '[agents.verifier]'
+assert_contains "$codex_hub/.codex/config.toml" 'max_threads = 7'
+assert_contains "$codex_hub/AGENTS.md" "seven Codex subagent roles"
+assert_contains "$codex_hub/AGENTS.md" "verifier"
 (cd "$codex_hub" && sh .codex/hooks/session-context.sh) > "$TMP_ROOT/codex-session-start.log"
 assert_contains "$TMP_ROOT/codex-session-start.log" "hub-lite is active"
 assert_contains "$TMP_ROOT/codex-session-start.log" '"hookSpecificOutput"'
@@ -170,6 +175,7 @@ assert_file "$claude_hub/.claude/agents/implementer.md"
 assert_file "$claude_hub/.claude/agents/reviewer.md"
 assert_file "$claude_hub/.claude/agents/security-reviewer.md"
 assert_file "$claude_hub/.claude/agents/tester.md"
+assert_file "$claude_hub/.claude/agents/verifier.md"
 assert_file "$claude_hub/.claude/hooks/session-context.sh"
 assert_file "$claude_hub/.claude/hooks/pre-compact-protection.sh"
 assert_file "$claude_hub/.claude/hooks/post-compact-resume.sh"
@@ -182,7 +188,7 @@ assert_executable "$claude_hub/bin/add-project"
 assert_executable "$claude_hub/.claude/hooks/session-context.sh"
 assert_file_count "$claude_hub/.claude/commands" "*.md" 4
 assert_file_count "$claude_hub/.claude/skills" "SKILL.md" 4
-assert_file_count "$claude_hub/.claude/agents" "*.md" 7
+assert_file_count "$claude_hub/.claude/agents" "*.md" 8
 assert_not_exists "$claude_hub/AGENTS.md"
 assert_not_exists "$claude_hub/.codex"
 assert_not_exists "$claude_hub/.piper/plugin"
@@ -207,6 +213,9 @@ assert_contains "$claude_hub/.claude/skills/brainstorm/SKILL.md" "rather than ex
 assert_not_exists "$claude_hub/.claude/skills/superpowers-planning/SKILL.md"
 assert_not_exists "$claude_hub/.claude/skills/ralph-loop/SKILL.md"
 assert_contains "$claude_hub/.claude/agents/README.md" "same helper role set as the Codex surface"
+assert_contains "$claude_hub/.claude/agents/README.md" "verifier"
+assert_contains "$claude_hub/.claude/agents/tester.md" "test-layer"
+assert_contains "$claude_hub/.claude/agents/verifier.md" "Strict read-only"
 assert_contains "$claude_hub/.claude/agents/docs-researcher.md" "OpenAI developer"
 assert_contains "$claude_hub/.claude/agents/docs-researcher.md" "docs MCP server"
 assert_contains "$claude_hub/.claude/agents/docs-researcher.md" "mcpServers"
@@ -232,13 +241,14 @@ assert_file "$opencode_hub/.opencode/agents/implementer.md"
 assert_file "$opencode_hub/.opencode/agents/reviewer.md"
 assert_file "$opencode_hub/.opencode/agents/security-reviewer.md"
 assert_file "$opencode_hub/.opencode/agents/tester.md"
+assert_file "$opencode_hub/.opencode/agents/verifier.md"
 assert_file "$opencode_hub/.opencode/commands/ralph.md"
 assert_file "$opencode_hub/.opencode/commands/compact-handoff.md"
 assert_file "$opencode_hub/.opencode/skills/piper-workflow/SKILL.md"
 assert_file "$opencode_hub/.opencode/skills/brainstorm/SKILL.md"
 assert_file "$opencode_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$opencode_hub/bin/add-project"
-assert_file_count "$opencode_hub/.opencode/agents" "*.md" 7
+assert_file_count "$opencode_hub/.opencode/agents" "*.md" 8
 assert_file_count "$opencode_hub/.opencode/commands" "*.md" 4
 assert_file_count "$opencode_hub/.opencode/skills" "SKILL.md" 4
 assert_not_exists "$opencode_hub/CLAUDE.md"
@@ -261,9 +271,13 @@ assert_contains "$opencode_hub/.opencode/skills/piper-workflow/SKILL.md" "Artifa
 assert_not_exists "$opencode_hub/.opencode/skills/superpowers-planning/SKILL.md"
 assert_not_exists "$opencode_hub/.opencode/skills/ralph-loop/SKILL.md"
 assert_contains "$opencode_hub/.opencode/agents/README.md" "same helper role set as the Codex and Claude Code"
+assert_contains "$opencode_hub/.opencode/agents/README.md" "verifier"
+assert_contains "$opencode_hub/.opencode/agents/tester.md" "test-layer"
+assert_contains "$opencode_hub/.opencode/agents/verifier.md" "Strict read-only"
 assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "OpenAI developer"
 assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "docs MCP server"
-assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "openaiDeveloperDocs_\\*: allow"
+assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "openaiDeveloperDocs_\\*: ask"
+assert_not_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "openaiDeveloperDocs_\\*: allow"
 assert_not_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "mcpServers"
 assert_contains "$opencode_hub/.opencode/agents/security-reviewer.md" "Authentication and authorization"
 assert_contains "$opencode_hub/STATION.md" "opencode.json"
@@ -300,6 +314,7 @@ for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$openc
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Artifact Signal Policy"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Orient"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "projects/registry.json"
+  assert_contains "$skill_dir/brainstorm/SKILL.md" "read-only except explicit registration through the helper"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Piper Workflow owns convergent execution"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Artifact Signal Policy"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Scope And Risk"
@@ -307,6 +322,11 @@ for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$openc
   assert_not_exists "$skill_dir/ralph-loop/SKILL.md"
   assert_contains "$skill_dir/review/SKILL.md" "Do not use this skill for general repo orientation"
   assert_contains "$skill_dir/automation-policy/SKILL.md" "Do not use this skill for ordinary local inspection"
+  assert_contains "$skill_dir/automation-policy/SKILL.md" "canonical global policy"
+  assert_contains "$skill_dir/automation-policy/SKILL.md" "protected-action execution checklist and approval gate"
+  assert_contains "$skill_dir/automation-policy/SKILL.md" "projects/<project-id>/decisions.md"
+  assert_not_contains "$skill_dir/automation-policy/SKILL.md" "Record durable opt-ins or policy changes in"
+  assert_not_contains "$skill_dir/automation-policy/SKILL.md" "Default Classifications"
   assert_not_exists "$skill_dir/hub-workflow/SKILL.md"
 done
 
@@ -541,6 +561,16 @@ if grep -R -n '{{' "$ROOT/generated/codex" "$ROOT/generated/claude" "$ROOT/gener
 if grep -R -n '^argument-hint: [^"]' "$ROOT/generated/claude/.claude/commands" "$ROOT/generated/opencode/.opencode/commands" > "$TMP_ROOT/frontmatter.log"; then cat "$TMP_ROOT/frontmatter.log" >&2; fail "unquoted argument-hint frontmatter found"; fi
 if grep -R -n '^argument-hint:\|^allowed-tools:\|^description:' "$ROOT/generated/codex/.codex/skills/piper-workflow/references" "$ROOT/generated/codex/.codex/skills/brainstorm/references" > "$TMP_ROOT/codex-refs-frontmatter.log"; then cat "$TMP_ROOT/codex-refs-frontmatter.log" >&2; fail "Codex skill references must not carry slash-command frontmatter"; fi
 if grep -R -n '^description: [^"].*: ' "$ROOT/core/skills" "$ROOT/generated/codex/.codex/skills" "$ROOT/generated/claude/.claude/skills" "$ROOT/generated/opencode/.opencode/skills" > "$TMP_ROOT/skill-frontmatter.log"; then cat "$TMP_ROOT/skill-frontmatter.log" >&2; fail "unquoted skill description frontmatter with colon found"; fi
+if grep -R -n -E '`(handoff|progress)\.md`' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-work-artifacts.log"; then cat "$TMP_ROOT/stale-work-artifacts.log" >&2; fail "active instructions must not use stale handoff.md or progress.md artifacts"; fi
+if grep -R -n 'piper-workflow router\|piper workflow handles lookup, registration, orientation' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-router.log"; then cat "$TMP_ROOT/stale-router.log" >&2; fail "active instructions must not describe piper-workflow as the broad router"; fi
+if grep -R -n 'openaiDeveloperDocs_\*: allow\|"openaiDeveloperDocs_\\\*": "allow"' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-openai-docs-permission.log"; then cat "$TMP_ROOT/stale-openai-docs-permission.log" >&2; fail "OpenCode docs-researcher must ask before OpenAI docs MCP use"; fi
+if grep -R -n 'read-only band\|creates no hub records' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-brainstorm-readonly.log"; then cat "$TMP_ROOT/stale-brainstorm-readonly.log" >&2; fail "brainstorm registration wording must acknowledge the deterministic write exception"; fi
+if grep -R -n '\.codex/commands' "$ROOT/core" "$ROOT/adapters" "$ROOT/docs/capability-matrix.md" "$ROOT/generated" > "$TMP_ROOT/codex-commands.log"; then
+  if grep -v -e 'does not' -e 'not auto-surface' "$TMP_ROOT/codex-commands.log" > "$TMP_ROOT/codex-commands-active.log"; then
+    cat "$TMP_ROOT/codex-commands-active.log" >&2
+    fail "active docs must describe Codex commands as skill references, not .codex/commands"
+  fi
+fi
 
 git -C "$ROOT" diff --check
 

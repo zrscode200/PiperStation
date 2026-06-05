@@ -42,6 +42,7 @@ Include these fields or equivalent clearly labeled sections:
 - Broad-search triggers: concrete reasons a future session should expand
   beyond the task neighborhood
 - Stop reason: why work is pausing, handing off, or compacting
+- What to hand a human or fresh agent
 
 Rules:
 

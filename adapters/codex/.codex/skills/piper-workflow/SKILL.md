@@ -61,48 +61,42 @@ criteria are testable — before locking a durable spec and plan.
 
 ## Artifact Signal Policy
 
-This skill handles the convergent signals; `brainstorm` owns the read-only band.
-When intent reaches these rows, durable writes are expected. The full
-intent-to-writes map lives in `STATION.md`.
+This skill handles the convergent signals; `brainstorm` owns the front-door
+band: read-only orientation and planning, plus explicit deterministic
+registration. When intent reaches these rows, durable writes are expected. The
+full intent-to-writes map lives in `STATION.md`.
 
-| User signal | Interpretation | Durable writes | Assistant stance |
-| --- | --- | --- | --- |
-| "make this a formal plan", "prepare for Ralph", "create the queue", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Verify the handed-off direction, then create the durable record set the scope needs. State that project source remains untouched. |
-| "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records; edit the real project repo | Confirm the selected task, diff boundary, risk, verification, and writable repo access before editing. Execute one scoped slice. |
-| "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/destructive action | Finish or protected automation | Only after explicit approval where required | Summarize state, verification, and risk first; route through `automation-policy`. |
+Formal planning or Ralph preparation may create useful
+`projects/<id>/work/` records such as active spec, active plan, task queue,
+context pack, and verification. Ralph execution may update those records and
+edit only the real project repo. Finish, commit, PR, dependency, network, CI,
+or destructive actions route through `automation-policy` before protected state
+changes.
 
 ## Scope And Risk
 
-Classify scope:
-
-- `S0`: direct small task; no artifact needed.
-- `S1`: short active plan when continuity is useful.
-- `S2`: written spec and plan required before implementation.
-- `S3`: split into milestones or sub-specs.
-
-Classify risk:
-
-- `L0`: trivial or local.
-- `L1`: normal implementation.
-- `L2`: explicit user confirmation required before Ralph executes.
-- `L3`: forbidden inside Ralph; stop and ask.
+Use the scope and risk tiers defined in `STATION.md`. Scope controls artifact
+weight and review expectations; risk controls whether Ralph needs confirmation
+or must stop before execution.
 
 ## Workspace Access
 
-Before Ralph execution, verify the real project repo is writable in the active
-Codex session. If it is outside the current sandbox, tell the user that Codex
-must be started with `--add-dir <project-repo>` or that sandbox access must
-otherwise be granted before execution — do not declare the task Ralph-ready
-until writable access exists.
+Before Ralph execution, verify writable repo access for the real project repo
+in the active Codex session. If it is outside the current sandbox, tell the user
+that Codex must be started with `--add-dir <project-repo>` or that sandbox
+access must otherwise be granted before execution — do not declare the task
+Ralph-ready until writable access exists.
 
 ## Subagent Helpers
 
-The hub declares six Codex subagent roles in `.codex/config.toml`:
-`reviewer`, `implementer`, `tester`, `architect`, `docs_researcher`,
-`security_reviewer`. Spawn the matching role when its specific responsibility
-applies — for example, `reviewer` during a Ralph review gate, or
-`security_reviewer` for auth/permissions changes. (`architect` and
-`docs_researcher` also support `brainstorm`'s read-only investigation.)
+The hub declares seven Codex subagent roles in `.codex/config.toml`:
+`reviewer`, `implementer`, `tester`, `verifier`, `architect`,
+`docs_researcher`, and `security_reviewer`. Spawn the matching role when its
+specific responsibility applies — for example, `reviewer` during a Ralph review
+gate, `verifier` for existing read-only checks, `tester` only for explicit
+test-layer edits, or `security_reviewer` for auth/permissions changes.
+(`architect` and `docs_researcher` also support `brainstorm`'s read-only
+investigation.)
 
 The main session stays responsible for the work. Verify each subagent finding
 before acting; apply only valid in-scope fixes; turn valid out-of-scope findings

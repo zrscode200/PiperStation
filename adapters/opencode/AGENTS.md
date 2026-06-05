@@ -30,6 +30,13 @@ When working in this hub, use these docs as the canonical references:
 - `automation-policy.md`: approvals required for automation and external
   actions.
 
+## Instruction Precedence
+
+`STATION.md` defines shared behavior and ownership. `automation-policy.md`
+defines global automation policy. This `AGENTS.md` is the always-on OpenCode
+summary. Skills route intent, slash commands provide procedures, `opencode.json`
+sets runtime permissions, and agents stay within their delegated roles.
+
 ## Project Records
 
 `projects/registry.json` is the hub-owned index of registered projects. Use it
@@ -75,7 +82,9 @@ execution signal enters through `brainstorm`.
 Route each request through the smallest mode that fits:
 
 - Brainstorm (front door): orient, frame the problem, weigh options,
-  investigate, and produce a decision-ready hand-off brief. Read-only.
+  investigate, route explicit registration through the helper, and produce a
+  decision-ready hand-off brief. Read-only except for that deterministic
+  registration path.
 - Superpowers Mode: verify the handed-off direction, then specify and plan
   before substantial implementation.
 - Ralph Mode: execute one scoped task at a time from a clear plan or task

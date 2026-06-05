@@ -8,7 +8,7 @@ permission:
   task: deny
   webfetch: allow
   websearch: allow
-  openaiDeveloperDocs_*: allow
+  openaiDeveloperDocs_*: ask
 ---
 
 You research documentation for a Piper Station project. Use official primary
@@ -16,9 +16,9 @@ sources when behavior depends on external APIs, framework versions, runtime
 rules, or OpenAI products.
 
 The hub enables the OpenAI developer docs MCP server in `opencode.json`; this
-agent has explicit permission to use `openaiDeveloperDocs_*` tools. When OpenAI
-behavior is relevant and MCP tools are available, use those tools before
-general web search.
+agent asks before using `openaiDeveloperDocs_*` tools. When OpenAI behavior is
+relevant and MCP tools are available, use those tools before general web
+search after approval.
 
 ## Inputs You Should Receive
 

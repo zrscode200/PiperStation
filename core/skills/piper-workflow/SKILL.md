@@ -54,34 +54,26 @@ exploration belongs to `brainstorm`.
 
 ## Artifact Signal Policy
 
-This skill handles the convergent signals. Brainstorm owns the read-only band;
-when intent reaches these rows, durable writes are expected. The full
+This skill handles the convergent signals. Brainstorm owns the front-door band:
+read-only orientation and planning, plus explicit deterministic registration.
+When intent reaches these rows, durable writes are expected. The full
 intent-to-writes map lives in `STATION.md`.
 
-| User signal | Interpretation | Durable writes | Assistant stance |
-| --- | --- | --- | --- |
-| "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Verify the handed-off direction, then create the durable record set the scope needs — active spec, active plan, task queue, context pack, verification. State that project source remains untouched. |
-| "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the real project repo | Confirm the selected task, diff boundary, risk, verification, and writable repo access before editing. Execute one scoped slice. |
-| "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/destructive action | Finish or protected automation | Only after explicit approval where required | Summarize state, verification, and risk first. Ask for approval before protected state changes; route through `automation-policy`. |
+Formal planning or Ralph preparation may create useful
+`projects/<id>/work/` records such as active spec, active plan, task queue,
+context pack, and verification. Ralph execution may update those records and
+edit only the real project repo. Finish, commit, PR, dependency, network, CI,
+or destructive actions route through `automation-policy` before protected state
+changes.
 
 If a request is actually still divergent, hand it back to `brainstorm` rather
 than escalating durable writes.
 
 ## Scope And Risk
 
-Classify scope:
-
-- `S0`: direct small task; no artifact needed.
-- `S1`: short active plan when continuity is useful.
-- `S2`: written spec and plan required before implementation.
-- `S3`: split into milestones or sub-specs.
-
-Classify risk:
-
-- `L0`: trivial or local.
-- `L1`: normal implementation.
-- `L2`: explicit user confirmation required before Ralph executes.
-- `L3`: forbidden inside Ralph; stop and ask.
+Use the scope and risk tiers defined in `STATION.md`. Scope controls artifact
+weight and review expectations; risk controls whether Ralph needs confirmation
+or must stop before execution.
 
 ## Durable Context
 

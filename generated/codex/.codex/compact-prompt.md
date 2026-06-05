@@ -19,6 +19,7 @@ Prioritize:
 - files to inspect first after compaction and known reference paths
 - commands run, verification results, and remaining test gaps
 - review state, blockers, risks, required approvals, and git state
+- what to hand a human or fresh agent when pausing or transferring work
 - broad-search triggers, such as a stale resume packet, missing acceptance criteria,
   failing verification, unclear generated parity, security/permissions behavior,
   or review scope

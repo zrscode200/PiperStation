@@ -47,7 +47,8 @@ not auto-surface a `.codex/commands/` directory as slash commands; the
 - `.codex/skills/automation-policy/SKILL.md` — protected-action approval gate.
 - `.codex/agents/*.toml` declared in `config.toml`'s `[agents.X]` blocks —
   `reviewer`, `architect`, `security_reviewer`, `docs_researcher`, `tester`,
-  `implementer` (role names match the `name = "..."` field in each `.toml`).
+  `verifier`, `implementer` (role names match the `name = "..."` field in each
+  `.toml`).
 - `.codex/hooks/*.sh` wired in `hooks.json` — `SessionStart` (with
   `startup|resume|compact` matcher), `PreCompact`, `PostCompact`.
 - `.codex/compact-prompt.md` referenced by `experimental_compact_prompt_file`.
@@ -64,6 +65,13 @@ When working in this hub, use these docs as the canonical references:
 - `SECURITY.md`: sensitive-data and boundary rules.
 - `automation-policy.md`: approvals required for automation and external
   actions.
+
+## Instruction Precedence
+
+`STATION.md` defines shared behavior and ownership. `automation-policy.md`
+defines global automation policy. This `AGENTS.md` is the always-on Codex
+summary. Skills route intent, command references provide procedures, hooks give
+lifecycle reminders, and agents stay within their delegated roles.
 
 ## Project Records
 
@@ -108,8 +116,10 @@ enters through `brainstorm`.
 
 Route each request through the smallest mode that fits:
 
-- Brainstorm (front door): orient, frame the problem, weigh options, investigate,
-  and produce a decision-ready hand-off brief. Read-only.
+- Brainstorm (front door): orient, frame the problem, weigh options,
+  investigate, route explicit registration through the helper, and produce a
+  decision-ready hand-off brief. Read-only except for that deterministic
+  registration path.
 - Superpowers Mode: verify the handed-off direction, then specify and plan
   before substantial implementation.
 - Ralph Mode: execute one scoped task at a time from a clear plan or task
@@ -167,12 +177,15 @@ Before editing a registered project:
 
 ## Subagents
 
-The hub declares six Codex subagent roles in `config.toml` and provides their
+The hub declares seven Codex subagent roles in `config.toml` and provides their
 `.toml` configs under `.codex/agents/`:
 
 - `reviewer` — read-only implementation review for Ralph review gates.
 - `implementer` — scoped implementation when the user explicitly delegates.
-- `tester` — focused regression and verification support.
+- `tester` — writes test-layer files, fixtures, or test data only when
+  explicitly delegated.
+- `verifier` — strict read-only helper for existing checks and failure
+  analysis; it reports when a check needs writable state.
 - `architect` — read-only architecture review for broad design and boundary
   risk.
 - `docs_researcher` — documentation research through official docs and MCP

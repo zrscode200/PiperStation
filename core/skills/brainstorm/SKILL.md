@@ -1,6 +1,6 @@
 ---
 name: brainstorm
-description: "Use when the user wants to explore, understand, or decide rather than execute on a Piper Station project: orient to a repo or registered project, ask what it does or what a change would take, compare approaches, frame a problem, or think through direction in conversation. Stays read-only and writes nothing durable. Hand off to piper-workflow for formal planning or Ralph execution, review for review, and automation-policy for protected actions."
+description: "Use when the user wants to explore, understand, decide, or explicitly register rather than execute on a Piper Station project: orient to a repo or registered project, ask what it does or what a change would take, compare approaches, frame a problem, think through direction in conversation, or route deterministic registration. Stays read-only except explicit registration through the helper. Hand off to piper-workflow for formal planning or Ralph execution, review for review, and automation-policy for protected actions."
 ---
 
 # Brainstorm
@@ -12,10 +12,13 @@ space to frame a problem, weigh options, and ground them in reality *before*
 that machinery commits. It answers "what should we build, and is it the right
 thing?" while `piper-workflow` answers "how do we build it well?"
 
-Brainstorm is read-only by contract. That is not a safety rail bolted on — it is
-the point. Premature artifacts are the failure this skill exists to prevent, so
-it creates no hub records, no `work/` files, and no project source edits. When a
-request converges toward durable work, it hands off to the convergent surfaces.
+Brainstorm is read-only by contract for orientation, exploration, and
+conversational planning. Premature artifacts are the failure this skill exists
+to prevent, so it creates no `work/` files and no project source edits. The
+only durable write exception is explicit registration through the deterministic
+helper, which may create or update the narrow registration records. When a
+request converges toward other durable work, brainstorm hands off to the
+convergent surfaces.
 
 Read `{{INSTRUCTION_DOC}}` and `STATION.md` first. Use the other root docs as
 canonical references when product, architecture, convention, testing, security,
@@ -111,16 +114,15 @@ everything beyond it is a convergent escalation (see Escalation). State the
 consequence when adjacent requests imply different writes. The full
 intent-to-writes map lives in `STATION.md`.
 
-| User signal | Interpretation | Durable writes | Assistant stance |
-| --- | --- | --- | --- |
-| "review this repo", "understand what this does", "what is this project", or a repo path with an explanation or review request | Orientation or review | None by default | Inspect the repo in place. Say the work is read-only and that registration or hub records will wait unless asked. |
-| "what would it take", "how should we approach", "compare this to", or "plan the refactor" before registration | Conversational planning | None by default | Frame, diverge, and investigate in chat. Use live repo inspection, but avoid hub records unless the user asks to formalize. |
-| "register this", "track this project", or "this is formal work now" | Registration | `project.md`, `memory.md`, and `decisions.md` only | Use the registration helper. Prefer hub-only records unless repo marker files are explicitly wanted. Do not create `work/` or start implementation. |
+The front-door band covers read-only orientation and conversational planning,
+plus explicit deterministic registration. Registration may create only
+`project.md`, `memory.md`, `decisions.md`, `projects/registry.json`, and
+optional repo markers through the helper. Beyond registration — formal
+planning, Ralph execution, finish, or automation — the signal is convergent:
+escalate per the table below rather than writing here.
 
-Beyond registration — formal planning, Ralph execution, finish or automation —
-the signal is convergent: escalate per the Escalation table rather than writing
-here. Ambiguous signals must not silently escalate durable writes. If the next
-step would create hub records, edit project source, or take protected action and
+Ambiguous signals must not silently escalate durable writes. If the next step
+would create hub work records, edit project source, or take protected action and
 intent is unclear, state the assumption and choose the less durable action or
 ask.
 
@@ -143,14 +145,10 @@ request is ambiguous, or the user asked only for orientation.
 
 ## Scope And Risk
 
-Classify enough to size the toolkit and choose the route. `piper-workflow` owns
-the detailed tiers.
-
-- Scope: `S0` direct small task; `S1` short active plan; `S2` spec and plan
-  before implementation; `S3` split into milestones. Higher scope warrants more
-  of the divergent toolkit before any recommendation.
-- Risk: `L0` trivial; `L1` normal; `L2` explicit confirmation before Ralph
-  executes; `L3` forbidden inside Ralph — stop and ask.
+Classify enough to size the toolkit and choose the route. `STATION.md` defines
+the scope and risk tiers; `piper-workflow` owns detailed application of those
+tiers. Higher scope warrants more of the divergent toolkit before any
+recommendation.
 
 ## Guardrails
 

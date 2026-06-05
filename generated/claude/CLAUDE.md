@@ -29,6 +29,13 @@ Use these docs as the canonical human-readable references:
 - `SECURITY.md` - sensitive-data and boundary rules.
 - `automation-policy.md` - approvals required for automation and external actions.
 
+## Instruction Precedence
+
+`STATION.md` defines shared behavior and ownership. `automation-policy.md`
+defines global automation policy. This `CLAUDE.md` is the always-on Claude Code
+summary. Skills route intent, slash commands provide procedures, hooks give
+lifecycle reminders, and agents stay within their delegated roles.
+
 ## Hub Commands
 
 Slash commands are the user entry points. Run them from this hub directory.
@@ -58,7 +65,7 @@ execution signal enters through `brainstorm`.
 
 Route each request through the smallest mode that fits.
 
-- Brainstorm (front door) - orient, frame the problem, weigh options, investigate, and produce a decision-ready hand-off brief. Read-only.
+- Brainstorm (front door) - orient, frame the problem, weigh options, investigate, route explicit registration through the helper, and produce a decision-ready hand-off brief. Read-only except for that deterministic registration path.
 - Superpowers Mode - verify the handed-off direction, then specify and plan before substantial implementation.
 - Ralph Mode - execute one scoped task at a time, verify, drift-check, and use an implementation review gate for substantial slices.
 - Review Mode - first check whether the work matches the request/spec/plan, then check code quality.
@@ -144,8 +151,8 @@ The Claude Code layer is intentionally small:
 - Commands are user entry points under `.claude/commands/`.
 - Skills are behavior guides under `.claude/skills/`.
 - Subagents live under `.claude/agents/` for the same helper role set as the
-  Codex surface: reviewer, implementer, tester, architect, docs-researcher, and
-  security-reviewer.
+  Codex surface: reviewer, implementer, tester, verifier, architect,
+  docs-researcher, and security-reviewer.
 - The docs-researcher wires the OpenAI developer docs MCP server in its own
   subagent frontmatter, matching the Codex docs-researcher role without making
   every Claude Code session load that server.

@@ -17,7 +17,7 @@ use_memories = true
 generate_memories = true
 
 [agents]
-max_threads = 6
+max_threads = 7
 max_depth = 1
 
 [agents.architect]
@@ -37,6 +37,9 @@ config_file = "./agents/security-reviewer.toml"
 
 [agents.tester]
 config_file = "./agents/tester.toml"
+
+[agents.verifier]
+config_file = "./agents/verifier.toml"
 
 [[skills.config]]
 path = "./skills/brainstorm"

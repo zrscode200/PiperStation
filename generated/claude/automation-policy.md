@@ -4,6 +4,11 @@ Default stance: local inspection and documented verification are allowed;
 actions that mutate git history, external systems, dependency state, CI, or
 deployment state require approval.
 
+This file is the canonical global policy. Project-specific automation opt-ins,
+one-off approvals, accepted risks, and protected-action decisions belong in
+`projects/<project-id>/decisions.md`. Change this root policy only for global
+shared rules that should apply across the hub.
+
 ## Tiers
 
 - `A0` allowed local assistance: inspect files, read diffs, run documented local

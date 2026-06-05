@@ -32,14 +32,39 @@ stay shared under `projects/`.
 A hub may have multiple runtime surfaces installed. Use one harness actively on
 a project at a time unless the user explicitly coordinates parallel work.
 
+## Instruction Precedence
+
+Use this order when instructions overlap:
+
+1. `STATION.md` defines shared Piper Station behavior, project-record
+   ownership, dispatch boundaries, work artifacts, compaction, and Ralph gates.
+2. `automation-policy.md` defines the global automation policy and A-tier
+   classifications.
+3. Runtime root docs (`AGENTS.md`, `CLAUDE.md`, and `opencode.json`
+   instruction lists) are always-on summaries that adapt the shared behavior to
+   each harness.
+4. Skills route intent and provide consequence-specific operating checklists.
+   They point back to the canonical docs instead of redefining global policy.
+5. Commands and reference files provide procedure bodies for explicit actions.
+6. Hooks and agents stay narrow: hooks surface lifecycle reminders, and agents
+   perform delegated helper roles without owning policy.
+
+Some repetition is intentional. Root docs repeat high-signal rules because they
+are always loaded; command/reference files repeat procedure details so they can
+be used directly; hooks repeat compact fields because they are runtime output;
+agents repeat role boundaries because they are delegated prompts. Policy tables
+and global ownership rules belong in the canonical docs above.
+
 ## Dispatch Contract
 
 `brainstorm` owns the decision-quality front door for the divergent phase —
-orientation, framing, divergence, investigation, registration, and routing — and
-stays read-only. `piper-workflow` owns convergent execution once a direction is
-set. Slash commands are explicit shortcuts into the same behavior. Commands,
-narrow skills, agents, hooks, and docs provide supporting behavior after a skill
-or command has selected the route.
+orientation, framing, divergence, investigation, registration routing, and
+route selection. It stays read-only for orientation and planning; explicit
+registration is the narrow exception and must go through the deterministic
+helper. `piper-workflow` owns convergent execution once a direction is set.
+Slash commands are explicit shortcuts into the same behavior. Commands, narrow
+skills, agents, hooks, and docs provide supporting behavior after a skill or
+command has selected the route.
 
 The boundary between them is the same verb, different intent: `brainstorm`
 explores to *generate* a direction; `piper-workflow` (Superpowers) verifies that
@@ -68,10 +93,10 @@ announcements.
 ### Artifact Signal Policy
 
 Infer durable artifacts from the user's intent signal and state the consequence
-when it matters. `brainstorm` acts on the read-only band (orientation,
-conversational planning, registration); the convergent rows below belong to
-`piper-workflow` (formal planning, Ralph execution) and `automation-policy`
-(finish):
+when it matters. `brainstorm` acts on the front-door band: read-only
+orientation and conversational planning, plus explicit deterministic
+registration. The convergent rows below belong to `piper-workflow` (formal
+planning, Ralph execution) and `automation-policy` (finish):
 
 | User signal | Interpretation | Durable writes | Assistant stance |
 | --- | --- | --- | --- |
@@ -134,7 +159,9 @@ Route requests through `brainstorm` (the front door), `piper-workflow`
 (convergent execution), command shortcuts, and the smallest mode that fits:
 
 - Brainstorm (front door): orient, frame the problem, weigh options,
-  investigate, and produce a decision-ready hand-off brief; stay read-only.
+  investigate, route explicit registration through the helper, and produce a
+  decision-ready hand-off brief; stay read-only except for that deterministic
+  registration path.
 - Superpowers Mode: verify the handed-off direction, then specify and plan
   before substantial implementation.
 - Ralph Mode: execute one scoped task at a time, verify, drift-check, and use

@@ -1,8 +1,13 @@
 # Dispatch Refactor Notes
 
-These notes capture the agreed direction for making Piper Station feel more
-natural without changing the detailed behavior already designed for planning,
-implementation, review, automation approval, or compaction.
+Status: historical/superseded. These notes capture the dispatch refactor that
+led to the current split: `brainstorm` is now the broad read-only front door,
+and `piper-workflow` owns convergent execution after direction is set. Treat
+the root docs, `STATION.md`, and current skills as authoritative.
+
+These notes originally captured the agreed direction for making Piper Station
+feel more natural without changing the detailed behavior already designed for
+planning, implementation, review, automation approval, or compaction.
 
 ## Problem
 

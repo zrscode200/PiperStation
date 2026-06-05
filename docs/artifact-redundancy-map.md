@@ -1,5 +1,9 @@
 # Artifact System Redundancy Map
 
+Status: historical audit. The current instruction precedence and overlap
+boundaries live in `core/shared/STATION.md`; this file is retained as design
+rationale and may contain superseded recommendations or line references.
+
 A read-only audit of redundancy in Piper Station's artifact system: the
 intent-to-writes signal policy, the scope/risk/automation tier tables, the
 compact resume packet, and the `work/` artifact taxonomy.

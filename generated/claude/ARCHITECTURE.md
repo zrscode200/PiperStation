@@ -18,7 +18,7 @@ piper-station-hub/
   AGENTS.md              # Codex runtime, when installed
   CLAUDE.md              # Claude Code runtime, when installed
   opencode.json          # OpenCode runtime, when installed
-  .codex/                # Codex commands, skills, config, hooks, agents
+  .codex/                # Codex skills, command references, config, hooks, agents
   .claude/               # Claude commands, skills, agents, hooks
   .opencode/             # OpenCode commands, skills, agents
   .piper/lib/            # shared deterministic helpers
