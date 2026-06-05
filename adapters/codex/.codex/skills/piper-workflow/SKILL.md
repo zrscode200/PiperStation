@@ -11,13 +11,19 @@ and finish routing. It is entered from the `brainstorm` front door once a
 request has converged on a direction, or directly by invoking
 `$piper-workflow ...` or stating the intent.
 
+The `dispatcher` skill decides whether the root session handles this phase
+inline or spawns a phase subagent with a delegation packet. Use `planner` for
+Superpowers planning and `ralph` for one accepted implementation slice. This
+skill defines the convergent behavior once the phase is selected.
+
 Codex CLI does not surface `.codex/commands/` as slash commands; the detailed
 procedures live as reference files in this skill directory. The divergent phase
 — orientation, framing, exploration, and registration — belongs to `brainstorm`;
-if a request is actually still divergent, hand it back. Read `AGENTS.md` and
-`STATION.md` first, resolve the project in `projects/registry.json` to its
-`repo_path`, and read `projects/<project-id>/project.md`, `memory.md`, and
-`decisions.md` before executing.
+if a request is actually still divergent, hand it back to the dispatcher for
+the `brainstorm` phase. Read `AGENTS.md` and `STATION.md` first, resolve the
+project in `projects/registry.json` to its `repo_path`, and read
+`projects/<project-id>/project.md`, `memory.md`, and `decisions.md` before
+executing.
 
 ## References
 
@@ -39,8 +45,8 @@ Choose the smallest convergent path that fits:
 
 | User intent | Route | Procedure |
 | --- | --- | --- |
-| Verify direction, specify, or plan substantial work | Superpowers Mode | `references/superpowers.md` |
-| Execute one clear queued task | Ralph Mode | `references/ralph.md` and Ralph sections in `STATION.md` |
+| Verify direction, specify, or plan substantial work | Superpowers Mode | `planner`, `references/superpowers.md` |
+| Execute one clear queued task | Ralph Mode | `ralph`, `references/ralph.md` and Ralph sections in `STATION.md` |
 | Review code or an implemented slice | Review Mode | the `review` skill |
 | Commit, PR, dependency, network, CI, destructive, or external action | Finish Mode or approval flow | the `automation-policy` skill |
 | Pause or compact active work | compact handoff | `references/compact-handoff.md` and compact sections in `STATION.md` |
@@ -90,13 +96,13 @@ Ralph-ready until writable access exists.
 ## Subagent Helpers
 
 The hub declares seven Codex subagent roles in `.codex/config.toml`:
-`reviewer`, `implementer`, `tester`, `verifier`, `architect`,
-`docs_researcher`, and `security_reviewer`. Spawn the matching role when its
-specific responsibility applies — for example, `reviewer` during a Ralph review
-gate, `verifier` for existing read-only checks, `tester` only for explicit
-test-layer edits, or `security_reviewer` for auth/permissions changes.
-(`architect` and `docs_researcher` also support `brainstorm`'s read-only
-investigation.)
+`explorer`, `planner`, `ralph`, `reviewer`, `verifier`, `tester`, and
+`docs_researcher`. The dispatcher spawns the matching role when a phase is
+substantial enough to delegate: `explorer` for brainstorm work, `planner` for
+Superpowers planning, `ralph` for one accepted implementation slice,
+`reviewer` for review gates, `verifier` for existing read-only checks,
+`tester` only for explicit test-layer edits, and `docs_researcher` for
+documentation research.
 
 The main session stays responsible for the work. Verify each subagent finding
 before acting; apply only valid in-scope fixes; turn valid out-of-scope findings

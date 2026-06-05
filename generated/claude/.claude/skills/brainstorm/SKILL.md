@@ -12,6 +12,10 @@ space to frame a problem, weigh options, and ground them in reality *before*
 that machinery commits. It answers "what should we build, and is it the right
 thing?" while `piper-workflow` answers "how do we build it well?"
 
+The `dispatcher` skill decides whether the root session handles this phase
+inline or spawns `explorer` with a delegation packet. This skill defines the
+exploration behavior once the `brainstorm` phase is selected.
+
 Brainstorm is read-only by contract for orientation, exploration, and
 conversational planning. Premature artifacts are the failure this skill exists
 to prevent, so it creates no `work/` files and no project source edits. The
@@ -70,9 +74,9 @@ exists because it lowers the chance of converging on the wrong thing.
   radius, effort, and fit with existing patterns. Widening the option space is
   the point; do not collapse to the first plausible plan.
 - **Investigate.** Ground options in what actually exists: how the relevant code
-  works today, prior art, and established patterns. Use available read-only
-  architecture and documentation-research helpers for design exploration and
-  prior art. Investigation here is exploration to *generate* options, not
+  works today, prior art, and established patterns. Use read-only repo
+  inspection and documentation research for design exploration and prior art.
+  Investigation here is exploration to *generate* options, not
   verification of a chosen one — that verification is `piper-workflow`'s job at
   the convergent boundary.
 
@@ -128,9 +132,10 @@ ask.
 
 ## Escalation
 
-When the request converges, hand it to the smallest convergent surface that
-fits. Escalation is one-way: brainstorm states the consequence and passes the
-brief; it does not perform durable execution itself.
+When the request converges, hand it to the root dispatcher so it can choose the
+smallest convergent surface and package the next phase. Escalation is one-way:
+brainstorm states the consequence and passes the brief; it does not perform
+durable execution itself.
 
 | Converged signal | Hand off to |
 | --- | --- |

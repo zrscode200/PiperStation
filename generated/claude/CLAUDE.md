@@ -33,8 +33,9 @@ Use these docs as the canonical human-readable references:
 
 `STATION.md` defines shared behavior and ownership. `automation-policy.md`
 defines global automation policy. This `CLAUDE.md` is the always-on Claude Code
-summary. Skills route intent, slash commands provide procedures, hooks give
-lifecycle reminders, and agents stay within their delegated roles.
+summary. The `dispatcher` skill owns root-session routing and delegation
+packets. Other skills define phase behavior, slash commands provide procedures,
+hooks give lifecycle reminders, and agents stay within their delegated roles.
 
 ## Hub Commands
 
@@ -55,13 +56,20 @@ Use `--hub-only` when repo marker files are not wanted.
 
 ## Mode Routing
 
-`brainstorm` owns the decision-quality front door for the divergent phase —
-orientation, framing, divergence, investigation, and routing — and stays
-read-only. `piper-workflow` owns convergent execution once a direction is set.
-Slash commands are explicit shortcuts into convergent execution:
-`/superpowers`, `/ralph`, and `/compact-handoff`. The front door needs no
-command — a project-work request that is ambiguous or lacks an explicit
-execution signal enters through `brainstorm`.
+The root Claude Code session acts as dispatcher for substantial phase work. Use
+`dispatcher` before entering broad `brainstorm` or `piper-workflow` work: it
+decides whether to work inline or spawn `explorer`, `planner`, or `ralph` with a
+bounded delegation packet. The dispatcher does not replace phase skills:
+`brainstorm` defines exploration, `piper-workflow` defines Superpowers/Ralph
+execution, and `review` defines review behavior. Slash commands are explicit
+shortcuts into convergent execution: `/superpowers`, `/ralph`, and
+`/compact-handoff`. The front door needs no command — a project-work request
+that is ambiguous or lacks an explicit execution signal enters the `brainstorm`
+phase through the dispatcher.
+
+Do not spawn for `S0`, factual, trivial, or one-step work, when one local read
+or command is enough, or when packaging the packet costs more than doing the
+work inline.
 
 Route each request through the smallest mode that fits.
 
@@ -72,11 +80,12 @@ Route each request through the smallest mode that fits.
 - Finish Mode - report verification, residual risk, changed files, and commit or pull request options without mutating git automatically.
 
 Use `brainstorm` as the broad natural-language front door and `piper-workflow`
-for convergent execution. Use `/superpowers` for explicit formal planning,
-`/ralph` for explicit one-task execution, `review` for explicit review work or
-review gates, and `automation-policy` before protected automation or external
-actions. Prefer consequence language such as "I will keep this read-only" or "I
-will create Ralph-ready work records" over ceremonial mode announcements.
+for convergent execution, with dispatcher deciding inline vs subagent execution.
+Use `/superpowers` for explicit formal planning, `/ralph` for explicit one-task
+execution, `review` for explicit review work or review gates, and
+`automation-policy` before protected automation or external actions. Prefer
+consequence language such as "I will keep this read-only" or "I will create
+Ralph-ready work records" over ceremonial mode announcements.
 
 ### Scope Tiers
 
@@ -150,14 +159,19 @@ The Claude Code layer is intentionally small:
 
 - Commands are user entry points under `.claude/commands/`.
 - Skills are behavior guides under `.claude/skills/`.
-- Subagents live under `.claude/agents/` for the same helper role set as the
-  Codex surface: reviewer, implementer, tester, verifier, architect,
-  docs-researcher, and security-reviewer.
+- Subagents live under `.claude/agents/` for the same phase and auxiliary role
+  set as the Codex surface: explorer, planner, ralph, reviewer, verifier,
+  tester, and docs-researcher.
 - The docs-researcher wires the OpenAI developer docs MCP server in its own
   subagent frontmatter, matching the Codex docs-researcher role without making
   every Claude Code session load that server.
 
 Root docs are the canonical references. Skills should point back to these docs instead of duplicating the whole station manual.
+The dispatcher sends subagents delegation packets with role, phase, objective,
+user request, project state, accepted prior output, relevant files/context,
+allowed actions, forbidden actions, verification expectation, stop conditions,
+and expected report. Architecture concerns belong in `planner`; security
+concerns belong in `reviewer`.
 
 ## Ralph Review Gate
 

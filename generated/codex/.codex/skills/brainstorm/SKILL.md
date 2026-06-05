@@ -12,6 +12,10 @@ that frames the problem, weighs options, and grounds them in reality first. It
 answers "what should we build, and is it the right thing?" while `piper-workflow`
 answers "how do we build it well?"
 
+The `dispatcher` skill decides whether the root session handles this phase
+inline or spawns `explorer` with a delegation packet. This skill defines the
+exploration behavior once the `brainstorm` phase is selected.
+
 Codex CLI does not surface `.codex/commands/` as slash commands; this skill is
 the natural-language entry for the divergent phase. Trigger via `$brainstorm ...`
 or by stating the intent directly. Read `AGENTS.md` and `STATION.md` first, then
@@ -75,9 +79,8 @@ Apply the moves the request needs to raise the quality of the decision:
   on consistent axes — complexity, risk, reversibility, blast radius, effort,
   and fit with existing patterns. Do not collapse to the first plausible plan.
 - **Investigate.** Ground options in what exists: how the relevant code works
-  today and prior art. Spawn the read-only `architect` subagent for design and
-  boundary exploration and `docs_researcher` for prior art and official docs
-  (both declared in `.codex/config.toml`). This is exploration to *generate*
+  today and prior art. Use read-only repo inspection and `docs_researcher` for
+  prior art and official docs when needed. This is exploration to *generate*
   options, not verification of a chosen one — that verification is
   `piper-workflow`'s job at the convergent boundary.
 
@@ -125,9 +128,9 @@ unclear, state the assumption and choose the less durable action or ask.
 
 ## Escalation
 
-When the request converges, hand it to the smallest convergent surface that
-fits. Escalation is one-way: brainstorm states the consequence and passes the
-brief.
+When the request converges, hand it to the root dispatcher so it can choose the
+smallest convergent surface and package the next phase. Escalation is one-way:
+brainstorm states the consequence and passes the brief.
 
 | Converged signal | Hand off to |
 | --- | --- |

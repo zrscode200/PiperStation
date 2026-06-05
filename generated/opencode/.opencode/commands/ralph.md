@@ -16,8 +16,8 @@ compact-safe records when active work records are in use.
 
 Ralph is not a shell runner and not a general planner. Use it after a task is
 clear or `projects/<project-id>/work/task-queue.md` is ready. Natural-language
-routing can choose this behavior through `piper-workflow`; protected actions
-still route through `automation-policy`.
+routing can choose this behavior through `dispatcher` and `piper-workflow`;
+protected actions still route through `automation-policy`.
 
 ## Steps
 
@@ -160,8 +160,8 @@ cache, and `.git` directories.
 - Ralph may use read-only reviewer or verifier helpers for substantial work.
 - Use the tester helper only when explicitly delegating test-layer files,
   fixtures, or test data for creation or update.
-- Implementation stays with the main session unless the user explicitly asks
-  for implementer delegation.
+- Ralph may run as the root session or as the `ralph` subagent when the
+  dispatcher packages one accepted implementation slice.
 - Verify all helper findings in the main session before acting on them.
 
 ## Output

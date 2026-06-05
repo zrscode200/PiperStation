@@ -43,10 +43,13 @@ Use this order when instructions overlap:
 3. Runtime root docs (`AGENTS.md`, `CLAUDE.md`, and `opencode.json`
    instruction lists) are always-on summaries that adapt the shared behavior to
    each harness.
-4. Skills route intent and provide consequence-specific operating checklists.
-   They point back to the canonical docs instead of redefining global policy.
-5. Commands and reference files provide procedure bodies for explicit actions.
-6. Hooks and agents stay narrow: hooks surface lifecycle reminders, and agents
+4. The `dispatcher` skill owns root-session phase routing, delegation packets,
+   and report handling for `brainstorm` and `piper-workflow` work.
+5. Other skills provide phase behavior and consequence-specific operating
+   checklists. They point back to the canonical docs instead of redefining
+   global policy.
+6. Commands and reference files provide procedure bodies for explicit actions.
+7. Hooks and agents stay narrow: hooks surface lifecycle reminders, and agents
    perform delegated helper roles without owning policy.
 
 Some repetition is intentional. Root docs repeat high-signal rules because they
@@ -57,38 +60,60 @@ and global ownership rules belong in the canonical docs above.
 
 ## Dispatch Contract
 
-`brainstorm` owns the decision-quality front door for the divergent phase —
-orientation, framing, divergence, investigation, registration routing, and
-route selection. It stays read-only for orientation and planning; explicit
-registration is the narrow exception and must go through the deterministic
-helper. `piper-workflow` owns convergent execution once a direction is set.
-Slash commands are explicit shortcuts into the same behavior. Commands, narrow
-skills, agents, hooks, and docs provide supporting behavior after a skill or
-command has selected the route.
+The root hub session acts as a dispatcher. Use the `dispatcher` skill before
+entering substantial `brainstorm` or `piper-workflow` phase work. Dispatcher
+owns when to work inline, when to spawn a subagent, which subagent to use, what
+context to include in the delegation packet, and how to handle the report that
+comes back.
 
-The boundary between them is the same verb, different intent: `brainstorm`
-explores to *generate* a direction; `piper-workflow` (Superpowers) verifies that
-direction against the code to *commit* it before durable planning.
+The phase skills still define the work once selected: `brainstorm` defines the
+decision-quality front door for orientation, framing, divergence,
+investigation, registration routing, and route selection; `piper-workflow`
+defines convergent execution once a direction is set; `review` defines review
+behavior; `automation-policy` defines protected-action approval gates.
+
+Dispatcher is not a busy-work generator. Do not spawn a subagent for `S0`,
+factual, trivial, or one-step work, when one local read or command is enough,
+or when packaging the delegation packet costs more than doing the work inline.
+
+The boundary between `brainstorm` and `piper-workflow` is the same verb,
+different intent: `brainstorm` explores to *generate* a direction;
+`piper-workflow` (Superpowers) verifies that direction against the code to
+*commit* it before durable planning.
 
 Use this dispatch table when intent is unclear:
 
 | User intent | Route | Supporting behavior |
 | --- | --- | --- |
 | Register a repo | `brainstorm`, `/add-project`, or `./bin/add-project` | deterministic registration helper |
-| Orient, explore, compare options, or decide what to do | `brainstorm` | `brainstorm` |
-| Verify a direction, specify, or plan substantial work | Superpowers Mode or `/superpowers` | `piper-workflow`, `/superpowers`, and this guide |
-| Execute one clear queued task | Ralph Mode or `/ralph` | `/ralph` and this guide |
+| Orient, explore, compare options, or decide what to do | `dispatcher` chooses inline `brainstorm` or `explorer` | `brainstorm` |
+| Verify a direction, specify, or plan substantial work | `dispatcher` chooses inline Superpowers or `planner` | `piper-workflow`, `/superpowers`, and this guide |
+| Execute one clear queued task | `dispatcher` chooses inline Ralph or `ralph` | `/ralph` and this guide |
 | Review code or an implemented slice | Review Mode | `review` |
 | Commit, PR, dependency, network, CI, destructive, or external action | Finish Mode or explicit approval flow | `automation-policy` |
 | Pause or compact active work | `/compact-handoff` | compact handoff guidance |
 
 If a project-work request is ambiguous or arrives without a slash command, treat
-it as an implicit `brainstorm` request — skill descriptions match by phase
-(explore vs execute), and this contract owns the tie-break for genuine
-ambiguity. Use visible mode names when they help continuity, but do not make the
-user operate the mode layer. Prefer consequence language such as "I will keep
-this read-only" or "I will create Ralph-ready work records" over ceremonial mode
-announcements.
+it as an implicit dispatch decision for the `brainstorm` phase. Skill
+descriptions match by phase (explore vs execute), and this contract owns the
+tie-break for genuine ambiguity. Use visible mode names when they help
+continuity, but do not make the user operate the mode layer. Prefer consequence
+language such as "I will keep this read-only" or "I will create Ralph-ready
+work records" over ceremonial mode announcements.
+
+### Delegation Packets
+
+When the dispatcher spawns a phase subagent, send a bounded packet instead of
+the full session. Include role, phase, objective, user request, project state,
+accepted prior output, relevant files or context, allowed actions, forbidden
+actions, verification expectation, stop conditions, and expected report.
+
+The default phase roster is five core agents plus two auxiliary helpers:
+`explorer`, `planner`, `ralph`, `reviewer`, and `verifier`, with `tester` and
+`docs-researcher` available when a packet needs test-layer edits or
+documentation research. Architecture concerns belong in `planner`; security
+concerns belong in `reviewer` unless a future runtime installs optional
+specialists.
 
 ### Artifact Signal Policy
 

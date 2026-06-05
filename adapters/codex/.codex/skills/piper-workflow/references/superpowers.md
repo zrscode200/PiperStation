@@ -36,7 +36,8 @@ automation approval. Protected actions still route through the
    verifiable.
 10. Update `context-pack.md` with compact-safe reload state when active work
     records are in use.
-11. Stop before implementation unless the user explicitly asks to proceed.
+11. Stop before implementation unless the user explicitly asks to proceed; when
+    proceeding, the dispatcher should package the selected task for `ralph`.
 
 Registration must not create `projects/<project-id>/work/`; Codex creates
 these files only when useful for active work. Keep Superpowers as Codex-native

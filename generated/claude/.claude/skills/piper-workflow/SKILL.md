@@ -11,13 +11,19 @@ routing. It is entered from the `brainstorm` front door once a request has
 converged on a direction, or directly through `/superpowers`, `/ralph`, and
 `/compact-handoff`.
 
-`brainstorm` owns the divergent phase — orientation, framing, exploration,
+The `dispatcher` skill decides whether the root session handles this phase
+inline or spawns a phase subagent with a delegation packet. Use `planner` for
+Superpowers planning and `ralph` for one accepted implementation slice. This
+skill defines the convergent behavior once the phase is selected.
+
+`brainstorm` defines the divergent phase — orientation, framing, exploration,
 conversational planning, registration, and routing. This skill assumes a
 registered project and a direction that has converged toward durable work. If a
 request is actually still divergent (orienting, exploring, or deciding what to
-do), hand it back to `brainstorm`. Use the narrow skills when their consequence
-applies: `review` for explicit review or review gates, and `automation-policy`
-before protected automation or external state changes.
+do), hand it back to the dispatcher for the `brainstorm` phase. Use the narrow
+skills when their consequence applies: `review` for explicit review or review
+gates, and `automation-policy` before protected automation or external state
+changes.
 
 Read `CLAUDE.md` and `STATION.md` first. Resolve the project in
 `projects/registry.json` to its `repo_path` and read
@@ -30,8 +36,8 @@ Choose the smallest convergent path that fits:
 
 | User intent | Mode | Supporting behavior |
 | --- | --- | --- |
-| Verify the direction, specify, or plan substantial work | Superpowers | this skill and `/superpowers` |
-| Execute one clear queued task | Ralph | `/ralph` and Ralph sections in `STATION.md` |
+| Verify the direction, specify, or plan substantial work | Superpowers | `planner`, this skill, and `/superpowers` |
+| Execute one clear queued task | Ralph | `ralph`, `/ralph`, and Ralph sections in `STATION.md` |
 | Review an implemented slice | Review | `review` |
 | Commit, PR, dependency, network, CI, destructive, or external action | Finish or approval flow | `automation-policy` |
 | Pause or compact active work | compact handoff | `/compact-handoff` and compact sections in `STATION.md` |
@@ -66,8 +72,8 @@ edit only the real project repo. Finish, commit, PR, dependency, network, CI,
 or destructive actions route through `automation-policy` before protected state
 changes.
 
-If a request is actually still divergent, hand it back to `brainstorm` rather
-than escalating durable writes.
+If a request is actually still divergent, hand it back to the dispatcher for
+the `brainstorm` phase rather than escalating durable writes.
 
 ## Scope And Risk
 

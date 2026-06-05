@@ -35,10 +35,10 @@ files.
 
 ## Runtime Boundary
 
-The hub is not a workflow engine. It provides project records, prompt commands,
-skills, hooks, and optional active work artifacts. Planning, implementation,
-review, testing, subagents, handoff, and git operations stay native to the
-active runtime.
+The hub is not a workflow engine. It provides project records, dispatcher and
+phase skills, prompt commands, hooks, agents, and optional active work
+artifacts. Planning, implementation, review, testing, subagents, handoff, and
+git operations stay native to the active runtime.
 
 Optional active artifacts may be created under `projects/<id>/work/` only when
 useful: `active-spec.md`, `active-plan.md`, `task-queue.md`, `context-pack.md`,

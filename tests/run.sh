@@ -40,13 +40,16 @@ codex_hub="$TMP_ROOT/codex-hub"
 assert_file "$codex_hub/AGENTS.md"
 assert_file "$codex_hub/STATION.md"
 assert_file "$codex_hub/.codex/config.toml"
-assert_file "$codex_hub/.codex/agents/architect.toml"
 assert_file "$codex_hub/.codex/agents/docs-researcher.toml"
-assert_file "$codex_hub/.codex/agents/implementer.toml"
+assert_file "$codex_hub/.codex/agents/explorer.toml"
+assert_file "$codex_hub/.codex/agents/planner.toml"
+assert_file "$codex_hub/.codex/agents/ralph.toml"
 assert_file "$codex_hub/.codex/agents/reviewer.toml"
-assert_file "$codex_hub/.codex/agents/security-reviewer.toml"
 assert_file "$codex_hub/.codex/agents/tester.toml"
 assert_file "$codex_hub/.codex/agents/verifier.toml"
+assert_not_exists "$codex_hub/.codex/agents/architect.toml"
+assert_not_exists "$codex_hub/.codex/agents/implementer.toml"
+assert_not_exists "$codex_hub/.codex/agents/security-reviewer.toml"
 assert_file "$codex_hub/.codex/hooks/session-context.sh"
 assert_file "$codex_hub/.codex/hooks/pre-compact-protection.sh"
 assert_file "$codex_hub/.codex/hooks/post-compact-resume.sh"
@@ -55,6 +58,7 @@ assert_executable "$codex_hub/.codex/hooks/pre-compact-protection.sh"
 assert_executable "$codex_hub/.codex/hooks/post-compact-resume.sh"
 assert_file "$codex_hub/.codex/skills/piper-workflow/references/ralph.md"
 assert_file "$codex_hub/.codex/skills/piper-workflow/references/compact-handoff.md"
+assert_file "$codex_hub/.codex/skills/dispatcher/SKILL.md"
 assert_file "$codex_hub/.codex/skills/piper-workflow/SKILL.md"
 assert_file "$codex_hub/.codex/skills/brainstorm/SKILL.md"
 assert_file "$codex_hub/.codex/skills/brainstorm/references/add-project.md"
@@ -75,7 +79,8 @@ assert_file_count "$codex_hub/.codex/agents" "*.toml" 7
 assert_file_count "$codex_hub/.codex/skills/piper-workflow/references" "*.md" 3
 assert_file_count "$codex_hub/.codex/skills/brainstorm/references" "*.md" 1
 assert_not_exists "$codex_hub/.codex/commands"
-assert_file_count "$codex_hub/.codex/skills" "SKILL.md" 4
+assert_file_count "$codex_hub/.codex/skills" "SKILL.md" 5
+assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/dispatcher"'
 assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/piper-workflow"'
 assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/brainstorm"'
 assert_not_contains "$codex_hub/.codex/config.toml" 'skills/hub-workflow'
@@ -96,14 +101,23 @@ assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "D
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Mark the task active"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Review gate examples"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Post-Compact Resume"
-assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Ralph may spawn the"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Ralph may run as the root session"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "reviewer"
 assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" '\$ARGUMENTS'
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" "Anti-Busy Rule"
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" "Delegation Packet"
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" "Role:"
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" 'Spawn `explorer`'
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" 'Spawn `planner`'
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" 'Spawn `ralph`'
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" "approval and compact handoff stay with the root session"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "Make it better"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "current problem, goals"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "Ralph-ready task list"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "If you cannot articulate what"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "established docs location"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" 'dispatcher should package the selected task for `ralph`'
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" 'routing can choose this behavior through `dispatcher` and `piper-workflow`'
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/compact-handoff.md" "Required Compact Resume Packet"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/compact-handoff.md" "Broad-search triggers"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/SKILL.md" "Artifact Signal Policy"
@@ -135,18 +149,37 @@ assert_contains "$codex_hub/.codex/hooks.json" '"PreCompact"'
 assert_contains "$codex_hub/.codex/hooks.json" '"PostCompact"'
 assert_contains "$codex_hub/.codex/hooks.json" '"startup|resume|compact"'
 assert_not_contains "$codex_hub/.codex/hooks.json" '"Stop"'
-assert_contains "$codex_hub/.codex/config.toml" '[agents.architect]'
-assert_contains "$codex_hub/.codex/config.toml" '[agents.docs_researcher]'
-assert_contains "$codex_hub/.codex/config.toml" '[agents.implementer]'
-assert_contains "$codex_hub/.codex/config.toml" '[agents.reviewer]'
-assert_contains "$codex_hub/.codex/config.toml" '[agents.security_reviewer]'
-assert_contains "$codex_hub/.codex/config.toml" '[agents.tester]'
-assert_contains "$codex_hub/.codex/config.toml" '[agents.verifier]'
+assert_contains "$codex_hub/.codex/config.toml" '\[agents\.docs_researcher\]'
+assert_contains "$codex_hub/.codex/config.toml" '\[agents\.explorer\]'
+assert_contains "$codex_hub/.codex/config.toml" '\[agents\.planner\]'
+assert_contains "$codex_hub/.codex/config.toml" '\[agents\.ralph\]'
+assert_contains "$codex_hub/.codex/config.toml" '\[agents\.reviewer\]'
+assert_contains "$codex_hub/.codex/config.toml" '\[agents\.tester\]'
+assert_contains "$codex_hub/.codex/config.toml" '\[agents\.verifier\]'
+assert_not_contains "$codex_hub/.codex/config.toml" '\[agents\.architect\]'
+assert_not_contains "$codex_hub/.codex/config.toml" '\[agents\.implementer\]'
+assert_not_contains "$codex_hub/.codex/config.toml" '\[agents\.security_reviewer\]'
 assert_contains "$codex_hub/.codex/config.toml" 'max_threads = 7'
+assert_contains "$codex_hub/AGENTS.md" 'human-facing cross-runtime role label is `docs-researcher`'
+assert_contains "$codex_hub/AGENTS.md" 'concrete agent id `docs_researcher`'
 assert_contains "$codex_hub/AGENTS.md" "seven Codex subagent roles"
+assert_contains "$codex_hub/AGENTS.md" "delegation packet"
+assert_contains "$codex_hub/AGENTS.md" "explorer"
+assert_contains "$codex_hub/AGENTS.md" "planner"
+assert_contains "$codex_hub/AGENTS.md" "ralph"
 assert_contains "$codex_hub/AGENTS.md" "verifier"
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" '`docs-researcher` is the human-facing cross-runtime role label'
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" "Codex uses the"
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" 'concrete agent id `docs_researcher`'
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" 'Code and OpenCode use `docs-researcher`'
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" "registration helper execution"
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" "If the explorer reports a registration request"
+assert_contains "$codex_hub/.codex/agents/explorer.toml" "report the registration intent to the root dispatcher"
+assert_not_contains "$codex_hub/.codex/agents/explorer.toml" "deterministic registration if the packet authorizes"
 (cd "$codex_hub" && sh .codex/hooks/session-context.sh) > "$TMP_ROOT/codex-session-start.log"
 assert_contains "$TMP_ROOT/codex-session-start.log" "hub-lite is active"
+assert_contains "$TMP_ROOT/codex-session-start.log" "Natural-language project work enters through the dispatcher skill"
+assert_not_contains "$TMP_ROOT/codex-session-start.log" "Natural-language project work enters through the brainstorm skill"
 assert_contains "$TMP_ROOT/codex-session-start.log" '"hookSpecificOutput"'
 assert_contains "$TMP_ROOT/codex-session-start.log" '"additionalContext"'
 assert_contains "$TMP_ROOT/codex-session-start.log" '"systemMessage"'
@@ -169,25 +202,29 @@ claude_hub="$TMP_ROOT/claude-hub"
 assert_file "$claude_hub/CLAUDE.md"
 assert_file "$claude_hub/STATION.md"
 assert_file "$claude_hub/.claude/settings.json"
-assert_file "$claude_hub/.claude/agents/architect.md"
 assert_file "$claude_hub/.claude/agents/docs-researcher.md"
-assert_file "$claude_hub/.claude/agents/implementer.md"
+assert_file "$claude_hub/.claude/agents/explorer.md"
+assert_file "$claude_hub/.claude/agents/planner.md"
+assert_file "$claude_hub/.claude/agents/ralph.md"
 assert_file "$claude_hub/.claude/agents/reviewer.md"
-assert_file "$claude_hub/.claude/agents/security-reviewer.md"
 assert_file "$claude_hub/.claude/agents/tester.md"
 assert_file "$claude_hub/.claude/agents/verifier.md"
+assert_not_exists "$claude_hub/.claude/agents/architect.md"
+assert_not_exists "$claude_hub/.claude/agents/implementer.md"
+assert_not_exists "$claude_hub/.claude/agents/security-reviewer.md"
 assert_file "$claude_hub/.claude/hooks/session-context.sh"
 assert_file "$claude_hub/.claude/hooks/pre-compact-protection.sh"
 assert_file "$claude_hub/.claude/hooks/post-compact-resume.sh"
 assert_file "$claude_hub/.claude/commands/ralph.md"
 assert_file "$claude_hub/.claude/commands/compact-handoff.md"
+assert_file "$claude_hub/.claude/skills/dispatcher/SKILL.md"
 assert_file "$claude_hub/.claude/skills/piper-workflow/SKILL.md"
 assert_file "$claude_hub/.claude/skills/brainstorm/SKILL.md"
 assert_file "$claude_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$claude_hub/bin/add-project"
 assert_executable "$claude_hub/.claude/hooks/session-context.sh"
 assert_file_count "$claude_hub/.claude/commands" "*.md" 4
-assert_file_count "$claude_hub/.claude/skills" "SKILL.md" 4
+assert_file_count "$claude_hub/.claude/skills" "SKILL.md" 5
 assert_file_count "$claude_hub/.claude/agents" "*.md" 8
 assert_not_exists "$claude_hub/AGENTS.md"
 assert_not_exists "$claude_hub/.codex"
@@ -213,14 +250,25 @@ assert_contains "$claude_hub/.claude/skills/brainstorm/SKILL.md" "rather than ex
 assert_not_exists "$claude_hub/.claude/skills/superpowers-planning/SKILL.md"
 assert_not_exists "$claude_hub/.claude/skills/ralph-loop/SKILL.md"
 assert_contains "$claude_hub/.claude/agents/README.md" "same helper role set as the Codex surface"
+assert_contains "$claude_hub/.claude/agents/README.md" "explorer"
+assert_contains "$claude_hub/.claude/agents/README.md" "planner"
+assert_contains "$claude_hub/.claude/agents/README.md" "ralph"
 assert_contains "$claude_hub/.claude/agents/README.md" "verifier"
+assert_contains "$claude_hub/.claude/agents/explorer.md" "brainstorm"
+assert_contains "$claude_hub/.claude/agents/explorer.md" "report the registration intent to the root dispatcher"
+assert_not_contains "$claude_hub/.claude/agents/explorer.md" "deterministic registration if the packet authorizes"
+assert_contains "$claude_hub/.claude/agents/planner.md" "Superpowers"
+assert_contains "$claude_hub/.claude/agents/ralph.md" "exactly one accepted Ralph slice"
+assert_contains "$claude_hub/.claude/agents/reviewer.md" "Ralph report"
 assert_contains "$claude_hub/.claude/agents/tester.md" "test-layer"
 assert_contains "$claude_hub/.claude/agents/verifier.md" "Strict read-only"
 assert_contains "$claude_hub/.claude/agents/docs-researcher.md" "OpenAI developer"
 assert_contains "$claude_hub/.claude/agents/docs-researcher.md" "docs MCP server"
 assert_contains "$claude_hub/.claude/agents/docs-researcher.md" "mcpServers"
 assert_contains "$claude_hub/.claude/agents/docs-researcher.md" "mcp__openaiDeveloperDocs__search_openai_docs"
-assert_contains "$claude_hub/.claude/agents/security-reviewer.md" "Authentication and authorization"
+assert_contains "$claude_hub/.claude/skills/dispatcher/SKILL.md" "Anti-Busy Rule"
+assert_contains "$claude_hub/.claude/skills/dispatcher/SKILL.md" "Delegation Packet"
+assert_contains "$claude_hub/CLAUDE.md" "delegation packet"
 assert_contains "$claude_hub/.claude/settings.json" "PreCompact"
 assert_contains "$claude_hub/STATION.md" "compact-ready"
 assert_not_contains "$claude_hub/.claude/commands/superpowers.md" "Force Superpowers"
@@ -235,22 +283,26 @@ opencode_hub="$TMP_ROOT/opencode-hub"
 assert_file "$opencode_hub/AGENTS.md"
 assert_file "$opencode_hub/STATION.md"
 assert_file "$opencode_hub/opencode.json"
-assert_file "$opencode_hub/.opencode/agents/architect.md"
 assert_file "$opencode_hub/.opencode/agents/docs-researcher.md"
-assert_file "$opencode_hub/.opencode/agents/implementer.md"
+assert_file "$opencode_hub/.opencode/agents/explorer.md"
+assert_file "$opencode_hub/.opencode/agents/planner.md"
+assert_file "$opencode_hub/.opencode/agents/ralph.md"
 assert_file "$opencode_hub/.opencode/agents/reviewer.md"
-assert_file "$opencode_hub/.opencode/agents/security-reviewer.md"
 assert_file "$opencode_hub/.opencode/agents/tester.md"
 assert_file "$opencode_hub/.opencode/agents/verifier.md"
+assert_not_exists "$opencode_hub/.opencode/agents/architect.md"
+assert_not_exists "$opencode_hub/.opencode/agents/implementer.md"
+assert_not_exists "$opencode_hub/.opencode/agents/security-reviewer.md"
 assert_file "$opencode_hub/.opencode/commands/ralph.md"
 assert_file "$opencode_hub/.opencode/commands/compact-handoff.md"
+assert_file "$opencode_hub/.opencode/skills/dispatcher/SKILL.md"
 assert_file "$opencode_hub/.opencode/skills/piper-workflow/SKILL.md"
 assert_file "$opencode_hub/.opencode/skills/brainstorm/SKILL.md"
 assert_file "$opencode_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$opencode_hub/bin/add-project"
 assert_file_count "$opencode_hub/.opencode/agents" "*.md" 8
 assert_file_count "$opencode_hub/.opencode/commands" "*.md" 4
-assert_file_count "$opencode_hub/.opencode/skills" "SKILL.md" 4
+assert_file_count "$opencode_hub/.opencode/skills" "SKILL.md" 5
 assert_not_exists "$opencode_hub/CLAUDE.md"
 assert_not_exists "$opencode_hub/.codex"
 assert_not_exists "$opencode_hub/.claude"
@@ -271,7 +323,16 @@ assert_contains "$opencode_hub/.opencode/skills/piper-workflow/SKILL.md" "Artifa
 assert_not_exists "$opencode_hub/.opencode/skills/superpowers-planning/SKILL.md"
 assert_not_exists "$opencode_hub/.opencode/skills/ralph-loop/SKILL.md"
 assert_contains "$opencode_hub/.opencode/agents/README.md" "same helper role set as the Codex and Claude Code"
+assert_contains "$opencode_hub/.opencode/agents/README.md" "explorer"
+assert_contains "$opencode_hub/.opencode/agents/README.md" "planner"
+assert_contains "$opencode_hub/.opencode/agents/README.md" "ralph"
 assert_contains "$opencode_hub/.opencode/agents/README.md" "verifier"
+assert_contains "$opencode_hub/.opencode/agents/explorer.md" "brainstorm"
+assert_contains "$opencode_hub/.opencode/agents/explorer.md" "report the registration intent to the root dispatcher"
+assert_not_contains "$opencode_hub/.opencode/agents/explorer.md" "deterministic registration if the packet authorizes"
+assert_contains "$opencode_hub/.opencode/agents/planner.md" "Superpowers"
+assert_contains "$opencode_hub/.opencode/agents/ralph.md" "exactly one accepted Ralph slice"
+assert_contains "$opencode_hub/.opencode/agents/reviewer.md" "Ralph report"
 assert_contains "$opencode_hub/.opencode/agents/tester.md" "test-layer"
 assert_contains "$opencode_hub/.opencode/agents/verifier.md" "Strict read-only"
 assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "OpenAI developer"
@@ -279,7 +340,9 @@ assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "docs MCP se
 assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "openaiDeveloperDocs_\\*: ask"
 assert_not_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "openaiDeveloperDocs_\\*: allow"
 assert_not_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "mcpServers"
-assert_contains "$opencode_hub/.opencode/agents/security-reviewer.md" "Authentication and authorization"
+assert_contains "$opencode_hub/.opencode/skills/dispatcher/SKILL.md" "Anti-Busy Rule"
+assert_contains "$opencode_hub/.opencode/skills/dispatcher/SKILL.md" "Delegation Packet"
+assert_contains "$opencode_hub/AGENTS.md" "delegation packet"
 assert_contains "$opencode_hub/STATION.md" "opencode.json"
 assert_contains "$opencode_hub/AGENTS.md" "Codex and OpenCode work"
 assert_not_contains "$opencode_hub/AGENTS.md" "point for OpenCode work"
@@ -293,21 +356,28 @@ python3 -m json.tool "$opencode_hub/.piper/hub-manifest.json" >/dev/null
 python3 -m json.tool "$opencode_hub/opencode.json" >/dev/null
 
 for hub in "$codex_hub" "$claude_hub" "$opencode_hub"; do
+  assert_contains "$hub/STATION.md" "dispatcher"
+  assert_contains "$hub/STATION.md" "Delegation Packets"
+  assert_contains "$hub/STATION.md" "Do not spawn a subagent for"
   assert_contains "$hub/STATION.md" "piper-workflow"
   assert_contains "$hub/STATION.md" "brainstorm"
-  assert_contains "$hub/STATION.md" "owns convergent execution"
+  assert_contains "$hub/STATION.md" "default phase roster"
   assert_contains "$hub/STATION.md" "decision-quality front door"
 done
 assert_contains "$codex_hub/AGENTS.md" "piper-workflow"
 assert_contains "$codex_hub/AGENTS.md" "brainstorm"
-assert_contains "$codex_hub/AGENTS.md" "owns convergent execution"
+assert_contains "$codex_hub/AGENTS.md" "acts as dispatcher"
 assert_contains "$claude_hub/CLAUDE.md" "piper-workflow"
 assert_contains "$claude_hub/CLAUDE.md" "brainstorm"
-assert_contains "$claude_hub/CLAUDE.md" "owns convergent execution"
+assert_contains "$claude_hub/CLAUDE.md" "acts as dispatcher"
 assert_contains "$opencode_hub/AGENTS.md" "piper-workflow"
 assert_contains "$opencode_hub/AGENTS.md" "brainstorm"
-assert_contains "$opencode_hub/AGENTS.md" "owns convergent execution"
+assert_contains "$opencode_hub/AGENTS.md" "acts as dispatcher"
 for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$opencode_hub/.opencode/skills"; do
+  assert_contains "$skill_dir/dispatcher/SKILL.md" "root-session orchestration skill"
+  assert_contains "$skill_dir/dispatcher/SKILL.md" "Phase Gates"
+  assert_contains "$skill_dir/dispatcher/SKILL.md" "Do not spawn a subagent"
+  assert_contains "$skill_dir/dispatcher/SKILL.md" "Expected report:"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Divergent Toolkit"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Hand-Off Brief"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Register"
@@ -315,12 +385,18 @@ for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$openc
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Orient"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "projects/registry.json"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "read-only except explicit registration through the helper"
+  assert_contains "$skill_dir/brainstorm/SKILL.md" "The \`dispatcher\` skill decides"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Piper Workflow owns convergent execution"
+  assert_contains "$skill_dir/piper-workflow/SKILL.md" "Use \`planner\` for"
+  assert_contains "$skill_dir/piper-workflow/SKILL.md" "and \`ralph\` for"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Artifact Signal Policy"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Scope And Risk"
   assert_not_exists "$skill_dir/superpowers-planning/SKILL.md"
   assert_not_exists "$skill_dir/ralph-loop/SKILL.md"
   assert_contains "$skill_dir/review/SKILL.md" "Do not use this skill for general repo orientation"
+  assert_contains "$skill_dir/review/SKILL.md" 'Route automation approval directly to the root-session `automation-policy` skill'
+  assert_not_contains "$skill_dir/review/SKILL.md" "automation approval. Route those through"
+  assert_not_contains "$skill_dir/review/SKILL.md" "automation approval.*piper-workflow"
   assert_contains "$skill_dir/automation-policy/SKILL.md" "Do not use this skill for ordinary local inspection"
   assert_contains "$skill_dir/automation-policy/SKILL.md" "canonical global policy"
   assert_contains "$skill_dir/automation-policy/SKILL.md" "protected-action execution checklist and approval gate"
@@ -565,6 +641,8 @@ if grep -R -n -E '`(handoff|progress)\.md`' "$ROOT/core" "$ROOT/adapters" "$ROOT
 if grep -R -n 'piper-workflow router\|piper workflow handles lookup, registration, orientation' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-router.log"; then cat "$TMP_ROOT/stale-router.log" >&2; fail "active instructions must not describe piper-workflow as the broad router"; fi
 if grep -R -n 'openaiDeveloperDocs_\*: allow\|"openaiDeveloperDocs_\\\*": "allow"' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-openai-docs-permission.log"; then cat "$TMP_ROOT/stale-openai-docs-permission.log" >&2; fail "OpenCode docs-researcher must ask before OpenAI docs MCP use"; fi
 if grep -R -n 'read-only band\|creates no hub records' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-brainstorm-readonly.log"; then cat "$TMP_ROOT/stale-brainstorm-readonly.log" >&2; fail "brainstorm registration wording must acknowledge the deterministic write exception"; fi
+if grep -R -n 'implementer' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-implementer-role.log"; then cat "$TMP_ROOT/stale-implementer-role.log" >&2; fail "active source/generated prompts must not mention implementer as a role"; fi
+if grep -R -n -E 'automation approval\. Route those through|automation approval.*piper-workflow' "$ROOT/core/skills/review/SKILL.md" "$ROOT/generated/codex/.codex/skills/review/SKILL.md" "$ROOT/generated/claude/.claude/skills/review/SKILL.md" "$ROOT/generated/opencode/.opencode/skills/review/SKILL.md" > "$TMP_ROOT/stale-review-automation-routing.log"; then cat "$TMP_ROOT/stale-review-automation-routing.log" >&2; fail "review skill must route automation approval directly to automation-policy"; fi
 if grep -R -n '\.codex/commands' "$ROOT/core" "$ROOT/adapters" "$ROOT/docs/capability-matrix.md" "$ROOT/generated" > "$TMP_ROOT/codex-commands.log"; then
   if grep -v -e 'does not' -e 'not auto-surface' "$TMP_ROOT/codex-commands.log" > "$TMP_ROOT/codex-commands-active.log"; then
     cat "$TMP_ROOT/codex-commands-active.log" >&2

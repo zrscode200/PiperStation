@@ -12,6 +12,10 @@ automation that mutates project or external state.
 `automation-policy.md` is the canonical global policy. This skill is the
 protected-action execution checklist and approval gate.
 
+Use this in the root session. Protected automation is not delegated to a
+subagent because approval, risk, and external state changes must stay visible
+to the user-facing dispatcher.
+
 Do not use this skill for ordinary local inspection, planning, implementation,
 or review unless the next action would mutate git history, dependencies, CI, an
 external system, or other protected state.

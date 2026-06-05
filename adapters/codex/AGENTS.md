@@ -29,9 +29,13 @@ operating contract for project work in this hub.
 
 Codex CLI discovers Piper Station behavior through these surfaces. Codex does
 not auto-surface a `.codex/commands/` directory as slash commands; the
-`brainstorm` and `piper-workflow` skills are the entry points instead.
+`dispatcher`, `brainstorm`, and `piper-workflow` skills are the entry points
+instead.
 
 - `AGENTS.md` (this file) — always loaded.
+- `.codex/skills/dispatcher/SKILL.md` — root-session orchestration for deciding
+  whether to handle `brainstorm`/`piper-workflow` phase work inline or spawn a
+  phase subagent with a delegation packet.
 - `.codex/skills/brainstorm/SKILL.md` — decision-quality front door for the
   divergent phase (orient, frame, diverge, investigate, route). Trigger via
   `$brainstorm ...` or by stating the intent.
@@ -46,9 +50,10 @@ not auto-surface a `.codex/commands/` directory as slash commands; the
   behavior.
 - `.codex/skills/automation-policy/SKILL.md` — protected-action approval gate.
 - `.codex/agents/*.toml` declared in `config.toml`'s `[agents.X]` blocks —
-  `reviewer`, `architect`, `security_reviewer`, `docs_researcher`, `tester`,
-  `verifier`, `implementer` (role names match the `name = "..."` field in each
-  `.toml`).
+  `explorer`, `planner`, `ralph`, `reviewer`, `verifier`, `tester`,
+  `docs_researcher` (role names match the `name = "..."` field in each `.toml`).
+  The human-facing cross-runtime role label is `docs-researcher`; Codex uses
+  the concrete agent id `docs_researcher`.
 - `.codex/hooks/*.sh` wired in `hooks.json` — `SessionStart` (with
   `startup|resume|compact` matcher), `PreCompact`, `PostCompact`.
 - `.codex/compact-prompt.md` referenced by `experimental_compact_prompt_file`.
@@ -70,8 +75,10 @@ When working in this hub, use these docs as the canonical references:
 
 `STATION.md` defines shared behavior and ownership. `automation-policy.md`
 defines global automation policy. This `AGENTS.md` is the always-on Codex
-summary. Skills route intent, command references provide procedures, hooks give
-lifecycle reminders, and agents stay within their delegated roles.
+summary. The `dispatcher` skill owns root-session routing and delegation
+packets. Other skills define phase behavior, command references provide
+procedures, hooks give lifecycle reminders, and agents stay within their
+delegated roles.
 
 ## Project Records
 
@@ -107,12 +114,17 @@ when continuity is useful.
 
 ## Mode Routing
 
-`brainstorm` owns the decision-quality front door for the divergent phase —
-orientation, framing, divergence, investigation, and routing — and stays
-read-only. `piper-workflow` owns convergent execution once a direction is set.
-State the intent (or invoke `$brainstorm ...` / `$piper-workflow ...`); a
-project-work request that is ambiguous or lacks an explicit execution signal
-enters through `brainstorm`.
+The root Codex session acts as dispatcher for substantial phase work. Use
+`dispatcher` before entering broad `brainstorm` or `piper-workflow` work: it
+decides whether to work inline or spawn `explorer`, `planner`, or `ralph` with a
+bounded delegation packet. The dispatcher does not replace phase skills:
+`brainstorm` defines exploration, `piper-workflow` defines Superpowers/Ralph
+execution, and `review` defines review behavior.
+
+Do not spawn for `S0`, factual, trivial, or one-step work, when one local read
+or command is enough, or when packaging the packet costs more than doing the
+work inline. A project-work request that is ambiguous or lacks an explicit
+execution signal enters the `brainstorm` phase through the dispatcher.
 
 Route each request through the smallest mode that fits:
 
@@ -130,10 +142,11 @@ Route each request through the smallest mode that fits:
   mutating git automatically.
 
 Use `brainstorm` as the broad natural-language front door and `piper-workflow`
-for convergent execution. Use the `review` skill for explicit review work or
-review gates, and `automation-policy` before protected automation or external
-actions. Prefer consequence language such as "I will keep this read-only" or "I
-will create Ralph-ready work records" over ceremonial mode announcements.
+for convergent execution, with dispatcher deciding inline vs subagent execution.
+Use the `review` skill for explicit review work or review gates, and
+`automation-policy` before protected automation or external actions. Prefer
+consequence language such as "I will keep this read-only" or "I will create
+Ralph-ready work records" over ceremonial mode announcements.
 
 Scope tiers:
 
@@ -180,23 +193,24 @@ Before editing a registered project:
 The hub declares seven Codex subagent roles in `config.toml` and provides their
 `.toml` configs under `.codex/agents/`:
 
+- `explorer` — brainstorm-phase orientation, investigation, and hand-off brief.
+- `planner` — Superpowers-phase planning and Ralph-ready task preparation.
+- `ralph` — one accepted implementation slice from a delegation packet.
 - `reviewer` — read-only implementation review for Ralph review gates.
-- `implementer` — scoped implementation when the user explicitly delegates.
-- `tester` — writes test-layer files, fixtures, or test data only when
-  explicitly delegated.
 - `verifier` — strict read-only helper for existing checks and failure
   analysis; it reports when a check needs writable state.
-- `architect` — read-only architecture review for broad design and boundary
-  risk.
-- `docs_researcher` — documentation research through official docs and MCP
-  tools.
-- `security_reviewer` — read-only security review for auth, permissions,
-  data, networking, secrets, and dependency trust.
+- `tester` — writes test-layer files, fixtures, or test data only when
+  explicitly delegated.
+- `docs_researcher` — Codex agent id for the human-facing `docs-researcher`
+  role; documentation research through official docs and MCP tools.
 
-Spawn a subagent with the matching `agent_type` when its specific role
-applies. Implementation stays with the main session unless the user explicitly
-asks for `implementer` delegation. Verify all subagent findings in the main
-session before acting on them.
+Spawn a subagent with the matching `agent_type` when dispatcher determines the
+phase is substantial enough to delegate. Send a delegation packet with role,
+phase, objective, user request, project state, accepted prior output, relevant
+files/context, allowed actions, forbidden actions, verification expectation,
+stop conditions, and expected report. Architecture concerns belong in
+`planner`; security concerns belong in `reviewer`. Verify all subagent findings
+in the main session before acting on them.
 
 ## Ralph Review Gate
 

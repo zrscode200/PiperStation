@@ -10,7 +10,8 @@ Ralph-ready tasks before substantial implementation.
 Use this command for formal planning, not for divergent exploration or general
 repo orientation (those belong to `brainstorm`), implementation, review, or
 automation approval. Natural-language routing reaches this behavior through
-`piper-workflow`; protected actions still route through `automation-policy`.
+`dispatcher` and `piper-workflow`; protected actions still route through
+`automation-policy`.
 
 ## Steps
 
@@ -38,7 +39,8 @@ automation approval. Natural-language routing reaches this behavior through
    verifiable.
 10. Update `context-pack.md` with compact-safe reload state when active work
     records are in use.
-11. Stop before implementation unless the user explicitly asks to proceed.
+11. Stop before implementation unless the user explicitly asks to proceed; when
+    proceeding, the dispatcher should package the selected task for `ralph`.
 
 Registration must not create `projects/<project-id>/work/`; {{RUNTIME_NAME}}
 creates these files only when useful for active work. Keep Superpowers as

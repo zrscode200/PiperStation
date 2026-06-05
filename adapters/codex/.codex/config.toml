@@ -20,26 +20,30 @@ generate_memories = true
 max_threads = 7
 max_depth = 1
 
-[agents.architect]
-config_file = "./agents/architect.toml"
-
 [agents.docs_researcher]
 config_file = "./agents/docs-researcher.toml"
 
-[agents.implementer]
-config_file = "./agents/implementer.toml"
+[agents.explorer]
+config_file = "./agents/explorer.toml"
+
+[agents.planner]
+config_file = "./agents/planner.toml"
+
+[agents.ralph]
+config_file = "./agents/ralph.toml"
 
 [agents.reviewer]
 config_file = "./agents/reviewer.toml"
-
-[agents.security_reviewer]
-config_file = "./agents/security-reviewer.toml"
 
 [agents.tester]
 config_file = "./agents/tester.toml"
 
 [agents.verifier]
 config_file = "./agents/verifier.toml"
+
+[[skills.config]]
+path = "./skills/dispatcher"
+enabled = true
 
 [[skills.config]]
 path = "./skills/brainstorm"

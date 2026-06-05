@@ -23,7 +23,7 @@ fi
 
 base_context="Piper Station hub-lite is active.
 Register repos with ./bin/add-project. Durable hub context stays under projects/<project-id>/; optional active work continuity may live under projects/<project-id>/work/.
-Natural-language project work enters through the brainstorm skill (\$brainstorm ...) to orient, explore, and decide what is worth doing; it routes to piper-workflow (\$piper-workflow ...) for formal planning and Ralph execution once direction is set. Detailed procedures live under .codex/skills/brainstorm/references/ and .codex/skills/piper-workflow/references/."
+Natural-language project work enters through the dispatcher skill. Dispatcher chooses inline brainstorm or explorer for orientation, exploration, and direction-setting, then routes converged work to piper-workflow (\$piper-workflow ...) for formal planning and Ralph execution. Detailed procedures live under .codex/skills/brainstorm/references/ and .codex/skills/piper-workflow/references/."
 
 resume_context="
 Resume guidance: start from projects/<id>/work/context-pack.md when present, verify branch/HEAD/git status in the real project repo, rebuild the active task neighborhood from named files, changed files, relevant tests, configs, docs, generated surfaces, and known reference paths. Expand beyond that only for concrete triggers such as a stale resume packet, missing acceptance criteria, failing verification, generated parity, security/permissions behavior, or review scope."

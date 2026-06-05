@@ -27,7 +27,7 @@ Review the actual implementation code or diff like an owner. Inspect the changed
 
 - the project repo path
 - the task as written (acceptance criterion, expected files, expected diff boundary)
-- the actual files changed (`git diff` or the implementer's report)
+- the actual files changed (`git diff` or the Ralph report)
 - optional: relevant build/test logs
 
 ## Two Passes

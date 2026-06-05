@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNTIMES = ("codex", "claude", "opencode")
 COMMANDS = ("add-project.md", "superpowers.md", "ralph.md", "compact-handoff.md")
 SKILLS = (
+    "dispatcher/SKILL.md",
     "brainstorm/SKILL.md",
     "piper-workflow/SKILL.md",
     "review/SKILL.md",

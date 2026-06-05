@@ -13,8 +13,9 @@ Implementation Review Gate when required or expected, and updates compact-safe
 records when active work records are in use.
 
 Ralph is not a shell runner and not a general planner. Use it after a task is
-clear or `projects/<project-id>/work/task-queue.md` is ready. Protected
-actions still route through the `automation-policy` skill.
+clear or `projects/<project-id>/work/task-queue.md` is ready. Natural-language
+routing can choose this behavior through `dispatcher` and `piper-workflow`;
+protected actions still route through the `automation-policy` skill.
 
 ## Steps
 
@@ -156,14 +157,11 @@ cache, and `.git` directories.
 
 ## Helper Use
 
-- Ralph may spawn the `reviewer`, `tester`, `security_reviewer`,
-  `verifier`, `security_reviewer`, `docs_researcher`, or `architect` subagents
-  for substantial work. `verifier`, `reviewer`, `security_reviewer`,
-  `docs_researcher`, and `architect` are read-only roles defined in
-  `.codex/agents/`; use `tester` only when explicitly delegating test-layer
-  file, fixture, or test-data edits.
-- Implementation stays with the main session unless the user explicitly asks
-  for `implementer` delegation.
+- Ralph may use read-only reviewer or verifier helpers for substantial work.
+- Use the tester helper only when explicitly delegating test-layer files,
+  fixtures, or test data for creation or update.
+- Ralph may run as the root session or as the `ralph` subagent when the
+  dispatcher packages one accepted implementation slice.
 - Verify all helper findings in the main session before acting on them.
 
 ## Output
