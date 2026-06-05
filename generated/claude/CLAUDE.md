@@ -57,9 +57,10 @@ Use `--hub-only` when repo marker files are not wanted.
 ## Mode Routing
 
 The root Claude Code session acts as dispatcher for substantial phase work. Use
-`dispatcher` before entering broad `brainstorm` or `piper-workflow` work: it
-decides whether to work inline or spawn `explorer`, `planner`, or `ralph` with a
-bounded delegation packet. The dispatcher does not replace phase skills:
+`dispatcher` before entering substantial `brainstorm`, `piper-workflow`, or
+`review` work: it decides whether to work inline or spawn `explorer`, `planner`,
+`ralph`, or `reviewer` with a bounded delegation packet. The dispatcher does not
+replace phase skills:
 `brainstorm` defines exploration, `piper-workflow` defines Superpowers/Ralph
 execution, and `review` defines review behavior. Slash commands are explicit
 shortcuts into convergent execution: `/superpowers`, `/ralph`, and
@@ -82,8 +83,8 @@ Route each request through the smallest mode that fits.
 Use `brainstorm` as the broad natural-language front door and `piper-workflow`
 for convergent execution, with dispatcher deciding inline vs subagent execution.
 Use `/superpowers` for explicit formal planning, `/ralph` for explicit one-task
-execution, `review` for explicit review work or review gates, and
-`automation-policy` before protected automation or external actions. Prefer
+execution, the dispatcher and `review` for explicit review work or review gates,
+and `automation-policy` before protected automation or external actions. Prefer
 consequence language such as "I will keep this read-only" or "I will create
 Ralph-ready work records" over ceremonial mode announcements.
 

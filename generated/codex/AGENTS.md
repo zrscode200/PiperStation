@@ -29,13 +29,13 @@ operating contract for project work in this hub.
 
 Codex CLI discovers Piper Station behavior through these surfaces. Codex does
 not auto-surface a `.codex/commands/` directory as slash commands; the
-`dispatcher`, `brainstorm`, and `piper-workflow` skills are the entry points
-instead.
+`dispatcher`, `brainstorm`, `piper-workflow`, and `review` skills are the entry
+points instead.
 
 - `AGENTS.md` (this file) — always loaded.
 - `.codex/skills/dispatcher/SKILL.md` — root-session orchestration for deciding
-  whether to handle `brainstorm`/`piper-workflow` phase work inline or spawn a
-  phase subagent with a delegation packet.
+  whether to handle phase work inline or spawn a phase subagent with a
+  delegation packet, including `brainstorm`, `piper-workflow`, and `review`.
 - `.codex/skills/brainstorm/SKILL.md` — decision-quality front door for the
   divergent phase (orient, frame, diverge, investigate, route). Trigger via
   `$brainstorm ...` or by stating the intent.
@@ -115,9 +115,10 @@ when continuity is useful.
 ## Mode Routing
 
 The root Codex session acts as dispatcher for substantial phase work. Use
-`dispatcher` before entering broad `brainstorm` or `piper-workflow` work: it
-decides whether to work inline or spawn `explorer`, `planner`, or `ralph` with a
-bounded delegation packet. The dispatcher does not replace phase skills:
+`dispatcher` before entering substantial `brainstorm`, `piper-workflow`, or
+`review` work: it decides whether to work inline or spawn `explorer`, `planner`,
+`ralph`, or `reviewer` with a bounded delegation packet. The dispatcher does not
+replace phase skills:
 `brainstorm` defines exploration, `piper-workflow` defines Superpowers/Ralph
 execution, and `review` defines review behavior.
 
@@ -143,8 +144,8 @@ Route each request through the smallest mode that fits:
 
 Use `brainstorm` as the broad natural-language front door and `piper-workflow`
 for convergent execution, with dispatcher deciding inline vs subagent execution.
-Use the `review` skill for explicit review work or review gates, and
-`automation-policy` before protected automation or external actions. Prefer
+Use dispatcher and the `review` skill for explicit review work or review gates,
+and `automation-policy` before protected automation or external actions. Prefer
 consequence language such as "I will keep this read-only" or "I will create
 Ralph-ready work records" over ceremonial mode announcements.
 
@@ -196,7 +197,8 @@ The hub declares seven Codex subagent roles in `config.toml` and provides their
 - `explorer` — brainstorm-phase orientation, investigation, and hand-off brief.
 - `planner` — Superpowers-phase planning and Ralph-ready task preparation.
 - `ralph` — one accepted implementation slice from a delegation packet.
-- `reviewer` — read-only implementation review for Ralph review gates.
+- `reviewer` — read-only review for Ralph Review Gate and General Repo/Diff
+  Review packets.
 - `verifier` — strict read-only helper for existing checks and failure
   analysis; it reports when a check needs writable state.
 - `tester` — writes test-layer files, fixtures, or test data only when

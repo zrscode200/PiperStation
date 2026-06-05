@@ -1,20 +1,20 @@
 ---
 name: dispatcher
-description: "Use in the root hub session when deciding whether to handle brainstorm or piper-workflow phase work inline, spawn a phase subagent, or package the next phase handoff."
+description: "Use in the root hub session when deciding whether to handle phase work inline or send a bounded delegation packet to a subagent, including brainstorm, piper-workflow, and review."
 ---
 
 # Dispatcher
 
 Dispatcher is the root-session orchestration skill. It decides whether the main
-hub session should do a small request inline or send a bounded phase packet to a
-subagent. It does not replace phase skills: `brainstorm` defines exploration
-behavior, `piper-workflow` defines Superpowers/Ralph/compact behavior, and
-`review` defines review behavior.
+hub session should do a small request inline or send a bounded delegation packet
+to a subagent. It does not replace phase skills: `brainstorm` defines
+exploration behavior, `piper-workflow` defines Superpowers/Ralph/compact
+behavior, and `review` defines review behavior.
 
-Use this skill before entering broad `brainstorm` or `piper-workflow` phase
-work. It is not a universal delegation rule for every helper. Automation
-approval and compact handoff stay with the root session because they involve
-user-facing approval and continuity state.
+Use this skill before entering substantial phase work: `brainstorm`,
+`piper-workflow`, or `review`. It is not a universal delegation rule for every
+helper. Automation approval and compact handoff stay with the root session
+because they involve user-facing approval and continuity state.
 
 Read `CLAUDE.md` and `STATION.md` first. Use `automation-policy.md`
 before protected actions.
@@ -38,12 +38,12 @@ Use these natural gates:
 | Ambiguous project-work request, orientation, exploration, comparison, or direction setting | Spawn `explorer` when the work is substantial; otherwise handle inline | `brainstorm` |
 | Direction is chosen and needs durable spec, plan, or Ralph-ready queue | Spawn `planner` when formal planning is useful | `piper-workflow` / Superpowers |
 | Plan or queue item is accepted and one implementation slice should start | Spawn `ralph` after checking scope, risk, approval, and writable access | `piper-workflow` / Ralph |
-| Implemented meaningful slice needs independent critique | Spawn `reviewer` | `review` |
+| Explicit repo, branch, PR, diff, file, or implemented-slice review | Spawn `reviewer` when substantial; otherwise handle inline | `review` |
 | Claims or checks need read-only validation | Spawn `verifier` | existing checks only |
 | Substantial test-layer files, fixtures, or test data are explicitly delegated | Spawn `tester` | test-layer edits only |
 | External API, framework, or OpenAI docs behavior is uncertain | Spawn `docs-researcher` | documentation research |
 | Commit, PR, dependency install, network, CI, destructive, or external mutation | Stay in root session and use `automation-policy` | no subagent |
-| Pause, compact, or handoff active work | Stay in root session and use compact handoff guidance | no subagent |
+| Pause, compact, or prepare compact-safe continuity | Stay in root session and use compact handoff guidance | no subagent |
 
 `docs-researcher` is the human-facing cross-runtime role label. Codex uses the
 concrete agent id `docs_researcher` in `[agents.docs_researcher]`, while Claude
@@ -118,6 +118,27 @@ Use when one accepted implementation slice should start.
   git actions, external automation, scope expansion, and hub policy changes.
 - Expected report: selected task, files changed, verification result, drift
   result, blockers, and review-gate recommendation.
+
+### Reviewer Packet
+
+Use for substantial `review` work. The same `reviewer` role handles both review
+types; the packet type controls scope and report shape.
+
+- Role: `reviewer`
+- Phase: `review`
+- Review type: `Ralph Review Gate` or `General Repo/Diff Review`
+- Objective: independently inspect the requested code, diff, branch, PR, file
+  set, or implemented slice for correctness, regressions, security,
+  reliability, drift, and missing tests.
+- Allowed actions: read files, inspect repo state, inspect diffs and history,
+  review provided build/test logs, and report when validation requires writable
+  state.
+- Forbidden actions: source edits, `work/` record updates, commits, pushes,
+  PRs, dependency installs, protected automation, external mutation, and
+  approval decisions.
+- Expected report: findings ordered by severity with file/line references when
+  possible, review type, scope inspected, verdict, assumptions, test gaps,
+  residual risk, and recommended next action.
 
 ## Report Handling
 

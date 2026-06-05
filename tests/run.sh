@@ -83,6 +83,7 @@ assert_file_count "$codex_hub/.codex/skills" "SKILL.md" 5
 assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/dispatcher"'
 assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/piper-workflow"'
 assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/brainstorm"'
+assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/review"'
 assert_not_contains "$codex_hub/.codex/config.toml" 'skills/hub-workflow'
 assert_not_contains "$codex_hub/.codex/config.toml" 'skills/superpowers-planning'
 assert_not_contains "$codex_hub/.codex/config.toml" 'skills/ralph-loop'
@@ -110,6 +111,9 @@ assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" "Role:"
 assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" 'Spawn `explorer`'
 assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" 'Spawn `planner`'
 assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" 'Spawn `ralph`'
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" 'Spawn `reviewer` when substantial'
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" "Reviewer Packet"
+assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" 'Review type: `Ralph Review Gate` or `General Repo/Diff Review`'
 assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" "approval and compact handoff stay with the root session"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "Make it better"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "current problem, goals"
@@ -164,6 +168,7 @@ assert_contains "$codex_hub/AGENTS.md" 'human-facing cross-runtime role label is
 assert_contains "$codex_hub/AGENTS.md" 'concrete agent id `docs_researcher`'
 assert_contains "$codex_hub/AGENTS.md" "seven Codex subagent roles"
 assert_contains "$codex_hub/AGENTS.md" "delegation packet"
+assert_contains "$codex_hub/AGENTS.md" 'dispatcher and the `review` skill'
 assert_contains "$codex_hub/AGENTS.md" "explorer"
 assert_contains "$codex_hub/AGENTS.md" "planner"
 assert_contains "$codex_hub/AGENTS.md" "ralph"
@@ -176,6 +181,8 @@ assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" "registration hel
 assert_contains "$codex_hub/.codex/skills/dispatcher/SKILL.md" "If the explorer reports a registration request"
 assert_contains "$codex_hub/.codex/agents/explorer.toml" "report the registration intent to the root dispatcher"
 assert_not_contains "$codex_hub/.codex/agents/explorer.toml" "deterministic registration if the packet authorizes"
+assert_contains "$codex_hub/.codex/agents/reviewer.toml" "Ralph Review Gate"
+assert_contains "$codex_hub/.codex/agents/reviewer.toml" "General Repo/Diff Review"
 (cd "$codex_hub" && sh .codex/hooks/session-context.sh) > "$TMP_ROOT/codex-session-start.log"
 assert_contains "$TMP_ROOT/codex-session-start.log" "hub-lite is active"
 assert_contains "$TMP_ROOT/codex-session-start.log" "Natural-language project work enters through the dispatcher skill"
@@ -260,6 +267,8 @@ assert_not_contains "$claude_hub/.claude/agents/explorer.md" "deterministic regi
 assert_contains "$claude_hub/.claude/agents/planner.md" "Superpowers"
 assert_contains "$claude_hub/.claude/agents/ralph.md" "exactly one accepted Ralph slice"
 assert_contains "$claude_hub/.claude/agents/reviewer.md" "Ralph report"
+assert_contains "$claude_hub/.claude/agents/reviewer.md" "Ralph Review Gate"
+assert_contains "$claude_hub/.claude/agents/reviewer.md" "General Repo/Diff Review"
 assert_contains "$claude_hub/.claude/agents/tester.md" "test-layer"
 assert_contains "$claude_hub/.claude/agents/verifier.md" "Strict read-only"
 assert_contains "$claude_hub/.claude/agents/docs-researcher.md" "OpenAI developer"
@@ -333,6 +342,8 @@ assert_not_contains "$opencode_hub/.opencode/agents/explorer.md" "deterministic 
 assert_contains "$opencode_hub/.opencode/agents/planner.md" "Superpowers"
 assert_contains "$opencode_hub/.opencode/agents/ralph.md" "exactly one accepted Ralph slice"
 assert_contains "$opencode_hub/.opencode/agents/reviewer.md" "Ralph report"
+assert_contains "$opencode_hub/.opencode/agents/reviewer.md" "Ralph Review Gate"
+assert_contains "$opencode_hub/.opencode/agents/reviewer.md" "General Repo/Diff Review"
 assert_contains "$opencode_hub/.opencode/agents/tester.md" "test-layer"
 assert_contains "$opencode_hub/.opencode/agents/verifier.md" "Strict read-only"
 assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "OpenAI developer"
@@ -363,6 +374,7 @@ for hub in "$codex_hub" "$claude_hub" "$opencode_hub"; do
   assert_contains "$hub/STATION.md" "brainstorm"
   assert_contains "$hub/STATION.md" "default phase roster"
   assert_contains "$hub/STATION.md" "decision-quality front door"
+  assert_contains "$hub/STATION.md" 'dispatcher` chooses inline review or `reviewer`'
 done
 assert_contains "$codex_hub/AGENTS.md" "piper-workflow"
 assert_contains "$codex_hub/AGENTS.md" "brainstorm"
@@ -378,6 +390,8 @@ for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$openc
   assert_contains "$skill_dir/dispatcher/SKILL.md" "Phase Gates"
   assert_contains "$skill_dir/dispatcher/SKILL.md" "Do not spawn a subagent"
   assert_contains "$skill_dir/dispatcher/SKILL.md" "Expected report:"
+  assert_contains "$skill_dir/dispatcher/SKILL.md" "Reviewer Packet"
+  assert_contains "$skill_dir/dispatcher/SKILL.md" 'Review type: `Ralph Review Gate` or `General Repo/Diff Review`'
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Divergent Toolkit"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Hand-Off Brief"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Register"
@@ -394,6 +408,9 @@ for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$openc
   assert_not_exists "$skill_dir/superpowers-planning/SKILL.md"
   assert_not_exists "$skill_dir/ralph-loop/SKILL.md"
   assert_contains "$skill_dir/review/SKILL.md" "Do not use this skill for general repo orientation"
+  assert_contains "$skill_dir/review/SKILL.md" "General Repo/Diff Review"
+  assert_contains "$skill_dir/review/SKILL.md" "Ralph Review Gate"
+  assert_contains "$skill_dir/review/SKILL.md" 'bounded `reviewer`'
   assert_contains "$skill_dir/review/SKILL.md" 'Route automation approval directly to the root-session `automation-policy` skill'
   assert_not_contains "$skill_dir/review/SKILL.md" "automation approval. Route those through"
   assert_not_contains "$skill_dir/review/SKILL.md" "automation approval.*piper-workflow"
@@ -643,6 +660,7 @@ if grep -R -n 'openaiDeveloperDocs_\*: allow\|"openaiDeveloperDocs_\\\*": "allow
 if grep -R -n 'read-only band\|creates no hub records' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-brainstorm-readonly.log"; then cat "$TMP_ROOT/stale-brainstorm-readonly.log" >&2; fail "brainstorm registration wording must acknowledge the deterministic write exception"; fi
 if grep -R -n 'implementer' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-implementer-role.log"; then cat "$TMP_ROOT/stale-implementer-role.log" >&2; fail "active source/generated prompts must not mention implementer as a role"; fi
 if grep -R -n -E 'automation approval\. Route those through|automation approval.*piper-workflow' "$ROOT/core/skills/review/SKILL.md" "$ROOT/generated/codex/.codex/skills/review/SKILL.md" "$ROOT/generated/claude/.claude/skills/review/SKILL.md" "$ROOT/generated/opencode/.opencode/skills/review/SKILL.md" > "$TMP_ROOT/stale-review-automation-routing.log"; then cat "$TMP_ROOT/stale-review-automation-routing.log" >&2; fail "review skill must route automation approval directly to automation-policy"; fi
+if grep -R -n -E 'before entering broad `brainstorm` or `piper-workflow`|spawn `explorer`, `planner`, or `ralph` with a bounded delegation packet|Review code or an implemented slice \| Review Mode \| `review`' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-review-dispatch-routing.log"; then cat "$TMP_ROOT/stale-review-dispatch-routing.log" >&2; fail "review requests must remain wired through dispatcher review delegation"; fi
 if grep -R -n '\.codex/commands' "$ROOT/core" "$ROOT/adapters" "$ROOT/docs/capability-matrix.md" "$ROOT/generated" > "$TMP_ROOT/codex-commands.log"; then
   if grep -v -e 'does not' -e 'not auto-surface' "$TMP_ROOT/codex-commands.log" > "$TMP_ROOT/codex-commands-active.log"; then
     cat "$TMP_ROOT/codex-commands-active.log" >&2

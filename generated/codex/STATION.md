@@ -61,10 +61,10 @@ and global ownership rules belong in the canonical docs above.
 ## Dispatch Contract
 
 The root hub session acts as a dispatcher. Use the `dispatcher` skill before
-entering substantial `brainstorm` or `piper-workflow` phase work. Dispatcher
-owns when to work inline, when to spawn a subagent, which subagent to use, what
-context to include in the delegation packet, and how to handle the report that
-comes back.
+entering substantial phase work, including `brainstorm`, `piper-workflow`, or
+`review`. Dispatcher owns when to work inline, when to spawn a subagent, which
+subagent to use, what context to include in the delegation packet, and how to
+handle the report that comes back.
 
 The phase skills still define the work once selected: `brainstorm` defines the
 decision-quality front door for orientation, framing, divergence,
@@ -89,7 +89,7 @@ Use this dispatch table when intent is unclear:
 | Orient, explore, compare options, or decide what to do | `dispatcher` chooses inline `brainstorm` or `explorer` | `brainstorm` |
 | Verify a direction, specify, or plan substantial work | `dispatcher` chooses inline Superpowers or `planner` | `piper-workflow`, `/superpowers`, and this guide |
 | Execute one clear queued task | `dispatcher` chooses inline Ralph or `ralph` | `/ralph` and this guide |
-| Review code or an implemented slice | Review Mode | `review` |
+| Review a repo, branch, PR, diff, file set, or implemented slice | `dispatcher` chooses inline review or `reviewer` | `review` |
 | Commit, PR, dependency, network, CI, destructive, or external action | Finish Mode or explicit approval flow | `automation-policy` |
 | Pause or compact active work | `/compact-handoff` | compact handoff guidance |
 
