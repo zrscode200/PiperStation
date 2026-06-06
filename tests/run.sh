@@ -98,6 +98,9 @@ assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "R
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Post-Compact Resume"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Ralph may spawn the"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "reviewer"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "confirmed-in-scope"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "confirmed-out-of-scope"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "false-positive"
 assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" '\$ARGUMENTS'
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "Make it better"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "current problem, goals"
@@ -321,9 +324,15 @@ for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$openc
   assert_not_exists "$skill_dir/superpowers-planning/SKILL.md"
   assert_not_exists "$skill_dir/ralph-loop/SKILL.md"
   assert_contains "$skill_dir/review/SKILL.md" "Do not use this skill for general repo orientation"
+  assert_contains "$skill_dir/review/SKILL.md" "Route automation approval"
+  assert_contains "$skill_dir/review/SKILL.md" 'root-session `automation-policy` skill'
+  assert_contains "$skill_dir/review/SKILL.md" "confirmed-in-scope"
+  assert_contains "$skill_dir/review/SKILL.md" "confirmed-out-of-scope"
+  assert_contains "$skill_dir/review/SKILL.md" "false-positive"
   assert_contains "$skill_dir/automation-policy/SKILL.md" "Do not use this skill for ordinary local inspection"
   assert_contains "$skill_dir/automation-policy/SKILL.md" "canonical global policy"
   assert_contains "$skill_dir/automation-policy/SKILL.md" "protected-action execution checklist and approval gate"
+  assert_contains "$skill_dir/automation-policy/SKILL.md" "Protected automation is not delegated"
   assert_contains "$skill_dir/automation-policy/SKILL.md" "projects/<project-id>/decisions.md"
   assert_not_contains "$skill_dir/automation-policy/SKILL.md" "Record durable opt-ins or policy changes in"
   assert_not_contains "$skill_dir/automation-policy/SKILL.md" "Default Classifications"
@@ -565,6 +574,7 @@ if grep -R -n -E '`(handoff|progress)\.md`' "$ROOT/core" "$ROOT/adapters" "$ROOT
 if grep -R -n 'piper-workflow router\|piper workflow handles lookup, registration, orientation' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-router.log"; then cat "$TMP_ROOT/stale-router.log" >&2; fail "active instructions must not describe piper-workflow as the broad router"; fi
 if grep -R -n 'openaiDeveloperDocs_\*: allow\|"openaiDeveloperDocs_\\\*": "allow"' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-openai-docs-permission.log"; then cat "$TMP_ROOT/stale-openai-docs-permission.log" >&2; fail "OpenCode docs-researcher must ask before OpenAI docs MCP use"; fi
 if grep -R -n 'read-only band\|creates no hub records' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-brainstorm-readonly.log"; then cat "$TMP_ROOT/stale-brainstorm-readonly.log" >&2; fail "brainstorm registration wording must acknowledge the deterministic write exception"; fi
+if grep -R -n -E 'automation approval\. Route those through|automation approval.*piper-workflow' "$ROOT/core/skills/review/SKILL.md" "$ROOT/generated/codex/.codex/skills/review/SKILL.md" "$ROOT/generated/claude/.claude/skills/review/SKILL.md" "$ROOT/generated/opencode/.opencode/skills/review/SKILL.md" > "$TMP_ROOT/stale-review-automation-routing.log"; then cat "$TMP_ROOT/stale-review-automation-routing.log" >&2; fail "review skill must route automation approval directly to automation-policy"; fi
 if grep -R -n '\.codex/commands' "$ROOT/core" "$ROOT/adapters" "$ROOT/docs/capability-matrix.md" "$ROOT/generated" > "$TMP_ROOT/codex-commands.log"; then
   if grep -v -e 'does not' -e 'not auto-surface' "$TMP_ROOT/codex-commands.log" > "$TMP_ROOT/codex-commands-active.log"; then
     cat "$TMP_ROOT/codex-commands-active.log" >&2

@@ -46,8 +46,11 @@ still route through `automation-policy`.
    required for `S2/S3` and queued foundational work, expected for meaningful
    behavior-changing `S1`, optional for `S0/L0`, docs-only, or trivial work.
    Risk tier controls approval before execution, not review selection.
-12. Verify reviewer findings in the main session, apply valid in-scope fixes,
-    turn valid out-of-scope findings into follow-up notes or queue items, and
+12. Validate reviewer findings before editing: give each finding an explicit
+    verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or
+    `false-positive` — and do not edit code until every finding has one. Then
+    apply fixes only for `confirmed-in-scope` findings, turn
+    `confirmed-out-of-scope` findings into follow-up notes or queue items, and
     reverify review-driven fixes with the narrowest meaningful command for the
     fixed behavior. Run broader verification only when fixes touch shared,
     risky, or cross-cutting behavior.
@@ -105,12 +108,14 @@ context. The reviewer reports correctness, regression, security, reliability,
 missing-test, convention, and drift findings ordered by severity with file and
 line references when possible.
 
-The main OpenCode session stays responsible for the work. Verify each
-reviewer finding before acting. Apply only valid in-scope fixes. Turn valid
-out-of-scope findings into follow-up notes or tasks. Briefly record rejected
-false positives when that helps future readers. If a required review gate
-cannot run, stop and tell the user what is missing unless the user explicitly
-accepts the review debt.
+The main OpenCode session stays responsible for the work. Validate each
+reviewer finding before acting: record a one-line verdict per finding —
+`confirmed-in-scope`, `confirmed-out-of-scope`, or `false-positive` — before
+editing any code. Apply fixes only for `confirmed-in-scope` findings. Turn
+`confirmed-out-of-scope` findings into follow-up notes or tasks. Briefly record
+why a finding was rejected as a `false-positive` when that helps future readers.
+If a required review gate cannot run, stop and tell the user what is missing
+unless the user explicitly accepts the review debt.
 
 ## Compaction Discipline
 
@@ -162,13 +167,13 @@ cache, and `.git` directories.
   fixtures, or test data for creation or update.
 - Implementation stays with the main session unless the user explicitly asks
   for implementer delegation.
-- Verify all helper findings in the main session before acting on them.
+- Validate all helper findings in the main session before acting on them.
 
 ## Output
 
 Report task executed, files changed, verification result, review gate status
-and basis, accepted review fixes or rejected findings, review debt status,
-drift result, decision ledger updates, context pack status, compaction status,
-and next task or stop reason.
+and basis, per-finding verdicts, accepted review fixes or rejected findings,
+review debt status, drift result, decision ledger updates, context pack status,
+compaction status, and next task or stop reason.
 
 Never claim completion without fresh verification output.

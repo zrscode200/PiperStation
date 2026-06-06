@@ -98,9 +98,11 @@ test-layer edits, or `security_reviewer` for auth/permissions changes.
 (`architect` and `docs_researcher` also support `brainstorm`'s read-only
 investigation.)
 
-The main session stays responsible for the work. Verify each subagent finding
-before acting; apply only valid in-scope fixes; turn valid out-of-scope findings
-into follow-up notes or queue items.
+The main session stays responsible for the work. Validate each subagent finding
+before acting: give each an explicit verdict — `confirmed-in-scope`,
+`confirmed-out-of-scope`, or `false-positive` — before editing code; apply
+only `confirmed-in-scope` fixes; turn `confirmed-out-of-scope` findings into
+follow-up notes or queue items.
 
 ## Durable Context
 
