@@ -153,6 +153,53 @@ directories only when substantial work needs preserved history.
 | `plans/` | Archived or named plans for milestones, alternatives, or superseded approaches. | `S3` or long-running work needs plan history beyond `active-plan.md`. |
 | `runs/` | Optional per-run notes for substantial Ralph iterations or review/verification cycles. | Per-run execution detail would be too dense to preserve in `context-pack.md`. |
 
+### Artifact Persistence
+
+Piper work artifacts are hub-owned project state. Keep them in
+`projects/<project-id>/work/` by default; do not move them into the registered
+project repo unless the user explicitly asks for a project-local copy.
+
+When an artifact changes, make it self-contained enough for a fresh session to
+resume without transcript archaeology: include the target repo path, branch,
+HEAD or relevant source commit, active scope, verification and review state,
+changed source areas, next exact action, blockers, and whether related source
+or hub changes are committed.
+
+Artifact updates are normal `A0` local assistance while work is active. Do not
+ask after every artifact edit. Instead, disclose changed Piper artifacts at
+natural checkpoints and ask about a Piper artifact commit only when the scope
+or stopping point warrants it. Checkpoints include the end of formal planning,
+a milestone boundary, compact preparation, finish mode, before switching
+projects, or when the user says to pause, save, compact, finish, or commit.
+
+At every checkpoint:
+
+1. Report changed Piper artifacts separately from registered project source
+   changes.
+2. Inspect git state for both the registered project repo and the Piper
+   Station hub when artifacts changed.
+3. State whether artifact changes are uncommitted in the hub.
+4. Ask before committing artifacts; a Piper artifact commit is an `A1`
+   protected local git action under `automation-policy.md`.
+
+Scope controls how strongly artifact persistence is surfaced:
+
+- `S0`: no artifact by default; no artifact commit prompt unless the user asked
+  to record something.
+- `S1`: lightweight artifact continuity; mention changed artifacts at finish or
+  compact, and ask to commit only when the artifact affects future continuity.
+- `S2`: spec, plan, task queue, verification, or context artifacts are the
+  working contract; offer one artifact commit at planning finish, compact
+  preparation, finish mode, or material plan/spec changes.
+- `S3`: multi-milestone artifact state is durable project coordination; treat
+  milestone boundaries, compact preparation, finish mode, and material plan or
+  spec changes as artifact persistence checkpoints.
+
+After ordinary Ralph slices, update and report useful artifacts, but do not ask
+to commit them unless the slice completes a meaningful milestone, materially
+changes the plan/spec, or the user is about to pause, compact, switch context,
+or finish.
+
 ## Mode Routing
 
 Route requests through `brainstorm` (the front door), `piper-workflow`

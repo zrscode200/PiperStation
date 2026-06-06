@@ -20,10 +20,18 @@ The user invoked this command with: `$ARGUMENTS`
 3. Inspect the real repo with `git status --short`,
    `git rev-parse --short HEAD`, and `git diff --stat` enough to summarize
    changed files and risks.
-4. Update `projects/<project-id>/work/context-pack.md` with the required
+4. Inspect the Piper Station hub git state when `projects/<project-id>/work/`
+   exists or will be updated, so the packet can distinguish hub artifact
+   changes from registered project source changes.
+5. Update `projects/<project-id>/work/context-pack.md` with the required
    compact resume packet below; it also carries the handoff fields when pausing
    or transferring work.
-5. Report that the project is compact-ready and tell the user they may run
+6. Report changed Piper artifacts separately from registered project source
+   changes. State whether artifact changes are uncommitted in the hub.
+7. For `S2/S3`, or for `S1` when the artifact matters for continuity, ask once
+   whether to commit Piper artifact updates before compacting; do not commit
+   unless the user approves through `automation-policy`.
+8. Report that the project is compact-ready and tell the user they may run
    `/compact`.
 
 ## Required Compact Resume Packet
@@ -44,6 +52,8 @@ Include these fields or equivalent clearly labeled sections:
 - Blockers and risks
 - Git state: repo path, branch, HEAD, changed tracked files, untracked files,
   and whether a commit was made
+- Piper artifact state: changed `projects/<project-id>/work/` files, Piper
+  Station hub branch/HEAD/status, and whether artifact changes are committed
 - Broad-search triggers: concrete reasons a future session should expand
   beyond the task neighborhood
 - Stop reason: why work is pausing, handing off, or compacting
@@ -55,7 +65,7 @@ Rules:
 - Do not say `/compact` ran. Say only that the state is compact-ready and the
   user may run `/compact`.
 - Do not commit, push, open PRs, install dependencies, or run external
-  automation.
+  automation without explicit approval through `automation-policy`.
 - If `projects/<project-id>/work/` does not exist yet, create only the files
   needed for safe compaction.
 - Use the resume packet as designed anchors, not a hard read limit. After

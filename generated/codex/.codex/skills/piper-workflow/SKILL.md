@@ -73,6 +73,29 @@ edit only the real project repo. Finish, commit, PR, dependency, network, CI,
 or destructive actions route through `automation-policy` before protected state
 changes.
 
+## Artifact Persistence Checkpoints
+
+Piper artifacts stay in `projects/<project-id>/work/` by default. Updating
+them during active work is allowed local assistance; committing those updates
+is a protected local git action and must go through `automation-policy`.
+
+Do not ask to commit after every artifact edit. At natural checkpoints, report
+changed artifacts separately from registered project source changes, inspect
+git state for both the real project repo and the Piper Station hub, and say
+whether Piper artifact changes are uncommitted. Ask once about committing
+Piper artifacts only when the scope or stopping point warrants it:
+
+- `S0`: only if the user explicitly asked to record artifacts.
+- `S1`: at finish or compact when the artifact matters for continuity.
+- `S2`: at planning finish, compact preparation, finish mode, or material
+  plan/spec changes.
+- `S3`: at milestone boundaries, compact preparation, finish mode, or material
+  plan/spec changes.
+
+After ordinary Ralph slices, update and report useful artifacts but avoid a
+commit prompt unless the slice is also a milestone, changes the plan/spec, or
+the user is about to pause, compact, switch projects, or finish.
+
 ## Scope And Risk
 
 Use the scope and risk tiers defined in `STATION.md`. Scope controls artifact

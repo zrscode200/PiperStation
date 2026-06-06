@@ -31,14 +31,20 @@ automation approval. Natural-language routing reaches this behavior through
 7. For `S1+`, create or update only useful active work files under
    `projects/<project-id>/work/`.
 8. For `S2+`, write a concise spec and implementation plan before execution.
-   Prefer `projects/<project-id>/work/specs/` and
-   `projects/<project-id>/work/plans/` unless the project repo has its own
-   established docs location.
+   Keep active and archived planning artifacts in
+   `projects/<project-id>/work/` unless the user explicitly asks for a
+   project-local copy.
 9. Produce a Ralph-ready `task-queue.md` only when tasks are clear and
    verifiable.
 10. Update `context-pack.md` with compact-safe reload state when active work
     records are in use.
-11. Stop before implementation unless the user explicitly asks to proceed.
+11. At the planning checkpoint, report changed Piper artifacts separately from
+    source changes, inspect the Piper Station hub git state when artifacts
+    changed, and state whether those artifact changes are uncommitted.
+12. For `S2+`, offer one Piper artifact commit at planning finish; for `S1`,
+    ask only if the active plan matters for future continuity. Do not commit
+    unless the user approves through `automation-policy`.
+13. Stop before implementation unless the user explicitly asks to proceed.
 
 Registration must not create `projects/<project-id>/work/`; {{RUNTIME_NAME}}
 creates these files only when useful for active work. Keep Superpowers as
@@ -66,6 +72,15 @@ Create only under `projects/<project-id>/work/`, and only when useful:
 
 Keep stable facts in `memory.md` and durable decisions in `decisions.md`.
 Registration must not create active work artifacts.
+
+## Artifact Persistence
+
+Superpowers is a natural artifact checkpoint. Updating work artifacts is part
+of planning, but committing them is not automatic. At the end of planning,
+summarize the artifact files touched, their role in the next Ralph slice or
+future session, and whether they remain uncommitted in the Piper Station hub.
+Offer a single artifact commit only at the scope-appropriate boundary described
+in `STATION.md`.
 
 ## Spec Shape
 

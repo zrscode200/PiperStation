@@ -127,6 +127,12 @@ Do not put routine progress logs, command output, temporary plans, secrets, or r
 
 Registration must not create `work/`. Claude Code may create it during active work when continuity is useful.
 
+## Artifact Persistence
+
+Piper work artifacts stay under `projects/<project-id>/work/` by default. Do not move specs, plans, queues, verification, or context packs into the registered project repo unless the user explicitly asks for a project-local copy.
+
+When active work artifacts change, report them at natural checkpoints separately from registered project source changes. Check git state for both the real project repo and the Piper Station hub before finish or compact when artifacts changed. Updating artifacts is allowed local assistance; committing Piper artifact changes is a protected local git action and requires explicit approval through `automation-policy.md`. Do not ask to commit after every artifact edit; ask only at scope-appropriate checkpoints defined in `STATION.md`.
+
 ## Working On A Project
 
 Before editing a registered project:

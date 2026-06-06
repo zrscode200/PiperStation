@@ -58,12 +58,17 @@ still route through `automation-policy`.
     request.
 14. Update useful active work records, including `task-queue.md`,
     `verification.md`, and `context-pack.md`, when they are in use.
-15. Record material decisions in `projects/<project-id>/decisions.md`.
-16. If a required or expected review gate was skipped, record review debt and do
+15. Report changed Piper artifacts separately from registered project source
+    changes. At ordinary slice boundaries, do not ask to commit artifact
+    updates unless this slice completes a milestone, materially changes the
+    active plan/spec, or the user is about to pause, compact, switch projects,
+    or finish.
+16. Record material decisions in `projects/<project-id>/decisions.md`.
+17. If a required or expected review gate was skipped, record review debt and do
     not continue to a dependent task until it is resolved or explicitly
     accepted by the user.
-17. Prepare compact-safe state at natural stopping points.
-18. Continue only if the next task is safe and the user asked for continuation.
+18. Prepare compact-safe state at natural stopping points.
+19. Continue only if the next task is safe and the user asked for continuation.
 
 Do not commit, push, open PRs, create worktrees, install dependencies, or run
 external automation unless the user explicitly asks. Ralph prepares for
@@ -134,6 +139,10 @@ When active work records are in use:
    verification status, review state, drift result, blockers, risks, broad
    search triggers, stop reason, and what to hand a human or fresh agent when
    pausing.
+4. Report artifact files updated in the Piper Station hub and whether they are
+   committed. If the stop is a milestone boundary, compact preparation, finish
+   mode, project switch, or material plan/spec change, ask once whether to
+   commit the Piper artifact updates through `automation-policy`.
 
 If the next task is safe and context is not a concern, continue normally. If
 context is low, a milestone just finished, or the next slice needs a clean
@@ -174,6 +183,7 @@ cache, and `.git` directories.
 Report task executed, files changed, verification result, review gate status
 and basis, per-finding verdicts, accepted review fixes or rejected findings,
 review debt status, drift result, decision ledger updates, context pack status,
-compaction status, and next task or stop reason.
+artifact changes and persistence status, compaction status, and next task or
+stop reason.
 
 Never claim completion without fresh verification output.

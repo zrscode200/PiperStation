@@ -23,3 +23,7 @@ shared rules that should apply across the hub.
 Absence of an opt-in means automation is not enabled. Do not treat broad
 requests like "finish this" as permission to push, merge, open a PR, discard
 changes, or run external automation.
+
+Updating Piper artifacts under `projects/<project-id>/work/` is `A0` local
+assistance. Committing those artifact updates in the Piper Station hub is `A1`
+and must be approved separately from any registered project source commit.

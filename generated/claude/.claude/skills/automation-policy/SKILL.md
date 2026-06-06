@@ -20,6 +20,12 @@ Do not use this skill for ordinary local inspection, planning, implementation,
 or review unless the next action would mutate git history, dependencies, CI, an
 external system, or other protected state.
 
+Piper artifact updates under `projects/<project-id>/work/` are ordinary local
+assistance while active work is in progress. A commit that saves those artifact
+updates in the Piper Station hub is still an `A1` protected local git action:
+ask first, name the project id and artifact files, and keep it distinct from
+any registered project source commit.
+
 ## Workflow
 
 1. Read `CLAUDE.md`, `STATION.md`, and `automation-policy.md`.
