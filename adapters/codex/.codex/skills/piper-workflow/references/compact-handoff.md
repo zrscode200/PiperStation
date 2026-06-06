@@ -64,6 +64,9 @@ Rules:
   automation without explicit approval through `automation-policy`.
 - If `projects/<project-id>/work/` does not exist yet, create only the files
   needed for safe compaction.
+- Treat `context-pack.md` as the only fully self-contained resume packet; do
+  not backfill full resume metadata into spec, plan, queue, or verification
+  artifacts during compact prep.
 - Use the resume packet as designed anchors, not a hard read limit. After
   compact, verify live repo state, rebuild enough task neighborhood to work
   safely, and expand deliberately when the packet is stale, incomplete,

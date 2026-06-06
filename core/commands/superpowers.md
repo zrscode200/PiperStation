@@ -30,14 +30,15 @@ automation approval. Natural-language routing reaches this behavior through
    answer would change the design, do not ask.
 7. For `S1+`, create or update only useful active work files under
    `projects/<project-id>/work/`.
+   For `S1`, prefer only `active-plan.md`.
 8. For `S2+`, write a concise spec and implementation plan before execution.
    Keep active and archived planning artifacts in
    `projects/<project-id>/work/` unless the user explicitly asks for a
    project-local copy.
 9. Produce a Ralph-ready `task-queue.md` only when tasks are clear and
    verifiable.
-10. Update `context-pack.md` with compact-safe reload state when active work
-    records are in use.
+10. Defer `context-pack.md` unless planning is stopping, pausing, preparing
+    for compact, handing off, or creating `S3` milestone context.
 11. At the planning checkpoint, report changed Piper artifacts separately from
     source changes, inspect the Piper Station hub git state when artifacts
     changed, and state whether those artifact changes are uncommitted.
@@ -55,7 +56,7 @@ machinery for planning.
 
 Create only under `projects/<project-id>/work/`, and only when useful:
 
-- `active-spec.md`: current problem, goals, non-goals, acceptance criteria,
+- `active-spec.md`: stable problem, goals, non-goals, acceptance criteria,
   risks, and open questions for `S2+` or Ralph-bound work.
 - `active-plan.md`: current approach, ordered slices, tradeoffs,
   dependencies, and verification strategy for `S1+` work that needs
@@ -69,6 +70,10 @@ Create only under `projects/<project-id>/work/`, and only when useful:
   checks, and remaining verification gaps.
 - `specs/`, `plans/`, and `runs/`: archived or named records for substantial
   milestones, alternatives, superseded approaches, or dense Ralph iterations.
+
+Keep artifacts lean: `context-pack.md` is the only fully self-contained resume
+packet. Do not duplicate branch, HEAD, full git state, review state, blockers,
+or next action across every spec, plan, queue, or verification record.
 
 Keep stable facts in `memory.md` and durable decisions in `decisions.md`.
 Registration must not create active work artifacts.

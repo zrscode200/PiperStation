@@ -51,13 +51,16 @@ still route through `automation-policy`.
     risky, or cross-cutting behavior.
 13. Drift-check the diff against the selected task, active plan/spec, and user
     request.
-14. Update useful active work records, including `task-queue.md`,
-    `verification.md`, and `context-pack.md`, when they are in use.
+14. For ordinary slice-end bookkeeping, update `task-queue.md` status and
+    `verification.md` results when they are in use. Update `active-spec.md` or
+    `active-plan.md` only when requirements, strategy, or scope materially
+    changed.
 15. Report changed Piper artifacts separately from registered project source
     changes. At ordinary slice boundaries, do not ask to commit artifact
-    updates unless this slice completes a milestone, materially changes the
-    active plan/spec, or the user is about to pause, compact, switch projects,
-    or finish.
+    updates or update `context-pack.md` unless this slice completes a
+    milestone, materially changes the active plan/spec, hits a blocker, leaves
+    context low, or the user is about to pause, compact, switch projects, or
+    finish.
 16. Record material decisions in `projects/<project-id>/decisions.md`.
 17. If a required or expected review gate was skipped, record review debt and do
     not continue to a dependent task until it is resolved or explicitly
@@ -128,12 +131,14 @@ When active work records are in use:
 
 1. Update `task-queue.md` with the current task status.
 2. Update `verification.md` with commands, results, and gaps.
-3. Update `context-pack.md` with last completed task, current task status, next
-   exact action, scope boundary, files changed, files to inspect first after
-   compact, known reference paths, branch, HEAD, `git status --short`,
-   verification status, review state, drift result, blockers, risks, broad
-   search triggers, stop reason, and what to hand a human or fresh agent when
-   pausing.
+3. Update `context-pack.md` only when pausing, preparing for compact, finishing,
+   blocked, crossing a milestone, context is low, switching projects, or
+   materially changing the plan/spec. When updated, include last completed
+   task, current task status, next exact action, scope boundary, files changed,
+   files to inspect first after compact, known reference paths, branch, HEAD,
+   `git status --short`, verification status, review state, drift result,
+   blockers, risks, broad search triggers, stop reason, and what to hand a
+   human or fresh agent.
 4. Report artifact files updated in the Piper Station hub and whether they are
    committed. If the stop is a milestone boundary, compact preparation, finish
    mode, project switch, or material plan/spec change, ask once whether to

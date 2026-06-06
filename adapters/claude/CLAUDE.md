@@ -133,6 +133,8 @@ Piper work artifacts stay under `projects/<project-id>/work/` by default. Do not
 
 When active work artifacts change, report them at natural checkpoints separately from registered project source changes. Check git state for both the real project repo and the Piper Station hub before finish or compact when artifacts changed. Updating artifacts is allowed local assistance; committing Piper artifact changes is a protected local git action and requires explicit approval through `automation-policy.md`. Do not ask to commit after every artifact edit; ask only at scope-appropriate checkpoints defined in `STATION.md`.
 
+Record artifacts economically: `context-pack.md` is the only fully self-contained resume packet. Keep specs, plans, queues, and verification records lean and purpose-specific.
+
 ## Working On A Project
 
 Before editing a registered project:
@@ -175,7 +177,7 @@ The main Claude Code session must validate reviewer findings before acting: give
 
 ## Compaction
 
-Ralph should prepare compact-safe state at natural stopping points by updating `projects/<id>/work/context-pack.md`, which also carries the handoff fields when pausing.
+Ralph should update `projects/<id>/work/context-pack.md` when pausing, preparing for compact, finishing, blocked, crossing a milestone, context is low, switching projects, or materially changing the plan/spec. Ordinary slice bookkeeping should stay in `task-queue.md` and `verification.md`.
 
 The compact state must include: goal, last completed task, current task status, next exact action, scope boundary, files to inspect first after compact, known reference paths, verification status, review state, drift result, blockers and risks, git state, broad-search triggers, stop reason, and what to hand a human or fresh agent. The next exact action should be a file to open, command to run, or question to answer, specific enough for a fresh Claude Code session to continue cold.
 

@@ -144,14 +144,36 @@ directories only when substantial work needs preserved history.
 
 | Artifact | Purpose | Create or update when |
 | --- | --- | --- |
-| `active-spec.md` | Current problem statement, goals, non-goals, acceptance criteria, risks, and open questions. | Work is `S2+`, requirements need durable agreement, or Ralph needs a stable target. |
+| `active-spec.md` | Stable requirements: problem statement, goals, non-goals, acceptance criteria, risks, and open questions. | Work is `S2+`, requirements need durable agreement, or Ralph needs a stable target. |
 | `active-plan.md` | Current implementation approach, ordered slices, tradeoffs, dependencies, and verification strategy. | Work is `S1+` and the plan must survive compaction or handoff. |
-| `task-queue.md` | Ralph-ready task list with ids, status, risk, acceptance criteria, verification, and expected diff boundary. | There are clear executable slices for Ralph or future sessions. |
-| `context-pack.md` | Compact/resume and handoff anchor: goal, current task, next exact action, key files, what to inspect first, branch/HEAD/status, verification state, review state, drift, blockers, stop reason, and what to hand a human or fresh agent. | Active work records are in use and the session may continue, pause, compact, or hand off. |
-| `verification.md` | Commands run, results, failures, fallbacks, skipped checks, and remaining verification gaps. | Planning defines verification, Ralph runs checks, or verification is blocked. |
+| `task-queue.md` | Ralph-ready task ids with status, risk, acceptance criteria, verification, and expected diff boundary. | There are clear executable slices for Ralph or future sessions. |
+| `context-pack.md` | The full compact/resume packet: goal, current task, next exact action, key files, what to inspect first, branch/HEAD/status, verification state, review state, drift, blockers, stop reason, and what to hand a human or fresh agent. | Active work may pause, compact, finish, hit a blocker, reach a milestone, switch projects, or hand off. |
+| `verification.md` | Concise check evidence: commands run, results, failures, fallbacks, skipped checks, and remaining verification gaps. | Planning defines verification, Ralph runs checks, or verification is blocked. |
 | `specs/` | Archived or named specs for milestones or alternatives. | `S3` or long-running work needs more than one durable spec. |
 | `plans/` | Archived or named plans for milestones, alternatives, or superseded approaches. | `S3` or long-running work needs plan history beyond `active-plan.md`. |
 | `runs/` | Optional per-run notes for substantial Ralph iterations or review/verification cycles. | Per-run execution detail would be too dense to preserve in `context-pack.md`. |
+
+### Artifact Recording Economy
+
+Record the least artifact state that preserves continuity. `context-pack.md` is
+the only fully self-contained resume packet; other artifacts should stay lean
+and avoid repeating repo path, branch, HEAD, full git state, next action,
+blockers, review state, or commit state unless that detail is intrinsic to the
+artifact's purpose.
+
+- `active-spec.md`: stable requirements only. Do not turn it into progress,
+  implementation notes, or git state.
+- `active-plan.md`: current approach, slices, tradeoffs, dependencies, and
+  verification strategy only. Do not duplicate the full queue or resume packet.
+- `task-queue.md`: task ids, status, risk, acceptance criteria, verification,
+  dependencies, and expected diff boundary only.
+- `verification.md`: concise command results, failures, skipped checks, and
+  gaps only. Prefer summaries over raw logs.
+- `context-pack.md`: full resume state and cross-artifact pointers. Update it
+  at pause, compact preparation, finish, blocker, milestone boundary, context
+  low stop, project switch, or material plan/spec change.
+- `specs/`, `plans/`, and `runs/`: use only for `S3` history or dense
+  milestone records, not normal slice logging.
 
 ### Artifact Persistence
 
@@ -159,11 +181,11 @@ Piper work artifacts are hub-owned project state. Keep them in
 `projects/<project-id>/work/` by default; do not move them into the registered
 project repo unless the user explicitly asks for a project-local copy.
 
-When an artifact changes, make it self-contained enough for a fresh session to
-resume without transcript archaeology: include the target repo path, branch,
-HEAD or relevant source commit, active scope, verification and review state,
-changed source areas, next exact action, blockers, and whether related source
-or hub changes are committed.
+When `context-pack.md` changes, make it self-contained enough for a fresh
+session to resume without transcript archaeology: include the target repo path,
+branch, HEAD or relevant source commit, active scope, verification and review
+state, changed source areas, next exact action, blockers, and whether related
+source or hub changes are committed.
 
 Artifact updates are normal `A0` local assistance while work is active. Do not
 ask after every artifact edit. Instead, disclose changed Piper artifacts at
@@ -186,19 +208,21 @@ Scope controls how strongly artifact persistence is surfaced:
 
 - `S0`: no artifact by default; no artifact commit prompt unless the user asked
   to record something.
-- `S1`: lightweight artifact continuity; mention changed artifacts at finish or
+- `S1`: prefer only `active-plan.md`; mention changed artifacts at finish or
   compact, and ask to commit only when the artifact affects future continuity.
-- `S2`: spec, plan, task queue, verification, or context artifacts are the
-  working contract; offer one artifact commit at planning finish, compact
-  preparation, finish mode, or material plan/spec changes.
+- `S2`: use `active-spec.md`, `active-plan.md`, optional `task-queue.md`, and
+  verification notes as the working contract; offer one artifact commit at
+  planning finish, compact preparation, finish mode, or material plan/spec
+  changes.
 - `S3`: multi-milestone artifact state is durable project coordination; treat
   milestone boundaries, compact preparation, finish mode, and material plan or
   spec changes as artifact persistence checkpoints.
 
-After ordinary Ralph slices, update and report useful artifacts, but do not ask
-to commit them unless the slice completes a meaningful milestone, materially
-changes the plan/spec, or the user is about to pause, compact, switch context,
-or finish.
+After ordinary Ralph slices, update and report `task-queue.md` and
+`verification.md` when they are in use. Do not update `context-pack.md` or ask
+to commit artifacts unless the slice completes a meaningful milestone,
+materially changes the plan/spec, or the user is about to pause, compact,
+switch context, or finish.
 
 ## Mode Routing
 

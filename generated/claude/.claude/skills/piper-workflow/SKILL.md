@@ -74,6 +74,9 @@ than escalating durable writes.
 Piper artifacts stay in `projects/<project-id>/work/` by default. Updating
 them during active work is allowed local assistance; committing those updates
 is a protected local git action and must go through `automation-policy`.
+Record artifacts economically: `context-pack.md` is the only fully
+self-contained resume packet; specs, plans, queues, and verification records
+should stay purpose-specific and avoid repeating full repo/git/resume state.
 
 Do not ask to commit after every artifact edit. At natural checkpoints, report
 changed artifacts separately from registered project source changes, inspect
@@ -82,14 +85,17 @@ whether Piper artifact changes are uncommitted. Ask once about committing
 Piper artifacts only when the scope or stopping point warrants it:
 
 - `S0`: only if the user explicitly asked to record artifacts.
-- `S1`: at finish or compact when the artifact matters for continuity.
-- `S2`: at planning finish, compact preparation, finish mode, or material
-  plan/spec changes.
+- `S1`: prefer only `active-plan.md`; ask at finish or compact only when the
+  artifact matters for continuity.
+- `S2`: use spec, plan, optional queue, and verification records; ask at
+  planning finish, compact preparation, finish mode, or material plan/spec
+  changes.
 - `S3`: at milestone boundaries, compact preparation, finish mode, or material
   plan/spec changes.
 
-After ordinary Ralph slices, update and report useful artifacts but avoid a
-commit prompt unless the slice is also a milestone, changes the plan/spec, or
+After ordinary Ralph slices, update and report `task-queue.md` and
+`verification.md` when they are in use. Avoid `context-pack.md` updates and
+commit prompts unless the slice is also a milestone, changes the plan/spec, or
 the user is about to pause, compact, switch projects, or finish.
 
 ## Scope And Risk

@@ -121,6 +121,10 @@ approval through `automation-policy.md`. Do not ask to commit after every
 artifact edit; ask only at scope-appropriate checkpoints defined in
 `STATION.md`.
 
+Record artifacts economically: `context-pack.md` is the only fully
+self-contained resume packet. Keep specs, plans, queues, and verification
+records lean and purpose-specific.
+
 ## Mode Routing
 
 `brainstorm` owns the decision-quality front door for the divergent phase —
@@ -248,9 +252,10 @@ post-compact context arrives via the `SessionStart` hook (with
 `hookSpecificOutput.additionalContext`). The hooks must not edit work
 records, commit, push, or invoke `/compact`.
 
-During Ralph Mode, prepare compact-safe state at natural stopping points by
-updating `projects/<project-id>/work/context-pack.md`, which also carries the
-handoff fields when pausing or handing off. If context is low or the next slice
+During Ralph Mode, update `context-pack.md` when pausing, preparing for compact,
+finishing, blocked, crossing a milestone, context is low, switching projects,
+or materially changing the plan/spec. Ordinary slice bookkeeping should stay in
+`task-queue.md` and `verification.md`. If context is low or the next slice
 needs a clean context, pause and tell the user the state is compact-ready and
 they may run `/compact`.
 
