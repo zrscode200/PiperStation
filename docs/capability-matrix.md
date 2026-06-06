@@ -9,4 +9,6 @@
 | Compact hooks | Prompt/session guidance | Pre/Post compact hooks | Auto-compaction config | Possible runtime feature |
 | Shared project ledger | Supported | Supported | Supported | Future |
 
-v1 supports Codex, Claude Code, and OpenCode. Raygent is a documented future adapter target.
+v1 supports Codex, Claude Code, and OpenCode. Raygent is a documented future
+adapter target; see `docs/piper-raygent-layering-note.md` for the intended
+Piper-as-product-layer / Raygent-as-kernel split.
