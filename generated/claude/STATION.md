@@ -229,10 +229,12 @@ bootstrap, install, update, registration, generated commands, hooks, settings,
 config, test harnesses, project or hub ownership, security policy, or automation
 policy.
 
-The main session must verify reviewer findings before acting, apply only valid
-in-scope fixes, turn valid out-of-scope findings into follow-up notes or tasks,
-and reverify review-driven fixes with the narrowest meaningful command for the
-fixed behavior. If a required or expected gate is skipped, record review debt
+The main session must validate reviewer findings before acting: give each
+finding an explicit verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or
+`false-positive` — before editing any code, then apply only `confirmed-in-scope`
+fixes, turn `confirmed-out-of-scope` findings into follow-up notes or tasks, and
+reverify review-driven fixes with the narrowest meaningful command for the fixed
+behavior. If a required or expected gate is skipped, record review debt
 and do not continue to dependent tasks until the debt is resolved or explicitly
 accepted by the user.
 

@@ -144,9 +144,11 @@ types; the packet type controls scope and report shape.
 
 The root session owns the work after a subagent returns:
 
-- Verify material findings before acting on them.
-- Apply only valid in-scope fixes or route valid out-of-scope findings into
-  follow-up notes or tasks.
+- Validate findings before acting: give each finding an explicit verdict —
+  `confirmed-in-scope`, `confirmed-out-of-scope`, or `false-positive` — before
+  editing any code.
+- Apply only `confirmed-in-scope` fixes or route `confirmed-out-of-scope`
+  findings into follow-up notes or tasks.
 - Decide whether to spawn the next phase, continue inline, ask the user, or
   stop.
 - Do not let a subagent approve automation, commit, push, invoke compact, or

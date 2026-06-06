@@ -104,9 +104,11 @@ Superpowers planning, `ralph` for one accepted implementation slice,
 `tester` only for explicit test-layer edits, and `docs_researcher` for
 documentation research.
 
-The main session stays responsible for the work. Verify each subagent finding
-before acting; apply only valid in-scope fixes; turn valid out-of-scope findings
-into follow-up notes or queue items.
+The main session stays responsible for the work. Validate each subagent finding
+before acting: give each an explicit verdict — `confirmed-in-scope`,
+`confirmed-out-of-scope`, or `false-positive` — before editing any code; apply
+only `confirmed-in-scope` fixes; turn `confirmed-out-of-scope` findings into
+follow-up notes or queue items.
 
 ## Durable Context
 

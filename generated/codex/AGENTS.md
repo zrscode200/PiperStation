@@ -211,8 +211,8 @@ phase is substantial enough to delegate. Send a delegation packet with role,
 phase, objective, user request, project state, accepted prior output, relevant
 files/context, allowed actions, forbidden actions, verification expectation,
 stop conditions, and expected report. Architecture concerns belong in
-`planner`; security concerns belong in `reviewer`. Verify all subagent findings
-in the main session before acting on them.
+`planner`; security concerns belong in `reviewer`. Validate all subagent
+findings in the main session before acting on them.
 
 ## Ralph Review Gate
 
@@ -229,9 +229,12 @@ bootstrap, install, update, registration, generated commands, hooks, settings,
 config, test harnesses, project or hub ownership, security policy, or automation
 policy.
 
-The main agent must verify reviewer findings before acting, apply only valid
-in-scope fixes, and reverify review-driven fixes with the narrowest meaningful
-command for the fixed behavior. Record the gate status or skip reason when
+The main agent must validate reviewer findings before acting: give each finding
+an explicit verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or
+`false-positive` — before editing any code, then apply only `confirmed-in-scope`
+fixes, turn `confirmed-out-of-scope` findings into follow-up notes or tasks, and
+reverify review-driven fixes with the narrowest meaningful command for the fixed
+behavior. Record the gate status or skip reason when
 active work records are in use. If a required or expected gate is skipped,
 record review debt in active work records and do not continue to dependent
 tasks until the debt is resolved or explicitly accepted by the user.
