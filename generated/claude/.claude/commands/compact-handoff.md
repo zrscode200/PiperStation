@@ -28,10 +28,10 @@ The user invoked this command with: `$ARGUMENTS`
    or transferring work.
 6. Report changed Piper artifacts separately from registered project source
    changes. State whether artifact changes are uncommitted in the hub.
-7. For `S2/S3`, or for `S1` when the artifact matters for continuity, ask once
-   whether to commit Piper artifact updates before compacting; do not commit
-   unless the checkpoint decision is made and the active permission profile
-   covers local git actions; otherwise route through `automation-policy`.
+7. Ask once whether to commit Piper artifact updates before compacting only when
+   those artifacts matter for future continuity; do not commit unless the
+   checkpoint decision is made and the active permission profile covers local
+   git actions; otherwise route through `automation-policy`.
 8. Report that the project is compact-ready and tell the user they may run
    `/compact`.
 

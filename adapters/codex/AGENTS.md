@@ -119,9 +119,8 @@ the real project repo and the Piper Station hub before finish or compact when
 artifacts changed. Updating artifacts is allowed local assistance; committing
 Piper artifact changes is a `local` permission action handled through
 `automation-policy.md` when the active profile does not already cover local
-git. Do not ask to commit after every artifact edit; ask only at
-scope-appropriate checkpoints defined in
-`STATION.md`.
+git. Do not ask to commit after every artifact edit; ask only at continuity
+checkpoints defined in `STATION.md`.
 
 Record artifacts economically: `context-pack.md` is the only fully
 self-contained resume packet. Keep specs, plans, queues, and verification
@@ -158,12 +157,14 @@ profile boundary. Prefer consequence language such as "I will keep this
 read-only" or "I will create Ralph-ready work records" over ceremonial mode
 announcements.
 
-Scope tiers:
+Scope tiers are advisory sizing, not artifact rules:
 
-- `S0`: direct small task; no artifact needed.
-- `S1`: short active plan in `projects/<project-id>/work/active-plan.md`.
-- `S2`: written spec and plan required before implementation.
-- `S3`: split into milestones or sub-specs.
+- `S0`: direct small task; stay in chat unless a durable need appears.
+- `S1`: modest work; use a lightweight plan only when continuity matters.
+- `S2`: substantial work; stable requirements, planning, decomposition, or
+  verification records may help before execution.
+- `S3`: broad or long-running work; split into milestones or sub-specs when that
+  keeps execution clear.
 
 Risk tiers:
 

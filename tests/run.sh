@@ -109,7 +109,8 @@ assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "U
 assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" '\$ARGUMENTS'
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "Make it better"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "stable problem, goals"
-assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "For \`S1\`, prefer only \`active-plan.md\`"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "for sizing only"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "when they do a clear job"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "Ralph-ready task list"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "If you cannot articulate what"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "project-local copy"
@@ -150,6 +151,8 @@ assert_contains "$codex_hub/AGENTS.md" "non-destructive worktree create or switc
 assert_contains "$codex_hub/.codex/agents/implementer.toml" "confirmed local profile coverage for source edits"
 assert_contains "$codex_hub/STATION.md" "Work Artifact Reference"
 assert_contains "$codex_hub/STATION.md" "Create these only under"
+assert_contains "$codex_hub/STATION.md" "Scope tiers are advisory sizing, not artifact rules"
+assert_contains "$codex_hub/STATION.md" "artifact creation"
 assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "Force Superpowers"
 assert_not_contains "$codex_hub/STATION.md" "does not bring back"
 assert_not_exists "$codex_hub/.codex/skills/superpowers-planning/SKILL.md"
@@ -238,7 +241,8 @@ assert_contains "$claude_hub/.claude/commands/ralph.md" "For ordinary slice-end 
 assert_contains "$claude_hub/.claude/commands/ralph.md" "Update \`context-pack.md\` only when"
 assert_contains "$claude_hub/.claude/commands/superpowers.md" "Make it better"
 assert_contains "$claude_hub/.claude/commands/superpowers.md" "stable problem, goals"
-assert_contains "$claude_hub/.claude/commands/superpowers.md" "For \`S1\`, prefer only \`active-plan.md\`"
+assert_contains "$claude_hub/.claude/commands/superpowers.md" "for sizing only"
+assert_contains "$claude_hub/.claude/commands/superpowers.md" "when they do a clear job"
 assert_contains "$claude_hub/.claude/commands/superpowers.md" "project-local copy"
 assert_contains "$claude_hub/.claude/commands/superpowers.md" "Piper artifact commit"
 assert_contains "$claude_hub/.claude/commands/superpowers.md" "only fully self-contained resume"
@@ -322,7 +326,8 @@ assert_contains "$opencode_hub/.opencode/commands/ralph.md" "For ordinary slice-
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "Update \`context-pack.md\` only when"
 assert_contains "$opencode_hub/.opencode/commands/superpowers.md" "Make it better"
 assert_contains "$opencode_hub/.opencode/commands/superpowers.md" "stable problem, goals"
-assert_contains "$opencode_hub/.opencode/commands/superpowers.md" "For \`S1\`, prefer only \`active-plan.md\`"
+assert_contains "$opencode_hub/.opencode/commands/superpowers.md" "for sizing only"
+assert_contains "$opencode_hub/.opencode/commands/superpowers.md" "when they do a clear job"
 assert_contains "$opencode_hub/.opencode/commands/superpowers.md" "project-local copy"
 assert_contains "$opencode_hub/.opencode/commands/superpowers.md" "Piper artifact commit"
 assert_contains "$opencode_hub/.opencode/commands/superpowers.md" "only fully self-contained resume"
@@ -373,6 +378,9 @@ for hub in "$codex_hub" "$claude_hub" "$opencode_hub"; do
   assert_contains "$hub/STATION.md" "decision-quality front door"
   assert_contains "$hub/STATION.md" "profiles decide whether action categories"
   assert_contains "$hub/STATION.md" "Risk tiers are implementation caution"
+  assert_contains "$hub/STATION.md" "Scope tiers are advisory sizing, not artifact rules"
+  assert_contains "$hub/STATION.md" "artifact creation"
+  assert_contains "$hub/STATION.md" "driven by durable need"
   assert_contains "$hub/STATION.md" "project source edits require \`local\` profile coverage"
   assert_contains "$hub/STATION.md" "exceptional actions only after explicit one-off approval"
   assert_contains "$hub/STATION.md" "Exceptional actions are outside standing profiles"
@@ -409,6 +417,8 @@ for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$openc
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Piper Workflow owns convergent execution"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Artifact Signal Policy"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Scope And Risk"
+  assert_contains "$skill_dir/piper-workflow/SKILL.md" "Scope is advisory sizing"
+  assert_contains "$skill_dir/piper-workflow/SKILL.md" "does not mechanically create artifacts"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "project source edits require \`local\` profile coverage"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "when \`local\` profile coverage exists"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Permission profiles control action boundaries separately"
@@ -674,6 +684,7 @@ if grep -R -n 'When an artifact changes, make it self-contained' "$ROOT/core" "$
 if grep -R -n 'Update useful active work records, including' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-broad-artifact-updates.log"; then cat "$TMP_ROOT/stale-broad-artifact-updates.log" >&2; fail "Ralph slice bookkeeping must not broadly update every active artifact"; fi
 if grep -R -n 'compact-safe reload state when active work records are in use' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-context-pack-every-planning.log"; then cat "$TMP_ROOT/stale-context-pack-every-planning.log" >&2; fail "Superpowers must defer context-pack unless a resume checkpoint is needed"; fi
 if grep -R -n 'prepare compact-safe state at natural stopping points by updating' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-context-pack-natural-stops.log"; then cat "$TMP_ROOT/stale-context-pack-natural-stops.log" >&2; fail "runtime roots must not imply every natural stop updates context-pack"; fi
+if grep -R -n -E 'no artifact needed|short active plan in|written spec and plan required before implementation|For `S1`, prefer only `active-plan.md`|For `S2\+`, write|scope controls artifact|artifact weight|scope-appropriate checkpoints' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-scope-artifact-rules.log"; then cat "$TMP_ROOT/stale-scope-artifact-rules.log" >&2; fail "scope tiers must stay advisory and must not mechanically create artifacts"; fi
 if grep -R -n 'piper-workflow router\|piper workflow handles lookup, registration, orientation' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-router.log"; then cat "$TMP_ROOT/stale-router.log" >&2; fail "active instructions must not describe piper-workflow as the broad router"; fi
 if grep -R -n 'openaiDeveloperDocs_\*: allow\|"openaiDeveloperDocs_\\\*": "allow"' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-openai-docs-permission.log"; then cat "$TMP_ROOT/stale-openai-docs-permission.log" >&2; fail "OpenCode docs-researcher must ask before OpenAI docs MCP use"; fi
 if grep -R -n 'read-only band\|creates no hub records' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-brainstorm-readonly.log"; then cat "$TMP_ROOT/stale-brainstorm-readonly.log" >&2; fail "brainstorm registration wording must acknowledge the deterministic write exception"; fi

@@ -104,7 +104,7 @@ actions):
 | "review this repo", "understand what this does", "what is this project", or a repo path with an explanation or review request | Orientation or review | None by default | Inspect the repo in place. Say the work is read-only and that registration or hub records will wait unless asked. |
 | "what would it take", "how should we approach", "compare this to", or "plan the refactor" before registration | Conversational planning | None by default | Produce a grounded plan in chat. Avoid hub records unless the user asks to formalize. |
 | "register this", "track this project", or "this is formal work now" | Registration | `project.md`, `memory.md`, and `decisions.md` only | Use the registration helper. Prefer hub-only records unless repo marker files are explicitly wanted. Do not create `work/` or start implementation. |
-| "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Create the durable record set the scope needs, such as active spec, active plan, task queue, context pack, and verification. State that source remains untouched. |
+| "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Create only the durable records the work needs: requirements, plan continuity, task decomposition, verification evidence, or compact/resume continuity. State that source remains untouched. |
 | "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the real project repo when `local` profile coverage exists | Confirm the selected task, diff boundary, risk, verification, writable repo access, and `local` profile coverage before editing. Route through `automation-policy` if coverage is absent. Execute one scoped slice. |
 | "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/exceptional action | Finish or permission-gated action | Local/external actions only after the workflow reaches that action and the permission profile allows it; exceptional actions only after explicit one-off approval | Summarize state, verification, and risk first. Route through `automation-policy` before crossing the active profile boundary or requesting exceptional approval. |
 
@@ -140,18 +140,18 @@ Registration must not create `work/`.
 ### Work Artifact Reference
 
 Create these only under `projects/<project-id>/work/`, never in the registered
-project repo. Use the active files for the current scope; use the archive
-directories only when substantial work needs preserved history.
+project repo. Use active files for the current work. Use archive directories
+only when substantial work needs preserved history.
 
 | Artifact | Purpose | Create or update when |
 | --- | --- | --- |
-| `active-spec.md` | Stable requirements: problem statement, goals, non-goals, acceptance criteria, risks, and open questions. | Work is `S2+`, requirements need durable agreement, or Ralph needs a stable target. |
-| `active-plan.md` | Current implementation approach, ordered slices, tradeoffs, dependencies, and verification strategy. | Work is `S1+` and the plan must survive compaction or handoff. |
+| `active-spec.md` | Stable requirements: problem statement, goals, non-goals, acceptance criteria, risks, and open questions. | Requirements need durable agreement, or Ralph needs a stable target. |
+| `active-plan.md` | Current implementation approach, ordered slices, tradeoffs, dependencies, and verification strategy. | The approach, sequence, or tradeoffs must survive compaction, handoff, or delayed execution. |
 | `task-queue.md` | Ralph-ready task ids with status, risk, acceptance criteria, verification, and expected diff boundary. | There are clear executable slices for Ralph or future sessions. |
 | `context-pack.md` | The full compact/resume packet: goal, current task, next exact action, key files, what to inspect first, branch/HEAD/status, verification state, review state, drift, blockers, stop reason, and what to hand a human or fresh agent. | Active work may pause, compact, finish, hit a blocker, reach a milestone, switch projects, or hand off. |
 | `verification.md` | Concise check evidence: commands run, results, failures, fallbacks, skipped checks, and remaining verification gaps. | Planning defines verification, Ralph runs checks, or verification is blocked. |
-| `specs/` | Archived or named specs for milestones or alternatives. | `S3` or long-running work needs more than one durable spec. |
-| `plans/` | Archived or named plans for milestones, alternatives, or superseded approaches. | `S3` or long-running work needs plan history beyond `active-plan.md`. |
+| `specs/` | Archived or named specs for milestones or alternatives. | Long-running work needs more than one durable spec. |
+| `plans/` | Archived or named plans for milestones, alternatives, or superseded approaches. | Long-running work needs plan history beyond `active-plan.md`. |
 | `runs/` | Optional per-run notes for substantial Ralph iterations or review/verification cycles. | Per-run execution detail would be too dense to preserve in `context-pack.md`. |
 
 ### Artifact Recording Economy
@@ -173,8 +173,8 @@ artifact's purpose.
 - `context-pack.md`: full resume state and cross-artifact pointers. Update it
   at pause, compact preparation, finish, blocker, milestone boundary, context
   low stop, project switch, or material plan/spec change.
-- `specs/`, `plans/`, and `runs/`: use only for `S3` history or dense
-  milestone records, not normal slice logging.
+- `specs/`, `plans/`, and `runs/`: use only for preserved milestone history,
+  alternatives, or dense execution detail, not normal slice logging.
 
 ### Artifact Persistence
 
@@ -192,10 +192,10 @@ Artifact updates are normal local assistance while work is active. Permission
 profiles gate whether a commit action can proceed; they do not make artifact
 commits automatic or change checkpoint timing. Do not ask after every artifact
 edit. Instead, disclose changed Piper artifacts at natural checkpoints and ask
-about a Piper artifact commit only when the scope or stopping point warrants
-it. Checkpoints include the end of formal planning, a milestone boundary,
-compact preparation, finish mode, before switching projects, or when the user
-says to pause, save, compact, finish, or commit.
+about a Piper artifact commit only when the stopping point or future continuity
+warrants it. Checkpoints include the end of formal planning, a milestone
+boundary, compact preparation, finish mode, before switching projects, or when
+the user says to pause, save, compact, finish, or commit.
 
 At every checkpoint:
 
@@ -208,19 +208,17 @@ At every checkpoint:
    `local` permission action under `automation-policy.md` and keep it separate
    from any registered project source commit.
 
-Scope controls how strongly artifact persistence is surfaced:
+Scope informs how strongly artifact persistence is surfaced; artifact creation
+is driven by durable need:
 
-- `S0`: no artifact by default; no artifact commit prompt unless the user asked
-  to record something.
-- `S1`: prefer only `active-plan.md`; mention changed artifacts at finish or
-  compact, and ask to commit only when the artifact affects future continuity.
-- `S2`: use `active-spec.md`, `active-plan.md`, optional `task-queue.md`, and
-  verification notes as the working contract; offer one artifact commit at
-  planning finish, compact preparation, finish mode, or material plan/spec
-  changes.
-- `S3`: multi-milestone artifact state is durable project coordination; treat
-  milestone boundaries, compact preparation, finish mode, and material plan or
-  spec changes as artifact persistence checkpoints.
+- `S0`: stay in chat unless the user asks to record something or a durable
+  decision, memory, or verification result appears.
+- `S1`: prefer a lightweight `active-plan.md` only when the plan matters for
+  continuity.
+- `S2`: likely benefits from stable requirements, a plan, task decomposition, or
+  verification evidence; create only the records needed for those jobs.
+- `S3`: likely needs milestone splits or preserved alternatives; use archive
+  directories only when history matters.
 
 After ordinary Ralph slices, update and report `task-queue.md` and
 `verification.md` when they are in use. Do not update `context-pack.md` or ask
@@ -246,12 +244,14 @@ Route requests through `brainstorm` (the front door), `piper-workflow`
 - Finish Mode: report verification, residual risk, changed files, and commit or
   pull request options without mutating git automatically.
 
-Scope tiers:
+Scope tiers are advisory sizing, not artifact rules:
 
-- `S0`: direct small task; no artifact needed.
-- `S1`: short active plan in `projects/<id>/work/active-plan.md`.
-- `S2`: written spec and plan required before implementation.
-- `S3`: split into milestones or sub-specs.
+- `S0`: direct small task; stay in chat unless a durable need appears.
+- `S1`: modest work; use a lightweight plan only when continuity matters.
+- `S2`: substantial work; stable requirements, planning, decomposition, or
+  verification records may help before execution.
+- `S3`: broad or long-running work; split into milestones or sub-specs when that
+  keeps execution clear.
 
 Risk tiers:
 

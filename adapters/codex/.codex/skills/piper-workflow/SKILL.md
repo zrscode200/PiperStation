@@ -67,12 +67,13 @@ registration. When intent reaches these rows, durable writes are expected. The
 full intent-to-writes map lives in `STATION.md`.
 
 Formal planning or Ralph preparation may create useful
-`projects/<id>/work/` records such as active spec, active plan, task queue,
-context pack, and verification. Ralph execution may update those records and
-edit only the real project repo when `local` profile coverage exists. Finish,
-local git, worktree, PR, dependency, network, CI, external, or exceptional
-actions route through `automation-policy` when they cross the active permission
-profile boundary.
+`projects/<id>/work/` records when they do a clear job: stabilize requirements,
+preserve an approach, decompose executable tasks, record verification evidence,
+or prepare compact/resume continuity. Ralph execution may update those records
+and edit only the real project repo when `local` profile coverage exists.
+Finish, local git, worktree, PR, dependency, network, CI, external, or
+exceptional actions route through `automation-policy` when they cross the
+active permission profile boundary.
 
 ## Artifact Persistence Checkpoints
 
@@ -88,16 +89,14 @@ Do not ask to commit after every artifact edit. At natural checkpoints, report
 changed artifacts separately from registered project source changes, inspect
 git state for both the real project repo and the Piper Station hub, and say
 whether Piper artifact changes are uncommitted. Ask once about committing
-Piper artifacts only when the scope or stopping point warrants it:
+Piper artifacts only when the stopping point or future continuity warrants it:
 
-- `S0`: only if the user explicitly asked to record artifacts.
-- `S1`: prefer only `active-plan.md`; ask at finish or compact only when the
-  artifact matters for continuity.
-- `S2`: use spec, plan, optional queue, and verification records; ask at
-  planning finish, compact preparation, finish mode, or material plan/spec
-  changes.
-- `S3`: at milestone boundaries, compact preparation, finish mode, or material
-  plan/spec changes.
+- `S0`: stay in chat unless a durable need appears.
+- `S1`: use a lightweight plan only when continuity matters.
+- `S2`: create only the records needed for stable requirements, planning,
+  decomposition, or verification.
+- `S3`: split or archive only when milestones or alternatives need preserved
+  history.
 
 After ordinary Ralph slices, update and report `task-queue.md` and
 `verification.md` when they are in use. Avoid `context-pack.md` updates and
@@ -106,9 +105,10 @@ the user is about to pause, compact, switch projects, or finish.
 
 ## Scope And Risk
 
-Use the scope and risk tiers defined in `STATION.md`. Scope controls artifact
-weight and review expectations; risk controls Ralph implementation caution.
-Permission profiles control action boundaries separately.
+Use the scope and risk tiers defined in `STATION.md`. Scope is advisory sizing:
+it guides planning depth, review expectations, and continuity pressure, but it
+does not mechanically create artifacts. Risk controls Ralph implementation
+caution. Permission profiles control action boundaries separately.
 
 ## Workspace Access
 

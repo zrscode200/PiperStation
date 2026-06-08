@@ -29,9 +29,9 @@ or automation-policy details matter.
 Match effort to the request; the divergent toolkit below is a set of moves to
 apply when they help, never a mandatory sequence. A direct factual question
 deserves a direct answer. A substantial, ambiguous, or high-stakes design
-question deserves the full arc. Scope is the dial (see Scope And Risk): `S0`
-answers or routes in one step; `S2`/`S3` warrants framing, real divergence, and
-investigation before any recommendation.
+question deserves the full arc. Use scope as advisory sizing (see Scope And
+Risk): `S0` answers or routes in one step; `S2`/`S3` warrants framing, real
+divergence, and investigation before any recommendation.
 
 Prefer consequence language over ceremony. Say "I will keep this read-only and
 we will settle the direction before writing anything" rather than announcing a
@@ -146,9 +146,9 @@ request is ambiguous, or the user asked only for orientation.
 ## Scope And Risk
 
 Classify enough to size the toolkit and choose the route. `STATION.md` defines
-the scope and risk tiers; `piper-workflow` owns detailed application of those
-tiers. Higher scope warrants more of the divergent toolkit before any
-recommendation.
+scope as advisory sizing and risk as implementation caution; `piper-workflow`
+owns detailed application. Higher scope warrants more of the divergent toolkit
+before any recommendation.
 
 ## Guardrails
 
