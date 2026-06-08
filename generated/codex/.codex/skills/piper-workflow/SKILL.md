@@ -1,6 +1,6 @@
 ---
 name: piper-workflow
-description: "Codex convergent execution for Piper Station project work — use when executing rather than exploring. Trigger via $piper-workflow or by stating the intent once direction is set: write a formal spec and plan, prepare a Ralph-ready queue, execute one scoped Ralph slice, prepare compact-safe handoff, or route a protected finish action. Routes to the matching procedure under references/."
+description: "Codex convergent execution for Piper Station project work — use when executing rather than exploring. Trigger via $piper-workflow or by stating the intent once direction is set: write a formal spec and plan, prepare a Ralph-ready queue, execute one scoped Ralph slice, prepare compact-safe handoff, or route a permission-gated finish action. Routes to the matching procedure under references/."
 ---
 
 # Piper Workflow (Codex)
@@ -29,9 +29,9 @@ if a request is actually still divergent, hand it back. Read `AGENTS.md` and
   before pause or compaction.
 
 Use the narrow skills when their specific consequence applies: `review` for
-explicit review or review gates, `automation-policy` before protected automation
-or external state changes. Orientation and registration route through the
-`brainstorm` skill.
+explicit review or review gates, and `automation-policy` before crossing the
+active permission profile boundary. Orientation and registration route through
+the `brainstorm` skill.
 
 ## Dispatch
 
@@ -40,9 +40,9 @@ Choose the smallest convergent path that fits:
 | User intent | Route | Procedure |
 | --- | --- | --- |
 | Verify direction, specify, or plan substantial work | Superpowers Mode | `references/superpowers.md` |
-| Execute one clear queued task | Ralph Mode | `references/ralph.md` and Ralph sections in `STATION.md` |
+| Execute one clear queued task | Ralph Mode | `references/ralph.md` and Ralph sections in `STATION.md`; project source edits require `local` profile coverage |
 | Review code or an implemented slice | Review Mode | the `review` skill |
-| Commit, PR, dependency, network, CI, destructive, or external action | Finish Mode or approval flow | the `automation-policy` skill |
+| Local git, worktree, PR, dependency, network, CI, exceptional, or external action | Finish Mode or permission flow | the `automation-policy` skill |
 | Pause or compact active work | compact handoff | `references/compact-handoff.md` and compact sections in `STATION.md` |
 | Orient, explore, or decide what to do | hand back | the `brainstorm` skill |
 
@@ -69,15 +69,17 @@ full intent-to-writes map lives in `STATION.md`.
 Formal planning or Ralph preparation may create useful
 `projects/<id>/work/` records such as active spec, active plan, task queue,
 context pack, and verification. Ralph execution may update those records and
-edit only the real project repo. Finish, commit, PR, dependency, network, CI,
-or destructive actions route through `automation-policy` before protected state
-changes.
+edit only the real project repo when `local` profile coverage exists. Finish,
+local git, worktree, PR, dependency, network, CI, external, or exceptional
+actions route through `automation-policy` when they cross the active permission
+profile boundary.
 
 ## Artifact Persistence Checkpoints
 
 Piper artifacts stay in `projects/<project-id>/work/` by default. Updating
 them during active work is allowed local assistance; committing those updates
-is a protected local git action and must go through `automation-policy`.
+is a `local` permission action and must go through `automation-policy` when the
+active permission profile does not cover local git.
 Record artifacts economically: `context-pack.md` is the only fully
 self-contained resume packet; specs, plans, queues, and verification records
 should stay purpose-specific and avoid repeating full repo/git/resume state.
@@ -105,8 +107,8 @@ the user is about to pause, compact, switch projects, or finish.
 ## Scope And Risk
 
 Use the scope and risk tiers defined in `STATION.md`. Scope controls artifact
-weight and review expectations; risk controls whether Ralph needs confirmation
-or must stop before execution.
+weight and review expectations; risk controls Ralph implementation caution.
+Permission profiles control action boundaries separately.
 
 ## Workspace Access
 
@@ -160,5 +162,9 @@ Create `projects/<project-id>/work/` only when useful. Registration (in
   project registration only.
 - Orientation and registration belong to `brainstorm`; this skill assumes a
   registered, converged target.
-- Do not commit, push, merge, delete, install dependencies, or run external
-  automation without explicit user approval; see `automation-policy.md`.
+- Do not commit, push, merge, create or switch worktrees, install dependencies,
+  or run external automation unless the selected workflow reached that action
+  and the active permission profile allows it; see `automation-policy.md`.
+  Delete, force-push, rewrite history, deploy to production, or take other
+  exceptional actions only after explicit one-off approval through
+  `automation-policy`.

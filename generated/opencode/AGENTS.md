@@ -27,15 +27,15 @@ When working in this hub, use these docs as the canonical references:
 - `CONVENTIONS.md`: naming, context, and work style conventions.
 - `TESTING.md`: verification expectations.
 - `SECURITY.md`: sensitive-data and boundary rules.
-- `automation-policy.md`: approvals required for automation and external
-  actions.
+- `automation-policy.md`: permission profiles and action-boundary gates.
 
 ## Instruction Precedence
 
 `STATION.md` defines shared behavior and ownership. `automation-policy.md`
-defines global automation policy. This `AGENTS.md` is the always-on OpenCode
-summary. Skills route intent, slash commands provide procedures, `opencode.json`
-sets runtime permissions, and agents stay within their delegated roles.
+defines permission profiles and action boundaries. This `AGENTS.md` is the
+always-on OpenCode summary. Skills route intent, slash commands provide
+procedures, `opencode.json` sets runtime permissions, and agents stay within
+their delegated roles.
 
 ## Project Records
 
@@ -80,9 +80,10 @@ When active work artifacts change, report them at natural checkpoints
 separately from registered project source changes. Check git state for both
 the real project repo and the Piper Station hub before finish or compact when
 artifacts changed. Updating artifacts is allowed local assistance; committing
-Piper artifact changes is a protected local git action and requires explicit
-approval through `automation-policy.md`. Do not ask to commit after every
-artifact edit; ask only at scope-appropriate checkpoints defined in
+Piper artifact changes is a `local` permission action handled through
+`automation-policy.md` when the active profile does not already cover local
+git. Do not ask to commit after every artifact edit; ask only at
+scope-appropriate checkpoints defined in
 `STATION.md`.
 
 Record artifacts economically: `context-pack.md` is the only fully
@@ -117,9 +118,10 @@ Route each request through the smallest mode that fits:
 Use `brainstorm` as the broad natural-language front door and `piper-workflow`
 for convergent execution. Use `/superpowers` for explicit formal planning,
 `/ralph` for explicit one-task execution, `review` for explicit review work or
-review gates, and `automation-policy` before protected automation or external
-actions. Prefer consequence language such as "I will keep this read-only" or "I
-will create Ralph-ready work records" over ceremonial mode announcements.
+review gates, and `automation-policy` before crossing the active permission
+profile boundary. Prefer consequence language such as "I will keep this
+read-only" or "I will create Ralph-ready work records" over ceremonial mode
+announcements.
 
 Scope tiers:
 
@@ -130,10 +132,29 @@ Scope tiers:
 
 Risk tiers:
 
-- `L0`: trivial or local.
-- `L1`: normal implementation.
-- `L2`: needs explicit user confirmation before Ralph executes.
-- `L3`: forbidden inside Ralph; stop and ask.
+- `L0`: routine implementation risk.
+- `L1`: normal implementation risk.
+- `L2`: guarded implementation risk; get explicit confirmation before Ralph
+  edits.
+- `L3`: blocked inside Ralph; stop for replanning, a human decision, or an
+  exceptional permission decision.
+
+Permission profiles:
+
+- `strict`: read-only inspection, planning, review, safe git status/log/diff
+  style commands, deterministic registration, and drafting.
+- `local`: `strict` plus registered project source edits, Piper artifact
+  updates, local checks/build/test, non-destructive worktree create or switch
+  operations, and non-destructive local git actions when the workflow has
+  reached that action.
+- `external`: `local` plus dependency install or update, networked commands,
+  push, pull request creation or update, CI reruns or repair, and other
+  non-destructive external-system actions.
+- `exceptional`: outside profiles; always requires explicit one-off approval.
+
+Permission profiles gate action categories. They do not change Piper phase
+routing, artifact checkpoints, Ralph review gates, or finish behavior. Record
+project-level profile preferences in `projects/<project-id>/decisions.md`.
 
 ## Working On A Project
 
@@ -153,7 +174,10 @@ Before editing a registered project:
 7. Make a short task-specific plan unless the user has asked only for review or
    explanation.
 8. Before Ralph execution or source edits, verify the real project repo is
-   writable in the active session or state that writable access is required.
+   writable in the active session and confirm the active permission profile
+   covers `local` source edits. If writable access or `local` profile coverage
+   is absent, state what is required and route profile coverage through
+   `automation-policy.md` before editing.
 9. Implement in the real project repo, using the repo's own conventions and
    verification commands.
 10. Update `projects/<project-id>/work/` only when active continuity is useful.
@@ -166,12 +190,12 @@ slices are implemented and initially verified, before marking the slice
 complete in active work records. The reviewer inspects the actual code or diff
 with the plan, spec, task queue, and verification logs as context.
 
-Review gate selection is based on scope and change impact. Risk tier determines
-whether execution needs explicit user approval. Review gates are required for
-`S2/S3` slices and queued tasks that touch foundational behavior such as
-bootstrap, install, update, registration, generated commands, hooks, settings,
-config, test harnesses, project or hub ownership, security policy, or automation
-policy.
+Review gate selection is based on scope and change impact. Risk tier controls
+Ralph implementation confirmation before editing, not permission profile.
+Review gates are required for `S2/S3` slices and queued tasks that touch
+foundational behavior such as bootstrap, install, update, registration,
+generated commands, hooks, settings, config, test harnesses, project or hub
+ownership, security policy, or automation policy.
 
 The main agent must validate reviewer findings before acting: give each finding
 an explicit verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or
@@ -201,8 +225,10 @@ file is shared by both AGENTS.md-based runtimes, compact-protection behavior
 must remain grounded in compact-safe work records rather than runtime-specific
 shell hooks.
 
-## Approval Boundaries
+## Permission Boundaries
 
-Ask before commits, pushes, merges, pull requests, dependency installs,
-worktree changes, long-running commands, networked commands, destructive git
-actions, CI changes, deployments, or external automation.
+Use `automation-policy.md` before crossing the active profile boundary for
+source edits, local git, pushes, merges, pull requests, dependency installs,
+non-destructive worktree create or switch operations, long-running commands,
+networked commands, CI changes, deployments, or external automation. Deleting
+worktrees and other exceptional actions always need explicit one-off approval.

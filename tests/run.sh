@@ -101,6 +101,9 @@ assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "r
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "confirmed-in-scope"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "confirmed-out-of-scope"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "false-positive"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "covers \`local\` project source edits"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "lacks \`local\` profile coverage for source edits"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "exceptional actions only after explicit"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "For ordinary slice-end bookkeeping"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Update \`context-pack.md\` only when"
 assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" '\$ARGUMENTS'
@@ -140,7 +143,11 @@ assert_contains "$codex_hub/STATION.md" "Piper work artifacts are hub-owned proj
 assert_contains "$codex_hub/STATION.md" "After ordinary Ralph slices"
 assert_contains "$codex_hub/AGENTS.md" "Artifact Persistence"
 assert_contains "$codex_hub/AGENTS.md" "Record artifacts economically"
-assert_contains "$codex_hub/AGENTS.md" "protected local git action"
+assert_contains "$codex_hub/AGENTS.md" "\`local\` permission action"
+assert_contains "$codex_hub/AGENTS.md" "Permission profiles gate action categories"
+assert_contains "$codex_hub/AGENTS.md" "covers \`local\` source edits"
+assert_contains "$codex_hub/AGENTS.md" "non-destructive worktree create or switch"
+assert_contains "$codex_hub/.codex/agents/implementer.toml" "confirmed local profile coverage for source edits"
 assert_contains "$codex_hub/STATION.md" "Work Artifact Reference"
 assert_contains "$codex_hub/STATION.md" "Create these only under"
 assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "Force Superpowers"
@@ -156,6 +163,8 @@ assert_contains "$codex_hub/.codex/hooks.json" '"PreCompact"'
 assert_contains "$codex_hub/.codex/hooks.json" '"PostCompact"'
 assert_contains "$codex_hub/.codex/hooks.json" '"startup|resume|compact"'
 assert_not_contains "$codex_hub/.codex/hooks.json" '"Stop"'
+assert_not_contains "$codex_hub/.codex/hooks.json" '"PreToolUse"'
+assert_not_contains "$codex_hub/.codex/hooks.json" '"PermissionRequest"'
 assert_contains "$codex_hub/.codex/config.toml" '[agents.architect]'
 assert_contains "$codex_hub/.codex/config.toml" '[agents.docs_researcher]'
 assert_contains "$codex_hub/.codex/config.toml" '[agents.implementer]'
@@ -218,8 +227,10 @@ assert_contains "$claude_hub/.piper/hub-manifest.json" '"claude"'
 assert_not_contains "$claude_hub/.piper/hub-manifest.json" '"codex"'
 assert_contains "$claude_hub/.claude/commands/compact-handoff.md" 'argument-hint: "\[project-id\] \[current task\]"'
 assert_contains "$claude_hub/.claude/commands/ralph.md" "Implementation Review Gate"
-assert_contains "$claude_hub/.claude/commands/ralph.md" "Risk tier controls approval before execution, not review selection"
+assert_contains "$claude_hub/.claude/commands/ralph.md" "Risk tier controls Ralph implementation confirmation"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "writable access is"
+assert_contains "$claude_hub/.claude/commands/ralph.md" "covers \`local\` project source edits"
+assert_contains "$claude_hub/.claude/commands/ralph.md" "lacks \`local\` profile coverage for source edits"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "Review gate examples"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "Post-Compact Resume"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "ordinary slice boundaries"
@@ -245,6 +256,11 @@ assert_contains "$claude_hub/.claude/skills/piper-workflow/SKILL.md" "Record art
 assert_contains "$claude_hub/.claude/skills/brainstorm/SKILL.md" "rather than execute"
 assert_contains "$claude_hub/CLAUDE.md" "Artifact Persistence"
 assert_contains "$claude_hub/CLAUDE.md" "Record artifacts economically"
+assert_contains "$claude_hub/CLAUDE.md" "Permission Profiles"
+assert_contains "$claude_hub/CLAUDE.md" "Permission profiles gate action categories"
+assert_contains "$claude_hub/CLAUDE.md" "covers \`local\` source edits"
+assert_contains "$claude_hub/CLAUDE.md" "non-destructive worktree create or switch"
+assert_contains "$claude_hub/.claude/agents/implementer.md" "coordinator confirmed \`local\` profile"
 assert_not_exists "$claude_hub/.claude/skills/superpowers-planning/SKILL.md"
 assert_not_exists "$claude_hub/.claude/skills/ralph-loop/SKILL.md"
 assert_contains "$claude_hub/.claude/agents/README.md" "same helper role set as the Codex surface"
@@ -257,6 +273,8 @@ assert_contains "$claude_hub/.claude/agents/docs-researcher.md" "mcpServers"
 assert_contains "$claude_hub/.claude/agents/docs-researcher.md" "mcp__openaiDeveloperDocs__search_openai_docs"
 assert_contains "$claude_hub/.claude/agents/security-reviewer.md" "Authentication and authorization"
 assert_contains "$claude_hub/.claude/settings.json" "PreCompact"
+assert_not_contains "$claude_hub/.claude/settings.json" "PreToolUse"
+assert_not_contains "$claude_hub/.claude/settings.json" "PermissionRequest"
 assert_contains "$claude_hub/STATION.md" "compact-ready"
 assert_not_contains "$claude_hub/.claude/commands/superpowers.md" "Force Superpowers"
 python3 -m json.tool "$claude_hub/.piper/hub-manifest.json" >/dev/null
@@ -295,6 +313,8 @@ assert_not_contains "$opencode_hub/.piper/hub-manifest.json" '"codex"'
 assert_not_contains "$opencode_hub/.piper/hub-manifest.json" '"claude"'
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "Implementation Review Gate"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "writable access is"
+assert_contains "$opencode_hub/.opencode/commands/ralph.md" "covers \`local\` project source edits"
+assert_contains "$opencode_hub/.opencode/commands/ralph.md" "lacks \`local\` profile coverage for source edits"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "Review gate examples"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "Post-Compact Resume"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "ordinary slice boundaries"
@@ -317,6 +337,11 @@ assert_contains "$opencode_hub/.opencode/skills/piper-workflow/SKILL.md" "Do not
 assert_contains "$opencode_hub/.opencode/skills/piper-workflow/SKILL.md" "Record artifacts economically"
 assert_contains "$opencode_hub/AGENTS.md" "Artifact Persistence"
 assert_contains "$opencode_hub/AGENTS.md" "Record artifacts economically"
+assert_contains "$opencode_hub/AGENTS.md" "Permission profiles"
+assert_contains "$opencode_hub/AGENTS.md" "Permission profiles gate action categories"
+assert_contains "$opencode_hub/AGENTS.md" "covers \`local\` source edits"
+assert_contains "$opencode_hub/AGENTS.md" "non-destructive worktree create or switch"
+assert_contains "$opencode_hub/.opencode/agents/implementer.md" "coordinator confirmed \`local\` profile"
 assert_not_exists "$opencode_hub/.opencode/skills/superpowers-planning/SKILL.md"
 assert_not_exists "$opencode_hub/.opencode/skills/ralph-loop/SKILL.md"
 assert_contains "$opencode_hub/.opencode/agents/README.md" "same helper role set as the Codex and Claude Code"
@@ -346,6 +371,23 @@ for hub in "$codex_hub" "$claude_hub" "$opencode_hub"; do
   assert_contains "$hub/STATION.md" "brainstorm"
   assert_contains "$hub/STATION.md" "owns convergent execution"
   assert_contains "$hub/STATION.md" "decision-quality front door"
+  assert_contains "$hub/STATION.md" "profiles decide whether action categories"
+  assert_contains "$hub/STATION.md" "Risk tiers are implementation caution"
+  assert_contains "$hub/STATION.md" "project source edits require \`local\` profile coverage"
+  assert_contains "$hub/STATION.md" "exceptional actions only after explicit one-off approval"
+  assert_contains "$hub/STATION.md" "Exceptional actions are outside standing profiles"
+  assert_contains "$hub/automation-policy.md" "Permission Profiles"
+  assert_contains "$hub/automation-policy.md" "\`strict\`"
+  assert_contains "$hub/automation-policy.md" "\`local\`"
+  assert_contains "$hub/automation-policy.md" "\`external\`"
+  assert_contains "$hub/automation-policy.md" "\`exceptional\`"
+  assert_contains "$hub/automation-policy.md" "profile is a gate, not a trigger"
+  assert_contains "$hub/automation-policy.md" "registered project source edits"
+  assert_contains "$hub/automation-policy.md" "Ralph implementation edits are \`local\` permission actions"
+  assert_contains "$hub/automation-policy.md" "Non-destructive worktree creation or switching is"
+  assert_contains "$hub/automation-policy.md" "deleting worktrees"
+  assert_contains "$hub/automation-policy.md" "do not edit bootstrap-managed runtime config files"
+  assert_contains "$hub/automation-policy.md" "add hooks as the profile gate"
 done
 assert_contains "$codex_hub/AGENTS.md" "piper-workflow"
 assert_contains "$codex_hub/AGENTS.md" "brainstorm"
@@ -367,6 +409,9 @@ for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$openc
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Piper Workflow owns convergent execution"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Artifact Signal Policy"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Scope And Risk"
+  assert_contains "$skill_dir/piper-workflow/SKILL.md" "project source edits require \`local\` profile coverage"
+  assert_contains "$skill_dir/piper-workflow/SKILL.md" "when \`local\` profile coverage exists"
+  assert_contains "$skill_dir/piper-workflow/SKILL.md" "Permission profiles control action boundaries separately"
   assert_not_exists "$skill_dir/superpowers-planning/SKILL.md"
   assert_not_exists "$skill_dir/ralph-loop/SKILL.md"
   assert_contains "$skill_dir/review/SKILL.md" "Do not use this skill for general repo orientation"
@@ -377,8 +422,15 @@ for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$openc
   assert_contains "$skill_dir/review/SKILL.md" "false-positive"
   assert_contains "$skill_dir/automation-policy/SKILL.md" "Do not use this skill for ordinary local inspection"
   assert_contains "$skill_dir/automation-policy/SKILL.md" "canonical global policy"
-  assert_contains "$skill_dir/automation-policy/SKILL.md" "protected-action execution checklist and approval gate"
-  assert_contains "$skill_dir/automation-policy/SKILL.md" "Protected automation is not delegated"
+  assert_contains "$skill_dir/automation-policy/SKILL.md" "permission-profile manager and action-boundary gate"
+  assert_contains "$skill_dir/automation-policy/SKILL.md" "Permission decisions and exceptional actions"
+  assert_contains "$skill_dir/automation-policy/SKILL.md" "Registered project source edits are \`local\` permission actions"
+  assert_contains "$skill_dir/automation-policy/SKILL.md" "must use this skill before editing source"
+  assert_contains "$skill_dir/automation-policy/SKILL.md" "Non-destructive worktree creation or switching is"
+  assert_contains "$skill_dir/automation-policy/SKILL.md" "\`exceptional\` is outside standing profiles"
+  assert_contains "$skill_dir/automation-policy/SKILL.md" "\`strict\`, \`local\`, \`external\`, or"
+  assert_contains "$skill_dir/automation-policy/SKILL.md" "do not edit bootstrap-managed runtime config files"
+  assert_contains "$skill_dir/automation-policy/SKILL.md" "hooks as the profile gate"
   assert_contains "$skill_dir/automation-policy/SKILL.md" "projects/<project-id>/decisions.md"
   assert_not_contains "$skill_dir/automation-policy/SKILL.md" "Record durable opt-ins or policy changes in"
   assert_not_contains "$skill_dir/automation-policy/SKILL.md" "Default Classifications"
@@ -626,6 +678,9 @@ if grep -R -n 'piper-workflow router\|piper workflow handles lookup, registratio
 if grep -R -n 'openaiDeveloperDocs_\*: allow\|"openaiDeveloperDocs_\\\*": "allow"' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-openai-docs-permission.log"; then cat "$TMP_ROOT/stale-openai-docs-permission.log" >&2; fail "OpenCode docs-researcher must ask before OpenAI docs MCP use"; fi
 if grep -R -n 'read-only band\|creates no hub records' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-brainstorm-readonly.log"; then cat "$TMP_ROOT/stale-brainstorm-readonly.log" >&2; fail "brainstorm registration wording must acknowledge the deterministic write exception"; fi
 if grep -R -n -E 'automation approval\. Route those through|automation approval.*piper-workflow' "$ROOT/core/skills/review/SKILL.md" "$ROOT/generated/codex/.codex/skills/review/SKILL.md" "$ROOT/generated/claude/.claude/skills/review/SKILL.md" "$ROOT/generated/opencode/.opencode/skills/review/SKILL.md" > "$TMP_ROOT/stale-review-automation-routing.log"; then cat "$TMP_ROOT/stale-review-automation-routing.log" >&2; fail "review skill must route automation approval directly to automation-policy"; fi
+if grep -R -n -E '(^|[^[:alnum:]_])A[0-3]([^[:alnum:]_]|$)|A-tier|Automation Tiers|automation tiers' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-automation-tiers.log"; then cat "$TMP_ROOT/stale-automation-tiers.log" >&2; fail "active instructions must use permission profiles, not stale automation tiers"; fi
+if grep -R -n -E 'protected local git action|Risk tier controls approval|Risk tier determines whether execution|L2.*dependency|dependency or CI action' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-permission-risk-mix.log"; then cat "$TMP_ROOT/stale-permission-risk-mix.log" >&2; fail "active instructions must keep Ralph risk separate from permission profiles"; fi
+if grep -R -n -E 'protected finish action|Do not commit, push, merge, delete, install dependencies|exceptional actions through the permission profile gate|exceptional actions may proceed|Only after the workflow reaches that action and the permission profile allows it' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-permission-profile-semantics.log"; then cat "$TMP_ROOT/stale-permission-profile-semantics.log" >&2; fail "active instructions must keep exceptional actions one-off and source edits locally gated"; fi
 if grep -R -n '\.codex/commands' "$ROOT/core" "$ROOT/adapters" "$ROOT/docs/capability-matrix.md" "$ROOT/generated" > "$TMP_ROOT/codex-commands.log"; then
   if grep -v -e 'does not' -e 'not auto-surface' "$TMP_ROOT/codex-commands.log" > "$TMP_ROOT/codex-commands-active.log"; then
     cat "$TMP_ROOT/codex-commands-active.log" >&2

@@ -15,7 +15,8 @@ Ralph-ready tasks before substantial implementation.
 Use this command for formal planning, not for divergent exploration or general
 repo orientation (those belong to `brainstorm`), implementation, review, or
 automation approval. Natural-language routing reaches this behavior through
-`piper-workflow`; protected actions still route through `automation-policy`.
+`piper-workflow`; actions that cross the active permission profile boundary
+still route through `automation-policy`.
 
 ## Steps
 
@@ -49,7 +50,8 @@ automation approval. Natural-language routing reaches this behavior through
     changed, and state whether those artifact changes are uncommitted.
 12. For `S2+`, offer one Piper artifact commit at planning finish; for `S1`,
     ask only if the active plan matters for future continuity. Do not commit
-    unless the user approves through `automation-policy`.
+    unless the checkpoint decision is made and the active permission profile
+    covers local git actions; otherwise route through `automation-policy`.
 13. Stop before implementation unless the user explicitly asks to proceed.
 
 Registration must not create `projects/<project-id>/work/`; OpenCode
@@ -90,7 +92,8 @@ of planning, but committing them is not automatic. At the end of planning,
 summarize the artifact files touched, their role in the next Ralph slice or
 future session, and whether they remain uncommitted in the Piper Station hub.
 Offer a single artifact commit only at the scope-appropriate boundary described
-in `STATION.md`.
+in `STATION.md`; permission profiles gate whether that local git action can
+proceed, not whether the checkpoint exists.
 
 ## Spec Shape
 

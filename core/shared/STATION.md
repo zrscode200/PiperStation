@@ -38,8 +38,8 @@ Use this order when instructions overlap:
 
 1. `STATION.md` defines shared Piper Station behavior, project-record
    ownership, dispatch boundaries, work artifacts, compaction, and Ralph gates.
-2. `automation-policy.md` defines the global automation policy and A-tier
-   classifications.
+2. `automation-policy.md` defines permission profiles and action-boundary
+   gates.
 3. Runtime root docs (`AGENTS.md`, `CLAUDE.md`, and `opencode.json`
    instruction lists) are always-on summaries that adapt the shared behavior to
    each harness.
@@ -77,9 +77,9 @@ Use this dispatch table when intent is unclear:
 | Register a repo | `brainstorm`, `/add-project`, or `./bin/add-project` | deterministic registration helper |
 | Orient, explore, compare options, or decide what to do | `brainstorm` | `brainstorm` |
 | Verify a direction, specify, or plan substantial work | Superpowers Mode or `/superpowers` | `piper-workflow`, `/superpowers`, and this guide |
-| Execute one clear queued task | Ralph Mode or `/ralph` | `/ralph` and this guide |
+| Execute one clear queued task | Ralph Mode or `/ralph` | `/ralph` and this guide; project source edits require `local` profile coverage |
 | Review code or an implemented slice | Review Mode | `review` |
-| Commit, PR, dependency, network, CI, destructive, or external action | Finish Mode or explicit approval flow | `automation-policy` |
+| Local git, worktree, PR, dependency, network, CI, exceptional, or external action | Finish Mode or permission approval flow | `automation-policy` |
 | Pause or compact active work | `/compact-handoff` | compact handoff guidance |
 
 If a project-work request is ambiguous or arrives without a slash command, treat
@@ -96,7 +96,8 @@ Infer durable artifacts from the user's intent signal and state the consequence
 when it matters. `brainstorm` acts on the front-door band: read-only
 orientation and conversational planning, plus explicit deterministic
 registration. The convergent rows below belong to `piper-workflow` (formal
-planning, Ralph execution) and `automation-policy` (finish):
+planning, Ralph execution) and `automation-policy` (permission-gated finish
+actions):
 
 | User signal | Interpretation | Durable writes | Assistant stance |
 | --- | --- | --- | --- |
@@ -104,13 +105,13 @@ planning, Ralph execution) and `automation-policy` (finish):
 | "what would it take", "how should we approach", "compare this to", or "plan the refactor" before registration | Conversational planning | None by default | Produce a grounded plan in chat. Avoid hub records unless the user asks to formalize. |
 | "register this", "track this project", or "this is formal work now" | Registration | `project.md`, `memory.md`, and `decisions.md` only | Use the registration helper. Prefer hub-only records unless repo marker files are explicitly wanted. Do not create `work/` or start implementation. |
 | "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Create the durable record set the scope needs, such as active spec, active plan, task queue, context pack, and verification. State that source remains untouched. |
-| "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the real project repo | Confirm the selected task, diff boundary, risk, verification, and writable repo access before editing. Execute one scoped slice. |
-| "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/destructive action | Finish or protected automation | Only after explicit approval where required | Summarize state, verification, and risk first. Ask for approval before protected state changes. |
+| "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the real project repo when `local` profile coverage exists | Confirm the selected task, diff boundary, risk, verification, writable repo access, and `local` profile coverage before editing. Route through `automation-policy` if coverage is absent. Execute one scoped slice. |
+| "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/exceptional action | Finish or permission-gated action | Local/external actions only after the workflow reaches that action and the permission profile allows it; exceptional actions only after explicit one-off approval | Summarize state, verification, and risk first. Route through `automation-policy` before crossing the active profile boundary or requesting exceptional approval. |
 
 Ambiguous signals must not silently escalate durable writes. If the next step
-would create hub records, edit project source, or take protected action and the
-user's intent is unclear, state the assumption and ask or choose the less
-durable action.
+would create hub records, edit project source (a `local` permission action), or
+cross the active permission profile boundary and the user's intent is unclear,
+state the assumption and ask or choose the less durable action.
 
 ## Project Records
 
@@ -187,12 +188,14 @@ branch, HEAD or relevant source commit, active scope, verification and review
 state, changed source areas, next exact action, blockers, and whether related
 source or hub changes are committed.
 
-Artifact updates are normal `A0` local assistance while work is active. Do not
-ask after every artifact edit. Instead, disclose changed Piper artifacts at
-natural checkpoints and ask about a Piper artifact commit only when the scope
-or stopping point warrants it. Checkpoints include the end of formal planning,
-a milestone boundary, compact preparation, finish mode, before switching
-projects, or when the user says to pause, save, compact, finish, or commit.
+Artifact updates are normal local assistance while work is active. Permission
+profiles gate whether a commit action can proceed; they do not make artifact
+commits automatic or change checkpoint timing. Do not ask after every artifact
+edit. Instead, disclose changed Piper artifacts at natural checkpoints and ask
+about a Piper artifact commit only when the scope or stopping point warrants
+it. Checkpoints include the end of formal planning, a milestone boundary,
+compact preparation, finish mode, before switching projects, or when the user
+says to pause, save, compact, finish, or commit.
 
 At every checkpoint:
 
@@ -201,8 +204,9 @@ At every checkpoint:
 2. Inspect git state for both the registered project repo and the Piper
    Station hub when artifacts changed.
 3. State whether artifact changes are uncommitted in the hub.
-4. Ask before committing artifacts; a Piper artifact commit is an `A1`
-   protected local git action under `automation-policy.md`.
+4. If the workflow checkpoint chooses an artifact commit, treat it as a
+   `local` permission action under `automation-policy.md` and keep it separate
+   from any registered project source commit.
 
 Scope controls how strongly artifact persistence is surfaced:
 
@@ -251,17 +255,31 @@ Scope tiers:
 
 Risk tiers:
 
-- `L0`: trivial or local.
-- `L1`: normal implementation.
-- `L2`: explicit user confirmation required before Ralph executes.
-- `L3`: forbidden inside Ralph; stop and ask.
+- `L0`: routine implementation risk, tiny and obvious with very low blast
+  radius.
+- `L1`: normal implementation risk with clear acceptance criteria and local
+  verification.
+- `L2`: guarded implementation risk; Ralph must get explicit user confirmation
+  before editing because the task touches sensitive behavior, shared contracts,
+  broad coupling, generated/runtime configuration, unclear rollback, or
+  materially ambiguous requirements.
+- `L3`: blocked inside Ralph; stop for replanning, a human decision, or an
+  exceptional permission decision.
+
+Risk tiers are implementation caution, not permission classes. Permission
+profiles decide whether action categories such as source edits, local git,
+non-destructive worktree changes, dependency, network, pull request, or CI may
+proceed. Exceptional actions are outside standing profiles and require explicit
+one-off approval.
 
 ## Ralph Review Gate
 
 Before Ralph edits project source, verify the real project repo is writable in
-the active session. If the repo is outside the current workspace or sandbox,
-state that writable access is required before execution instead of declaring
-the task Ralph-ready.
+the active session and confirm the active permission profile covers `local`
+source edits. If the repo is outside the current workspace or sandbox, state
+that writable access is required before execution instead of declaring the task
+Ralph-ready. If `local` profile coverage is absent, route through
+`automation-policy` before editing.
 
 During Ralph Mode, run a read-only implementation review after substantial
 slices are implemented and initially verified, before marking the slice
@@ -269,11 +287,11 @@ complete in active work records. The reviewer inspects the actual code or diff
 with the active spec, plan, task queue, and verification logs as context.
 
 Review gate selection is based on scope and change impact. Risk tier controls
-approval before execution, not review selection. Review gates are required for
-`S2/S3` slices and queued tasks that touch foundational behavior such as
-bootstrap, install, update, registration, generated commands, hooks, settings,
-config, test harnesses, project or hub ownership, security policy, or automation
-policy.
+Ralph execution confirmation before editing, not review selection or permission
+profile. Review gates are required for `S2/S3` slices and queued tasks that
+touch foundational behavior such as bootstrap, install, update, registration,
+generated commands, hooks, settings, config, test harnesses, project or hub
+ownership, security policy, or automation policy.
 
 The main session must validate reviewer findings before acting: give each
 finding an explicit verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or

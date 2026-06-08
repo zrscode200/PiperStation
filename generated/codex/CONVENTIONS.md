@@ -12,5 +12,5 @@ Routine progress, raw command output, temporary plans, secrets, and sensitive
 logs do not belong in durable hub records.
 
 Use Ralph review gates for substantial slices and queued foundational work.
-Risk tier controls execution approval; review gate selection comes from scope
-and change impact.
+Risk tier controls Ralph implementation caution; permission profiles control
+action boundaries. Review gate selection comes from scope and change impact.

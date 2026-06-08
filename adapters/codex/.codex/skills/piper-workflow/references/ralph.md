@@ -13,8 +13,9 @@ Implementation Review Gate when required or expected, and updates compact-safe
 records when active work records are in use.
 
 Ralph is not a shell runner and not a general planner. Use it after a task is
-clear or `projects/<project-id>/work/task-queue.md` is ready. Protected
-actions still route through the `automation-policy` skill.
+clear or `projects/<project-id>/work/task-queue.md` is ready. Actions that
+cross the active permission profile boundary still route through the
+`automation-policy` skill.
 
 ## Steps
 
@@ -32,18 +33,22 @@ actions still route through the `automation-policy` skill.
 5. Verify the real project repo is writable in the active session. If the repo
    is outside the current Codex sandbox, state that writable access is
    required (e.g. start Codex with `--add-dir <project-repo>`) before
-   execution instead of declaring the task Ralph-ready.
+   execution instead of declaring the task Ralph-ready. Confirm the active
+   permission profile covers `local` project source edits; if not, route
+   through `automation-policy` before editing.
 6. State the selected task and expected diff boundary before editing.
 7. Mark the task active in `projects/<project-id>/work/task-queue.md` when a
    queue exists and active work records are in use.
 8. Stop if the task is ambiguous, lacks verification, is `L3`, is outside the
-   approved spec or plan, or is `L2` without explicit user confirmation.
+   approved spec or plan, lacks `local` profile coverage for source edits, or
+   is `L2` without explicit user confirmation.
 9. Implement only the selected task in the real project repo.
 10. Run the narrowest meaningful initial verification.
 11. Run the Implementation Review Gate based on scope and change impact:
    required for `S2/S3` and queued foundational work, expected for meaningful
    behavior-changing `S1`, optional for `S0/L0`, docs-only, or trivial work.
-   Risk tier controls approval before execution, not review selection.
+   Risk tier controls Ralph implementation confirmation before editing, not
+   review selection or permission profile.
 12. Validate reviewer findings before editing: give each finding an explicit
     verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or
     `false-positive` — and do not edit code until every finding has one. Then
@@ -71,9 +76,12 @@ actions still route through the `automation-policy` skill.
 18. Prepare compact-safe state at natural stopping points.
 19. Continue only if the next task is safe and the user asked for continuation.
 
-Do not commit, push, open PRs, create worktrees, install dependencies, or run
-external automation unless the user explicitly asks. Ralph prepares for
-compaction; it does not invoke `/compact` itself.
+Do not commit, push, open PRs, create or switch worktrees, install dependencies,
+or run external automation unless the selected workflow reached that action and
+the active permission profile allows it. Delete, force-push, rewrite history,
+deploy to production, or take other exceptional actions only after explicit
+one-off approval through `automation-policy`. Ralph prepares for compaction; it
+does not invoke `/compact` itself.
 
 ## Drift And Stop Conditions
 
@@ -88,10 +96,12 @@ Drift-check the actual diff:
 
 Stop and hand control back when the same verification fails twice without
 meaningful progress, requirements are ambiguous, implementation drifts outside
-the selected task, an `L2` task lacks approval, an `L3` action would be
-required, tests or builds cannot run and no fallback exists, active work
-records cannot be updated when needed for continuation, a required review gate
-cannot run, or the plan appears wrong after repeated implementation attempts.
+the selected task, an `L2` task lacks confirmation, `L3` implementation risk
+would be required, the next action crosses the active permission profile
+boundary without sufficient profile coverage, tests or builds cannot run and
+no fallback exists, active work records cannot be updated when needed for
+continuation, a required review gate cannot run, or the plan appears wrong
+after repeated implementation attempts.
 
 ## Review Gate Details
 
@@ -104,8 +114,9 @@ Review gate examples:
 - Meaningful `S1` behavior change: gate expected.
 - Queued bootstrap, registration, hook/config, or test-harness slice: gate
   required.
-- `L2` dependency or CI action: get approval before execution; choose the gate
-  from scope and impact.
+- Dependency install, network, pull request, CI, or other external action:
+  route the action through `automation-policy`; choose the gate from scope and
+  impact.
 
 When the gate runs, spawn the `reviewer` subagent (declared in
 `.codex/config.toml`). The reviewer inspects the actual changed code or diff
@@ -146,7 +157,8 @@ When active work records are in use:
 4. Report artifact files updated in the Piper Station hub and whether they are
    committed. If the stop is a milestone boundary, compact preparation, finish
    mode, project switch, or material plan/spec change, ask once whether to
-   commit the Piper artifact updates through `automation-policy`.
+   commit the Piper artifact updates; route through `automation-policy` if the
+   active profile does not cover local git.
 
 If the next task is safe and context is not a concern, continue normally. If
 context is low, a milestone just finished, or the next slice needs a clean

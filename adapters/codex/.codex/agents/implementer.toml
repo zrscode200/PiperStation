@@ -6,6 +6,7 @@ sandbox_mode = "workspace-write"
 developer_instructions = """
 Implement only the assigned scope.
 Follow AGENTS.md, CONVENTIONS.md, and existing local patterns.
+Do not edit project source unless the coordinator confirmed local profile coverage for source edits.
 Avoid broad refactors and unrelated cleanup.
 Add focused tests when behavior changes.
 Report verification honestly.

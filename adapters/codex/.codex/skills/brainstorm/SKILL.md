@@ -134,7 +134,7 @@ brief.
 | "make this a formal plan", "prepare for Ralph", "create the queue", "set this up for later" | `piper-workflow` — formal planning |
 | "start Ralph", "build task X", "execute the queue item", "implement the plan" | `piper-workflow` — Ralph execution |
 | "review this change" or an implemented slice or review gate | `review` |
-| "commit", "open a PR", "push", "install", "run CI", or external/destructive action | `automation-policy` |
+| "commit", "open a PR", "push", "install", "run CI", worktree change, or external/exceptional action | `automation-policy` |
 | "pause", "hand off", or "get this compact-ready" | `piper-workflow` — compact handoff |
 
 Wait for go-ahead when the route requires confirmation, risk is `L2`, the
@@ -155,5 +155,9 @@ recommendation.
 - Registration runs only through the deterministic helper.
 - Do not copy source code into the hub.
 - Hand convergent work to `piper-workflow`, `review`, or `automation-policy`.
-- Do not commit, push, merge, delete, install dependencies, or run external
-  automation without explicit user approval; see `automation-policy.md`.
+- Do not commit, push, merge, create or switch worktrees, install dependencies,
+  or run external automation unless the selected workflow has reached that
+  action and the active permission profile allows it; see
+  `automation-policy.md`. Delete, force-push, rewrite history, deploy to
+  production, or take other exceptional actions only after explicit one-off
+  approval through `automation-policy`.
