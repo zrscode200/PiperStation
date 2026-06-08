@@ -42,8 +42,8 @@ case "$source" in
     cat <<'EOF'
 
 Resume guidance:
-- Reload projects/<id>/project.md, memory.md, decisions.md, and work/context-pack.md when present.
-- Check work/task-queue.md, active-plan.md, and verification.md when present.
+- Reload projects/<id>/project.md, memory.md, optional decisions.md, and work/context-pack.md when present.
+- Check work/active-work.md, work/build-log.md, optional work/task-queue.md, and work/roadmap.md when relevant.
 - Verify live branch, HEAD, and git status in the real project repo before editing.
 - Rebuild the active task neighborhood from named files, changed files, relevant tests, docs, generated surfaces, and known reference paths.
 - Expand beyond the packet when the resume state is stale, acceptance criteria are missing, verification is failing, generated parity is unclear, security or permissions behavior is involved, or review scope requires it.

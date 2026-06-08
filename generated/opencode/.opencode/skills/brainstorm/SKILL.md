@@ -6,7 +6,7 @@ description: "Use when the user wants to explore, understand, decide, or explici
 # Brainstorm
 
 Brainstorm is where you decide what is worth doing. The rest of Piper Station —
-registration, specs, task queues, Ralph, compaction — is a convergence engine
+registration, active work records, Ralph, compaction — is a convergence engine
 that produces durable, executable work. Brainstorm is the counterweight: the
 space to frame a problem, weigh options, and ground them in reality *before*
 that machinery commits. It answers "what should we build, and is it the right
@@ -47,9 +47,9 @@ Ground the conversation in the actual project before reasoning about it:
    `project_id` entries (with `description` where present) and ask which to use.
 3. If the repo is not registered and the user wants project work, ask whether to
    register it first.
-4. Read `projects/<project-id>/project.md`, `memory.md`, and `decisions.md` for
-   the canonical record. Treat the registry as the lookup index; treat
-   `project.md` as authoritative.
+4. Read `projects/<project-id>/project.md`, `memory.md`, and optional
+   `decisions.md` when it exists for the canonical record. Treat the registry
+   as the lookup index; treat `project.md` as authoritative.
 5. Read `projects/<project-id>/work/context-pack.md` when it exists.
 6. Inspect the real repo path with `git status`, current branch, current HEAD,
    and the files relevant to the request.
@@ -116,10 +116,10 @@ intent-to-writes map lives in `STATION.md`.
 
 The front-door band covers read-only orientation and conversational planning,
 plus explicit deterministic registration. Registration may create only
-`project.md`, `memory.md`, `decisions.md`, `projects/registry.json`, and
-optional repo markers through the helper. Beyond registration — formal
-planning, Ralph execution, finish, or automation — the signal is convergent:
-escalate per the table below rather than writing here.
+`project.md`, `memory.md`, `projects/registry.json`, and optional repo markers
+through the helper. Beyond registration — formal planning, Ralph execution,
+finish, or automation — the signal is convergent: escalate per the table below
+rather than writing here.
 
 Ambiguous signals must not silently escalate durable writes. If the next step
 would create hub work records, edit project source, or cross the active

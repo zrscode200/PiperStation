@@ -25,8 +25,9 @@ You review architecture decisions for a Piper Station project. Inspect the actua
 
 - the project repo path
 - the feature, design, or architectural question
-- any relevant specs, plans, or decisions
-- relevant project records (`decisions.md`, `memory.md`, `ARCHITECTURE.md`)
+- any relevant `active-work.md`, `roadmap.md`, or substantial decisions
+- relevant project records (`project.md`, `memory.md`, optional
+  `decisions.md`, `ARCHITECTURE.md`)
 
 ## Review Focus
 
@@ -41,7 +42,8 @@ You review architecture decisions for a Piper Station project. Inspect the actua
 - Findings ordered by impact, with file and line references where applicable.
 - Tradeoffs and alternatives for each finding.
 - Whether the approach is architecturally sound for the stated scope.
-- Any decisions that should be recorded in project `decisions.md`.
+- Any project policy notes that should be recorded in `project.md`, or
+  substantial decisions that warrant optional `decisions.md`.
 
 ## Rules
 

@@ -18,8 +18,8 @@ still route through `automation-policy`.
 1. Read `{{INSTRUCTION_DOC}}` and `STATION.md`.
 2. Identify the project id or repo path from `$ARGUMENTS`. Look up the project
    in `projects/registry.json` to confirm registration and resolve `repo_path`,
-   then read `projects/<project-id>/project.md`, `memory.md`, and
-   `decisions.md` for the rich record.
+   then read `projects/<project-id>/project.md`, `memory.md`, and optional
+   `decisions.md` when it exists.
 3. Verify the direction handed off from `brainstorm` against the real code:
    confirm the brief's flagged assumptions, inspect the specific files and call
    sites the work will touch, and check that acceptance criteria are testable.
@@ -30,25 +30,29 @@ still route through `automation-policy`.
 6. Ask only blocking clarification questions. If you cannot articulate what
    answer would change the design, do not ask.
 7. Create or update active work files under `projects/<project-id>/work/` only
-   when they do a clear job: stabilize requirements, preserve an approach,
-   decompose executable tasks, record verification expectations, or prepare
+   when they do a clear job: preserve long-horizon direction, stabilize current
+   active work, create durable queued execution, record a checkpoint, or prepare
    compact/resume continuity.
-8. Write a concise spec or implementation plan only when requirements,
-   strategy, tradeoffs, or sequence need a durable target before execution. Keep
-   active and archived planning artifacts in `projects/<project-id>/work/`
+8. Write `active-work.md` only when requirements, acceptance criteria,
+   strategy, tradeoffs, sequence, or verification strategy need a durable target
+   before execution. Keep work artifacts in `projects/<project-id>/work/`
    unless the user explicitly asks for a project-local copy.
-9. Produce a Ralph-ready `task-queue.md` only when tasks are clear and
-   verifiable.
-10. Defer `context-pack.md` unless planning is stopping, pausing, preparing
-    for compact, handing off, or crossing a milestone boundary.
-11. At the planning checkpoint, report changed Piper artifacts separately from
+9. Update `roadmap.md` only when long-term direction, milestones, deferred
+   work, risks, or revisit triggers change.
+10. Produce a Ralph-ready `task-queue.md` only when tasks are clear,
+    verifiable, and must survive the current session or move across agents.
+11. Append `build-log.md` at formal planning completion when the plan
+    materially changes future execution.
+12. Defer `context-pack.md` unless planning is stopping, pausing, preparing
+    for compact, handing off, blocked, or crossing a milestone boundary.
+13. At the planning checkpoint, report changed Piper artifacts separately from
     source changes, inspect the Piper Station hub git state when artifacts
     changed, and state whether those artifact changes are uncommitted.
-12. Offer one Piper artifact commit at planning finish only when the changed
+14. Offer one Piper artifact commit at planning finish only when the changed
     artifacts matter for future continuity. Do not commit unless the checkpoint
     decision is made and the active permission profile covers local git actions;
     otherwise route through `automation-policy`.
-13. Stop before implementation unless the user explicitly asks to proceed.
+15. Stop before implementation unless the user explicitly asks to proceed.
 
 Registration must not create `projects/<project-id>/work/`; {{RUNTIME_NAME}}
 creates these files only when useful for active work. Keep Superpowers as
@@ -59,27 +63,26 @@ machinery for planning.
 
 Create only under `projects/<project-id>/work/`, and only when useful:
 
-- `active-spec.md`: stable problem, goals, non-goals, acceptance criteria,
-  risks, and open questions when requirements need durable agreement or Ralph
-  needs a stable target.
-- `active-plan.md`: current approach, ordered slices, tradeoffs,
-  dependencies, and verification strategy when continuity matters.
-- `task-queue.md`: Ralph-ready task list with ids, status, risk, acceptance
-  criteria, verification, and expected diff boundary.
+- `roadmap.md`: longer-horizon direction, milestones, deferred work, risks,
+  and revisit triggers.
+- `active-work.md`: current goal, requirements, acceptance criteria, approach,
+  slices, risks, verification strategy, and open questions.
+- `build-log.md`: concise checkpoint ledger for planning outcomes,
+  implementation summaries, review and verification results, risks, next
+  steps, and commits.
 - `context-pack.md`: compact/resume and handoff anchor with the current task,
   next exact action, files to inspect first, git state, verification, review
   state, drift, blockers, stop reason, and what to hand a human or fresh agent.
-- `verification.md`: commands run, results, failures, fallbacks, skipped
-  checks, and remaining verification gaps.
-- `specs/`, `plans/`, and `runs/`: archived or named records for substantial
-  milestones, alternatives, superseded approaches, or dense Ralph iterations.
+- `task-queue.md`: optional durable Ralph task list with ids, status, risk,
+  acceptance criteria, verification, and expected diff boundary.
 
 Keep artifacts lean: `context-pack.md` is the only fully self-contained resume
 packet. Do not duplicate branch, HEAD, full git state, review state, blockers,
-or next action across every spec, plan, queue, or verification record.
+or next action across every roadmap, active-work, queue, or build-log record.
 
-Keep stable facts in `memory.md` and durable decisions in `decisions.md`.
-Registration must not create active work artifacts.
+Keep stable facts in `memory.md`, project policy preferences in `project.md`,
+and substantial decision logs in optional `decisions.md`. Registration must not
+create active work artifacts.
 
 ## Artifact Persistence
 
@@ -93,9 +96,9 @@ proceed, not whether the checkpoint exists.
 
 ## Spec Shape
 
-Include problem or opportunity, goals and non-goals, users and workflows,
-proposed behavior, acceptance criteria, approach and tradeoffs, risks and
-guardrails, verification expectations, and open questions.
+`active-work.md` should include problem or opportunity, goals and non-goals,
+users and workflows, proposed behavior, acceptance criteria, approach and
+tradeoffs, risks and guardrails, verification strategy, and open questions.
 
 ## Task Shape
 
@@ -110,6 +113,6 @@ dependencies.
 - Mark assumptions separately from confirmed facts.
 - Keep plans concrete enough for a fresh {{RUNTIME_SESSION}} to continue cold.
 - Do not store secrets or sensitive raw logs in hub records.
-- Record meaningful approach, scope, risk, or verification decisions in
-  `projects/<project-id>/decisions.md`.
+- Record project policy preferences in `project.md`; use optional
+  `decisions.md` only for substantial decision logs.
 - "Make it better" is not an acceptance criterion; force a testable one.

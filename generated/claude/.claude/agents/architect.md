@@ -15,7 +15,7 @@ satisfies the requirement.
 
 - the project repo path
 - the proposed change, feature, or risk area
-- any current spec, plan, task queue, or design notes
+- any current `active-work.md`, `roadmap.md`, optional task queue, or design notes
 - the files or subsystems expected to be affected
 
 ## Review Focus

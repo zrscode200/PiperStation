@@ -9,27 +9,29 @@ Enter Ralph Mode for one scoped task.
 
 The user invoked this command with: `$ARGUMENTS`
 
-Ralph is prompt and command behavior in OpenCode. It selects one task,
+Ralph is prompt and command behavior in OpenCode. It selects one slice,
 states the diff boundary, implements that task, verifies, drift-checks, applies
 the Implementation Review Gate when required or expected, and updates
 compact-safe records when active work records are in use.
 
-Ralph is not a shell runner and not a general planner. Use it after a task is
-clear or `projects/<project-id>/work/task-queue.md` is ready. Natural-language
-routing can choose this behavior through `piper-workflow`; actions that cross
-the active permission profile boundary still route through `automation-policy`.
+Ralph is not a shell runner and not a general planner. Use it after a slice is
+clear from the user request, `projects/<project-id>/work/active-work.md`, or
+the optional durable `task-queue.md`. Natural-language routing can choose this
+behavior through `piper-workflow`; actions that cross the active permission
+profile boundary still route through `automation-policy`.
 
 ## Steps
 
 1. Read `AGENTS.md` and `STATION.md`. Look up the project in
    `projects/registry.json` to confirm registration and resolve `repo_path`,
    then read the relevant `projects/<project-id>/project.md`, `memory.md`, and
-   `decisions.md`.
+   optional `decisions.md` when it exists.
 2. Read relevant files under `projects/<project-id>/work/`, especially
-   `active-spec.md`, `active-plan.md`, `task-queue.md`, and
-   `context-pack.md`.
+   `active-work.md`, `build-log.md`, `context-pack.md`, and optional
+   `task-queue.md`.
 3. Select one pending or active task: the task matching `$ARGUMENTS` if
-   specified, otherwise the top ready task in the queue.
+   specified, otherwise the next clear slice from `active-work.md`, otherwise
+   the top ready task in the optional queue.
 4. Confirm the task has acceptance criteria, a verification command or fallback,
    risk tier, and expected diff boundary.
 5. Verify the real project repo is writable in the active session. If the repo
@@ -38,11 +40,11 @@ the active permission profile boundary still route through `automation-policy`.
    the active permission profile covers `local` project source edits; if not,
    route through `automation-policy` before editing.
 6. State the selected task and expected diff boundary before editing.
-7. Mark the task active in `projects/<project-id>/work/task-queue.md` when a
-   queue exists and active work records are in use.
+7. Mark the task active in `projects/<project-id>/work/task-queue.md` only
+   when a durable queue exists.
 8. Stop if the task is ambiguous, lacks verification, is `L3`, is outside the
-   approved spec or plan, lacks `local` profile coverage for source edits, or
-   is `L2` without explicit user confirmation.
+   approved active work, lacks `local` profile coverage for source edits, or is
+   `L2` without explicit user confirmation.
 9. Implement only the selected task in the real project repo.
 10. Run the narrowest meaningful initial verification.
 11. Run the Implementation Review Gate based on scope and change impact:
@@ -58,19 +60,21 @@ the active permission profile boundary still route through `automation-policy`.
     reverify review-driven fixes with the narrowest meaningful command for the
     fixed behavior. Run broader verification only when fixes touch shared,
     risky, or cross-cutting behavior.
-13. Drift-check the diff against the selected task, active plan/spec, and user
+13. Drift-check the diff against the selected task, active work, and user
     request.
-14. For ordinary slice-end bookkeeping, update `task-queue.md` status and
-    `verification.md` results when they are in use. Update `active-spec.md` or
-    `active-plan.md` only when requirements, strategy, or scope materially
-    changed.
+14. For ordinary slice-end bookkeeping, append `build-log.md` at checkpoint
+    cadence with changed source areas, verification result, review result,
+    drift, risks, and next step. Update `task-queue.md` status only when a
+    durable queue is in use. Update `active-work.md` only when requirements,
+    approach, slices, or verification strategy materially changed.
 15. Report changed Piper artifacts separately from registered project source
     changes. At ordinary slice boundaries, do not ask to commit artifact
     updates or update `context-pack.md` unless this slice completes a
-    milestone, materially changes the active plan/spec, hits a blocker, leaves
+    milestone, materially changes active work, hits a blocker, leaves
     context low, or the user is about to pause, compact, switch projects, or
     finish.
-16. Record material decisions in `projects/<project-id>/decisions.md`.
+16. Record project policy preferences in `project.md`, and use optional
+    `decisions.md` only for substantial decision logs.
 17. If a required or expected review gate was skipped, record review debt and do
     not continue to a dependent task until it is resolved or explicitly
     accepted by the user.
@@ -120,10 +124,10 @@ Review gate examples:
 
 When the gate runs, use the read-only reviewer subagent. The reviewer inspects the actual
 changed code or diff and relevant surrounding code first, using the active
-spec, plan, task queue, build or test logs, and known non-goals as supporting
-context. The reviewer reports correctness, regression, security, reliability,
-missing-test, convention, and drift findings ordered by severity with file and
-line references when possible.
+work record, build log, optional task queue, test output, and known non-goals
+as supporting context. The reviewer reports correctness, regression, security,
+reliability, missing-test, convention, and drift findings ordered by severity
+with file and line references when possible.
 
 The main OpenCode session stays responsible for the work. Validate each
 reviewer finding before acting: record a one-line verdict per finding —
@@ -143,11 +147,13 @@ next task.
 
 When active work records are in use:
 
-1. Update `task-queue.md` with the current task status.
-2. Update `verification.md` with commands, results, and gaps.
+1. Append `build-log.md` with the current checkpoint, including commands,
+   results, review state, drift, risks, and next step.
+2. Update `task-queue.md` with the current task status only when a durable
+   queue exists.
 3. Update `context-pack.md` only when pausing, preparing for compact, finishing,
    blocked, crossing a milestone, context is low, switching projects, or
-   materially changing the plan/spec. When updated, include last completed
+   materially changing active work. When updated, include last completed
    task, current task status, next exact action, scope boundary, files changed,
    files to inspect first after compact, known reference paths, branch, HEAD,
    `git status --short`, verification status, review state, drift result,
@@ -155,7 +161,7 @@ When active work records are in use:
    human or fresh agent.
 4. Report artifact files updated in the Piper Station hub and whether they are
    committed. If the stop is a milestone boundary, compact preparation, finish
-   mode, project switch, or material plan/spec change, ask once whether to
+   mode, project switch, or material active-work change, ask once whether to
    commit the Piper artifact updates; route through `automation-policy` if the
    active permission profile does not already cover local git actions.
 
@@ -169,10 +175,12 @@ they may run `/compact`.
 After compact, resume from designed anchors first:
 
 - `context-pack.md`
-- `task-queue.md`
-- `active-plan.md`
-- `verification.md`
-- project `decisions.md`
+- `active-work.md`
+- `build-log.md`
+- optional `task-queue.md`
+- `roadmap.md` when long-horizon direction matters
+- project `project.md` and `memory.md`
+- optional `decisions.md` when present
 - branch, HEAD, and `git status --short`
 
 Then rebuild the active task neighborhood before editing. Inspect changed
@@ -197,7 +205,7 @@ cache, and `.git` directories.
 
 Report task executed, files changed, verification result, review gate status
 and basis, per-finding verdicts, accepted review fixes or rejected findings,
-review debt status, drift result, decision ledger updates, context pack status,
+review debt status, drift result, durable record updates, context pack status,
 artifact changes and persistence status, compaction status, and next task or
 stop reason.
 

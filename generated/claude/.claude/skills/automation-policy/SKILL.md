@@ -36,7 +36,7 @@ is `exceptional`.
 
 1. Read `CLAUDE.md`, `STATION.md`, and `automation-policy.md`.
 2. Identify the active project and read
-   `projects/<project-id>/decisions.md` for a recorded profile preference.
+   `projects/<project-id>/project.md` for a recorded profile preference.
 3. Classify the next action as `strict`, `local`, `external`, or
    `exceptional` using `automation-policy.md`.
 4. Compare the action category with the active or requested profile. If the
@@ -44,7 +44,7 @@ is `exceptional`.
    pull request, CI target, dependency, network destination, or external
    system, plus the reason, risk, and rollback or recovery path.
 5. Record project-specific profile preferences, one-off approvals, accepted
-   risks, or permission decisions in `projects/<project-id>/decisions.md`.
+   risks, or permission decisions in `projects/<project-id>/project.md`.
 6. For v1, do not edit bootstrap-managed runtime config files and do not add
    hooks as the profile gate. If the active runtime needs a session permission
    change, state the runtime-level change needed and wait for it to be applied.
@@ -62,4 +62,4 @@ is `exceptional`.
 - `exceptional` is outside standing profiles. For `exceptional` actions,
   restate the action and wait for explicit one-off user instruction.
 - Do not leave profile preferences only in conversation history; record durable
-  project decisions in `projects/<project-id>/decisions.md`.
+  project policy preferences in `projects/<project-id>/project.md`.

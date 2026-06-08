@@ -41,7 +41,7 @@ review, testing, subagents, handoff, and git operations stay native to the
 active runtime.
 
 Optional active artifacts may be created under `projects/<id>/work/` only when
-useful: `active-spec.md`, `active-plan.md`, `task-queue.md`, `context-pack.md`,
-`verification.md`, and optional `specs/`, `plans/`, and `runs/`.
+useful: `roadmap.md`, `active-work.md`, `build-log.md`, `context-pack.md`, and
+optional `task-queue.md`.
 
 Registration must not create active work artifacts.

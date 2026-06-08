@@ -50,21 +50,20 @@ Each registered project has:
 projects/<project-id>/
   project.md
   memory.md
-  decisions.md
   work/              # optional, created by the active runtime only when useful
 ```
 
 - `project.md` binds the project id to the real repo path and stores a small
-  project overview.
+  project overview plus project policy preferences.
 - `memory.md` stores durable facts, preferences, stable conventions, and
   reusable context.
-- `decisions.md` stores meaningful choices, tradeoffs, accepted risks, and
-  policies future work should not silently reopen.
-- `work/` stores optional active work continuity such as specs, plans, task
-  queues, verification, and context packs.
+- Optional `decisions.md` stores substantial decision logs future work should
+  not silently reopen.
+- `work/` stores optional active work continuity such as roadmap, active work,
+  build log, compact pack, and durable task queue records.
 
 Do not put routine progress logs, command output, temporary plans, secrets, or
-raw sensitive logs into `memory.md` or `decisions.md`.
+raw sensitive logs into durable hub records.
 
 Registration must not create `work/`. Codex or OpenCode may create it during
 active work when continuity is useful.
@@ -72,7 +71,7 @@ active work when continuity is useful.
 ## Artifact Persistence
 
 Piper work artifacts stay under `projects/<project-id>/work/` by default. Do
-not move specs, plans, queues, verification, or context packs into the
+not move roadmap, active work, build log, queues, or context packs into the
 registered project repo unless the user explicitly asks for a project-local
 copy.
 
@@ -86,7 +85,7 @@ git. Do not ask to commit after every artifact edit; ask only at continuity
 checkpoints defined in `STATION.md`.
 
 Record artifacts economically: `context-pack.md` is the only fully
-self-contained resume packet. Keep specs, plans, queues, and verification
+self-contained resume packet. Keep roadmap, active-work, build-log, and queue
 records lean and purpose-specific.
 
 ## Mode Routing
@@ -107,9 +106,10 @@ Route each request through the smallest mode that fits:
   registration path.
 - Superpowers Mode: verify the handed-off direction, then specify and plan
   before substantial implementation.
-- Ralph Mode: execute one scoped task at a time from a clear plan or task
-  queue, with an implementation review gate for substantial slices.
-- Review Mode: first check whether the work matches the request/spec/plan,
+- Ralph Mode: execute one scoped task at a time from `active-work.md` or an
+  optional durable queue, with an implementation review gate for substantial
+  slices.
+- Review Mode: first check whether the work matches the request or active work,
   then check code quality.
 - Finish Mode: verify, summarize, and present commit or PR options without
   mutating git automatically.
@@ -125,11 +125,11 @@ announcements.
 Scope tiers are advisory sizing, not artifact rules:
 
 - `S0`: direct small task; stay in chat unless a durable need appears.
-- `S1`: modest work; use a lightweight plan only when continuity matters.
-- `S2`: substantial work; stable requirements, planning, decomposition, or
-  verification records may help before execution.
-- `S3`: broad or long-running work; split into milestones or sub-specs when that
-  keeps execution clear.
+- `S1`: modest work; use `active-work.md` only when continuity matters.
+- `S2`: substantial work; active-work continuity, durable checkpoints, or
+  durable queued execution may help before execution.
+- `S3`: broad or long-running work; track milestone direction in roadmap when
+  that keeps execution clear.
 
 Risk tiers:
 
@@ -155,7 +155,7 @@ Permission profiles:
 
 Permission profiles gate action categories. They do not change Piper phase
 routing, artifact checkpoints, Ralph review gates, or finish behavior. Record
-project-level profile preferences in `projects/<project-id>/decisions.md`.
+project-level profile preferences in `projects/<project-id>/project.md`.
 
 ## Working On A Project
 
@@ -166,9 +166,11 @@ Before editing a registered project:
    resolve `repo_path`. If the user's id is ambiguous, list the registered
    `project_id` entries (with `description` where present) and ask which one
    to use.
-3. Read `projects/<project-id>/project.md`, `memory.md`, and `decisions.md` for
-   the rich record.
-4. Read `projects/<project-id>/work/context-pack.md` when present.
+3. Read `projects/<project-id>/project.md`, `memory.md`, and optional
+   `decisions.md` when present.
+4. Read `projects/<project-id>/work/context-pack.md`, `active-work.md`,
+   `build-log.md`, optional `task-queue.md`, and `roadmap.md` when present and
+   relevant.
 5. Inspect the real repo path with git status, current branch, current HEAD,
    and the files relevant to the user request.
 6. State any uncommitted or recent user changes that affect the task.
@@ -182,14 +184,16 @@ Before editing a registered project:
 9. Implement in the real project repo, using the repo's own conventions and
    verification commands.
 10. Update `projects/<project-id>/work/` only when active continuity is useful.
-11. Update hub `memory.md` or `decisions.md` only when durable context changed.
+11. Update hub `memory.md`, `project.md` policy notes, or optional
+    `decisions.md` only when durable context changed.
 
 ## Ralph Review Gate
 
 During Ralph Mode, run a read-only implementation review after substantial
 slices are implemented and initially verified, before marking the slice
 complete in active work records. The reviewer inspects the actual code or diff
-with the plan, spec, task queue, and verification logs as context.
+with `active-work.md`, `build-log.md`, optional `task-queue.md`, and relevant
+surrounding code as context.
 
 Review gate selection is based on scope and change impact. Risk tier controls
 Ralph implementation confirmation before editing, not permission profile.
@@ -212,10 +216,10 @@ tasks until the debt is resolved or explicitly accepted by the user.
 
 During Ralph Mode, update `context-pack.md` when pausing, preparing for compact,
 finishing, blocked, crossing a milestone, context is low, switching projects,
-or materially changing the plan/spec. Ordinary slice bookkeeping should stay in
-`task-queue.md` and `verification.md`. If context is low or the next slice
-needs a clean context, pause and tell the user the state is compact-ready and
-they may run `/compact`.
+or materially changing active work. Ordinary slice checkpoints should append
+`build-log.md` and update optional `task-queue.md` only when a durable queue is
+in use. If context is low or the next slice needs a clean context, pause and
+tell the user the state is compact-ready and they may run `/compact`.
 
 Do not claim `/compact` was run unless the user or active runtime actually ran
 it.

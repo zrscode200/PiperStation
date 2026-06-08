@@ -25,13 +25,14 @@ Rules:
 
 - Use `./bin/add-project` or the deterministic helper; do not manually
   recreate ad hoc project records.
-- Registration creates or updates `project.md`, `memory.md`, `decisions.md`,
-  the `projects/registry.json` index, and optional repo marker files.
+- Registration creates or updates `project.md`, `memory.md`, the
+  `projects/registry.json` index, and optional repo marker files.
 - Do not start implementation work, create plans, checkpoint state, commit,
   push, install dependencies, or edit project source as a registration side
   effect.
 - Do not create `projects/<id>/work/`.
-- Do not silently drop existing `memory.md` or `decisions.md` content.
+- Do not silently drop existing `memory.md` content. Preserve optional
+  `decisions.md` if it already exists.
 - Do not edit `projects/registry.json` by hand. If it drifts, regenerate it
   with `./bin/add-project --rebuild`.
 - Use `--hub-only` when repo marker files are not wanted.

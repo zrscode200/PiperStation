@@ -6,7 +6,7 @@ description: "Codex front door for Piper Station project work — explore, under
 # Brainstorm (Codex)
 
 Brainstorm is where you decide what is worth doing before the convergence engine
-commits. The rest of Piper Station — registration, specs, task queues, Ralph,
+commits. The rest of Piper Station — registration, active work records, Ralph,
 compaction — produces durable, executable work; brainstorm is the counterweight
 that frames the problem, weighs options, and grounds them in reality first. It
 answers "what should we build, and is it the right thing?" while `piper-workflow`
@@ -55,9 +55,9 @@ Ground the conversation in the actual project before reasoning about it:
    `project_id` entries (with `description` where present) and ask which to use.
 3. If the repo is not registered and the user wants project work, ask whether to
    register it first.
-4. Read `projects/<project-id>/project.md`, `memory.md`, and `decisions.md` for
-   the canonical record; read `projects/<project-id>/work/context-pack.md` when
-   it exists.
+4. Read `projects/<project-id>/project.md`, `memory.md`, and optional
+   `decisions.md` when it exists for the canonical record; read
+   `projects/<project-id>/work/context-pack.md` when it exists.
 5. Inspect the real repo path with `git status`, current branch, current HEAD,
    and the files relevant to the request.
 6. If the project repo is outside the current Codex sandbox, note that Codex
@@ -115,10 +115,10 @@ intent-to-writes map lives in `STATION.md`.
 
 The front-door band covers read-only orientation and conversational planning,
 plus explicit deterministic registration. Registration may create only
-`project.md`, `memory.md`, `decisions.md`, `projects/registry.json`, and
-optional repo markers through the helper. Beyond registration, formal planning,
-Ralph execution, finish, and automation are convergent routes owned by
-`piper-workflow`, `review`, or `automation-policy`.
+`project.md`, `memory.md`, `projects/registry.json`, and optional repo markers
+through the helper. Beyond registration, formal planning, Ralph execution,
+finish, and automation are convergent routes owned by `piper-workflow`,
+`review`, or `automation-policy`.
 
 Ambiguous signals must not silently escalate durable writes. If intent is
 unclear, state the assumption and choose the less durable action or ask.

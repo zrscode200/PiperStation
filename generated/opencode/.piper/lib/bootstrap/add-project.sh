@@ -108,7 +108,6 @@ PROJECT_REPO=""
 PROJECT_DIR=""
 PROJECT_MD=""
 MEMORY_MD=""
-DECISIONS_MD=""
 branch=""
 head=""
 remote=""
@@ -165,7 +164,6 @@ if [ "$REBUILD" = false ]; then
   PROJECT_DIR="$HUB_DIR/projects/$PROJECT_ID"
   PROJECT_MD="$PROJECT_DIR/project.md"
   MEMORY_MD="$PROJECT_DIR/memory.md"
-  DECISIONS_MD="$PROJECT_DIR/decisions.md"
 
   branch=$(git -C "$PROJECT_REPO" symbolic-ref --short HEAD 2>/dev/null || printf "unknown")
   head=$(git -C "$PROJECT_REPO" rev-parse --short HEAD 2>/dev/null || printf "unborn")
@@ -553,6 +551,9 @@ write_project_md() {
       printf '## Registry\n\n'
       cat "$block"
       printf '\n## Purpose\n\nTBD\n\n'
+      printf '## Project Policy\n\n'
+      printf -- '- Permission profile preference: strict unless recorded otherwise.\n'
+      printf -- '- One-off approvals, accepted risks, and automation notes: none recorded.\n\n'
       printf '## Working Notes\n\n'
       printf -- '- Keep durable project context in this folder.\n'
       printf -- '- Keep implementation work in the repo path above.\n'
@@ -681,18 +682,6 @@ only when future work would benefit from the context.
 EOF
 }
 
-decisions_md() {
-  cat <<EOF
-# $DISPLAY_NAME Decisions
-
-Meaningful project decisions that future work should not reopen silently.
-
-## Entries
-
-- TBD
-EOF
-}
-
 project_json() {
   escaped_project_id=$(json_escape "$PROJECT_ID")
   escaped_display_name=$(json_escape "$DISPLAY_NAME")
@@ -739,7 +728,6 @@ validate_repo_path_uniqueness
 
 write_project_md
 write_if_missing "projects/$PROJECT_ID/memory.md" "$MEMORY_MD" "$(memory_md)"
-write_if_missing "projects/$PROJECT_ID/decisions.md" "$DECISIONS_MD" "$(decisions_md)"
 
 if [ "$WRITE_REPO_MARKERS" = true ]; then
   write_project_json_marker

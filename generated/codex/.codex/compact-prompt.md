@@ -9,9 +9,12 @@ Prioritize:
 - the user's latest goal and requested project
 - project id, repo path, branch, and current task
 - important facts from `projects/<id>/memory.md`
-- meaningful decisions from `projects/<id>/decisions.md`
+- project policy preferences from `projects/<id>/project.md`
+- substantial decision logs from optional `projects/<id>/decisions.md`
 - active Superpowers or Ralph state from `projects/<id>/work/context-pack.md`
   when present
+- active work, build-log checkpoints, optional durable queue, and roadmap
+  direction when relevant
 - Ralph task status, last completed task, next exact action, stop reason,
   blockers, risks, verification status, and drift result when present
 - files changed in the real project repo and why
@@ -31,9 +34,12 @@ Reload on resume:
 - `projects/registry.json` (project lookup index)
 - `projects/<project-id>/project.md`
 - `projects/<project-id>/memory.md`
-- `projects/<project-id>/decisions.md`
+- optional `projects/<project-id>/decisions.md` when present
 - `projects/<project-id>/work/context-pack.md` when present
-- other relevant files under `projects/<project-id>/work/` when present
+- `projects/<project-id>/work/active-work.md` when present
+- `projects/<project-id>/work/build-log.md` when present
+- optional `projects/<project-id>/work/task-queue.md` when present
+- `projects/<project-id>/work/roadmap.md` when relevant
 - relevant task-neighborhood files in the real project repo
 
 Rules:

@@ -6,7 +6,7 @@ or when a workflow should perform an action.
 
 This file is the canonical global policy. Project-specific profile preferences,
 one-off approvals, accepted risks, and permission decisions belong in
-`projects/<project-id>/decisions.md`. Change this root policy only for global
+`projects/<project-id>/project.md`. Change this root policy only for global
 shared rules that should apply across the hub.
 
 ## Permission Profiles
@@ -38,7 +38,7 @@ Ralph implementation edits are `local` permission actions. If no project
 preference records `local` or stronger profile coverage, Ralph must route
 through `automation-policy` before editing project source.
 
-Record durable project preferences in `projects/<project-id>/decisions.md`.
+Record durable project preferences in `projects/<project-id>/project.md`.
 For v1, applying a profile is session-level guidance plus the active runtime's
 own permission controls; do not edit bootstrap-managed runtime config files or
 add hooks as the profile gate. If a runtime permission mode must change, state

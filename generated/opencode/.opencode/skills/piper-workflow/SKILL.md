@@ -1,6 +1,6 @@
 ---
 name: piper-workflow
-description: "Use when executing rather than exploring on a registered Piper Station project: write a formal spec and plan, prepare a Ralph-ready task queue, execute one scoped Ralph slice with verification and review gates, prepare compact-safe handoff, or route a permission-gated finish action. Entered from brainstorm once direction is set, or via /superpowers, /ralph, /compact-handoff."
+description: "Use when executing rather than exploring on a registered Piper Station project: formalize active work, update roadmap or build-log checkpoints, prepare an optional durable Ralph queue, execute one scoped Ralph slice with verification and review gates, prepare compact-safe handoff, or route a permission-gated finish action. Entered from brainstorm once direction is set, or via /superpowers, /ralph, /compact-handoff."
 ---
 
 # Piper Workflow
@@ -21,8 +21,8 @@ before crossing the active permission profile boundary.
 
 Read `AGENTS.md` and `STATION.md` first. Resolve the project in
 `projects/registry.json` to its `repo_path` and read
-`projects/<project-id>/project.md`, `memory.md`, and `decisions.md` before
-executing.
+`projects/<project-id>/project.md`, `memory.md`, and optional `decisions.md`
+when it exists before executing.
 
 ## Modes
 
@@ -31,7 +31,7 @@ Choose the smallest convergent path that fits:
 | User intent | Mode | Supporting behavior |
 | --- | --- | --- |
 | Verify the direction, specify, or plan substantial work | Superpowers | this skill and `/superpowers` |
-| Execute one clear queued task | Ralph | `/ralph` and Ralph sections in `STATION.md`; project source edits require `local` profile coverage |
+| Execute one clear active-work slice or optional queued task | Ralph | `/ralph` and Ralph sections in `STATION.md`; project source edits require `local` profile coverage |
 | Review an implemented slice | Review | `review` |
 | Local git, worktree, PR, dependency, network, CI, exceptional, or external action | Finish or permission flow | `automation-policy` |
 | Pause or compact active work | compact handoff | `/compact-handoff` and compact sections in `STATION.md` |
@@ -49,7 +49,7 @@ Superpowers begins where `brainstorm` ended. Its lead step is verification, not
 open exploration: take the direction from brainstorm's hand-off brief and
 confirm it against the real code — validate the brief's flagged assumptions,
 check the specific files and call sites the work will touch, and confirm the
-acceptance criteria are testable — before locking a durable spec and plan. Open
+acceptance criteria are testable — before locking durable active work. Open
 exploration belongs to `brainstorm`.
 
 ## Artifact Signal Policy
@@ -60,13 +60,15 @@ When intent reaches these rows, durable writes are expected. The full
 intent-to-writes map lives in `STATION.md`.
 
 Formal planning or Ralph preparation may create useful
-`projects/<id>/work/` records when they do a clear job: stabilize requirements,
-preserve an approach, decompose executable tasks, record verification evidence,
-or prepare compact/resume continuity. Ralph execution may update those records
-and edit only the real project repo when `local` profile coverage exists.
-Finish, local git, worktree, PR, dependency, network, CI, external, or
-exceptional actions route through `automation-policy` when they cross the
-active permission profile boundary.
+`projects/<id>/work/` records when they do a clear job: preserve long-horizon
+direction in `roadmap.md`, stabilize current execution in `active-work.md`,
+create durable queued execution in optional `task-queue.md`, record checkpoint
+history in `build-log.md`, or prepare compact/resume continuity in
+`context-pack.md`. Ralph execution may update those records and edit only the
+real project repo when `local` profile coverage exists. Finish, local git,
+worktree, PR, dependency, network, CI, external, or exceptional actions route
+through `automation-policy` when they cross the active permission profile
+boundary.
 
 If a request is actually still divergent, hand it back to `brainstorm` rather
 than escalating durable writes.
@@ -77,8 +79,9 @@ Piper artifacts stay in `projects/<project-id>/work/` by default. Updating
 them during active work is allowed local assistance; committing those updates
 is a `local` permission action and stays at the existing artifact checkpoint.
 Record artifacts economically: `context-pack.md` is the only fully
-self-contained resume packet; specs, plans, queues, and verification records
-should stay purpose-specific and avoid repeating full repo/git/resume state.
+self-contained resume packet; roadmap, active-work, queue, and build-log
+records should stay purpose-specific and avoid repeating full
+repo/git/resume state.
 
 Do not ask to commit after every artifact edit. At natural checkpoints, report
 changed artifacts separately from registered project source changes, inspect
@@ -87,16 +90,17 @@ whether Piper artifact changes are uncommitted. Ask once about committing
 Piper artifacts only when the stopping point or future continuity warrants it:
 
 - `S0`: stay in chat unless a durable need appears.
-- `S1`: use a lightweight plan only when continuity matters.
-- `S2`: create only the records needed for stable requirements, planning,
-  decomposition, or verification.
-- `S3`: split or archive only when milestones or alternatives need preserved
-  history.
+- `S1`: use `active-work.md` only when continuity matters.
+- `S2`: create only the records needed for current active work, checkpoint
+  history, compact/resume, or durable queued execution.
+- `S3`: use `roadmap.md` when milestones, deferred work, or revisit triggers
+  need durable direction.
 
-After ordinary Ralph slices, update and report `task-queue.md` and
-`verification.md` when they are in use. Avoid `context-pack.md` updates and
-commit prompts unless the slice is also a milestone, changes the plan/spec, or
-the user is about to pause, compact, switch projects, or finish.
+After ordinary Ralph slices, append `build-log.md` at checkpoint cadence and
+update `task-queue.md` only when a durable queue is in use. Avoid
+`context-pack.md` updates and commit prompts unless the slice is also a
+milestone, changes active work, or the user is about to pause, compact, switch
+projects, or finish.
 
 ## Scope And Risk
 
@@ -111,8 +115,10 @@ Update hub records only when useful:
 
 - `memory.md`: durable facts, user preferences, stable repo conventions, and
   reusable context.
-- `decisions.md`: meaningful choices, tradeoffs, accepted risks, or policy
-  decisions future work should not silently reopen.
+- `project.md`: project policy preferences, one-off approvals, accepted risks,
+  and project-level automation notes.
+- optional `decisions.md`: substantial decision logs future work should not
+  silently reopen.
 
 Routine progress, command output, and transient notes should stay in the
 conversation unless substantial active work needs continuity under

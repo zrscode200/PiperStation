@@ -8,10 +8,11 @@ The user invoked this command with: `$ARGUMENTS`
 
 1. Read `{{INSTRUCTION_DOC}}`. Look up the project in `projects/registry.json`
    to confirm registration and resolve `repo_path`, then read the project
-   record: `project.md`, `memory.md`, and `decisions.md`.
+   record: `project.md`, `memory.md`, and optional `decisions.md` when it
+   exists.
 2. Read relevant files under `projects/<project-id>/work/`, especially
-   `active-spec.md`, `active-plan.md`, `task-queue.md`, `verification.md`, and
-   `context-pack.md`.
+   `roadmap.md`, `active-work.md`, `build-log.md`, `context-pack.md`, and
+   optional `task-queue.md`.
 3. Inspect the real repo with `git status --short`,
    `git rev-parse --short HEAD`, and `git diff --stat` enough to summarize
    changed files and risks.
@@ -66,8 +67,8 @@ Rules:
 - If `projects/<project-id>/work/` does not exist yet, create only the files
   needed for safe compaction.
 - Treat `context-pack.md` as the only fully self-contained resume packet; do
-  not backfill full resume metadata into spec, plan, queue, or verification
-  artifacts during compact prep.
+  not backfill full resume metadata into roadmap, active-work, queue, or
+  build-log artifacts during compact prep.
 - Use the resume packet as designed anchors, not a hard read limit. After
   compact, verify live repo state, rebuild enough task neighborhood to work
   safely, and expand deliberately when the packet is stale, incomplete,
