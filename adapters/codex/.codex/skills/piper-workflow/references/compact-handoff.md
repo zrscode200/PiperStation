@@ -25,9 +25,10 @@ handoff, or compact-ready state on a registered project.
    or transferring work.
 6. Report changed Piper artifacts separately from registered project source
    changes. State whether artifact changes are uncommitted in the hub.
-7. For `S2/S3`, or for `S1` when the artifact matters for continuity, ask once
-   whether to commit Piper artifact updates before compacting; do not commit
-   unless the user approves through `automation-policy`.
+7. Ask once whether to commit Piper artifact updates before compacting only
+   when those artifacts matter for future continuity; do not commit unless the
+   checkpoint decision is made and the active permission profile covers local
+   git actions; otherwise route through `automation-policy`.
 8. Report that the project is compact-ready and tell the user they may run
    `/compact`.
 
@@ -62,7 +63,8 @@ Rules:
 - Do not say `/compact` ran. Say only that the state is compact-ready and the
   user may run `/compact`.
 - Do not commit, push, open PRs, install dependencies, or run external
-  automation without explicit approval through `automation-policy`.
+  automation unless the selected workflow has reached that action and the
+  active permission profile allows it; see `automation-policy`.
 - If `projects/<project-id>/work/` does not exist yet, create only the files
   needed for safe compaction.
 - Treat `context-pack.md` as the only fully self-contained resume packet; do

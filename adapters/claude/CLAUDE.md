@@ -74,9 +74,11 @@ Route each request through the smallest mode that fits.
 
 Use `brainstorm` as the broad natural-language front door and `piper-workflow`
 for convergent execution. Use `/superpowers` for explicit formal planning,
-`/ralph` for explicit one-task execution, `review` for explicit review work or
-review gates, and `automation-policy` before crossing the active permission
-profile boundary. Prefer consequence language such as "I will keep this
+`/ralph` for explicit one-task execution, the Piper `review` skill for explicit
+Piper review work or review gates, Claude Code's native `/review` when you
+specifically want its built-in PR review command, and `automation-policy`
+before crossing the active permission profile boundary. Prefer consequence
+language such as "I will keep this
 read-only" or "I will create Ralph-ready work records" over ceremonial mode
 announcements.
 
@@ -165,8 +167,8 @@ The Claude Code layer is intentionally small:
   Codex surface: reviewer, implementer, tester, verifier, architect,
   docs-researcher, and security-reviewer.
 - The docs-researcher wires the OpenAI developer docs MCP server in its own
-  subagent frontmatter, matching the Codex docs-researcher role without making
-  every Claude Code session load that server.
+  subagent frontmatter, matching the human-facing Codex docs-researcher role
+  while Codex uses concrete agent id `docs_researcher`.
 
 Root docs are the canonical references. Skills should point back to these docs instead of duplicating the whole station manual.
 

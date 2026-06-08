@@ -15,6 +15,7 @@ permission:
     "grep *": allow
     "ls *": allow
   task: deny
+  todowrite: deny
   webfetch: deny
   websearch: deny
 ---

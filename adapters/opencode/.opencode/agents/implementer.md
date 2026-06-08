@@ -3,7 +3,7 @@ name: implementer
 description: Implements one well-scoped task from a Ralph loop iteration. Use when the coordinator delegates a single queue item with clear acceptance criteria.
 mode: subagent
 permission:
-  edit: allow
+  edit: ask
   bash:
     "*": ask
     "git status *": allow

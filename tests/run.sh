@@ -96,7 +96,10 @@ assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "D
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Mark the task active"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Review gate examples"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Post-Compact Resume"
-assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Ralph may spawn the"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Ralph may use read-only \`reviewer\` or \`verifier\` helpers"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Use \`tester\` only when explicitly delegating test-layer"
+assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Ralph may spawn the"
+assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "security_reviewer\`, \`verifier\`, \`security_reviewer"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "reviewer"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "confirmed-in-scope"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "confirmed-out-of-scope"
@@ -152,6 +155,8 @@ assert_contains "$codex_hub/.codex/agents/implementer.toml" "confirmed local pro
 assert_contains "$codex_hub/.codex/agents/reviewer.toml" 'active-work.md'
 assert_contains "$codex_hub/.codex/agents/reviewer.toml" 'build-log.md'
 assert_contains "$codex_hub/.codex/agents/reviewer.toml" 'build/test output'
+assert_contains "$codex_hub/.codex/agents/reviewer.toml" 'Use two passes'
+assert_contains "$codex_hub/.codex/agents/reviewer.toml" 'active-work compliance'
 assert_not_contains "$codex_hub/.codex/agents/reviewer.toml" 'plan, spec, task queue, build logs'
 assert_contains "$codex_hub/STATION.md" "Work Artifact Reference"
 assert_contains "$codex_hub/STATION.md" "Create these only under"
@@ -199,6 +204,8 @@ assert_contains "$TMP_ROOT/codex-session-compact.log" "Resume guidance"
 python3 -m json.tool "$TMP_ROOT/codex-session-compact.log" >/dev/null
 (cd "$codex_hub" && sh .codex/hooks/pre-compact-protection.sh) > "$TMP_ROOT/codex-pre-compact.log"
 assert_contains "$TMP_ROOT/codex-pre-compact.log" '"systemMessage"'
+assert_contains "$TMP_ROOT/codex-pre-compact.log" "compact reminder"
+assert_contains "$TMP_ROOT/codex-pre-compact.log" "does not block compaction"
 python3 -m json.tool "$TMP_ROOT/codex-pre-compact.log" >/dev/null
 (cd "$codex_hub" && sh .codex/hooks/post-compact-resume.sh) > "$TMP_ROOT/codex-post-compact.log"
 assert_contains "$TMP_ROOT/codex-post-compact.log" '"systemMessage"'
@@ -274,6 +281,13 @@ assert_contains "$claude_hub/CLAUDE.md" "Permission Profiles"
 assert_contains "$claude_hub/CLAUDE.md" "Permission profiles gate action categories"
 assert_contains "$claude_hub/CLAUDE.md" "covers \`local\` source edits"
 assert_contains "$claude_hub/CLAUDE.md" "non-destructive worktree create or switch"
+assert_contains "$claude_hub/CLAUDE.md" "Piper \`review\` skill"
+assert_contains "$claude_hub/CLAUDE.md" "native \`/review\`"
+assert_contains "$claude_hub/CLAUDE.md" "concrete agent id \`docs_researcher\`"
+assert_not_contains "$claude_hub/.claude/settings.json" "Bash(git branch:"
+assert_not_contains "$claude_hub/.claude/settings.json" "Bash(git -C * branch:"
+assert_not_contains "$claude_hub/.claude/settings.json" "Bash(git symbolic-ref:"
+assert_not_contains "$claude_hub/.claude/settings.json" "Bash(git -C * symbolic-ref:"
 assert_contains "$claude_hub/.claude/agents/implementer.md" "coordinator confirmed \`local\` profile"
 assert_contains "$claude_hub/.claude/agents/reviewer.md" "active-work.md"
 assert_contains "$claude_hub/.claude/agents/reviewer.md" "build-log.md"
@@ -299,7 +313,10 @@ python3 -m json.tool "$claude_hub/.piper/hub-manifest.json" >/dev/null
 printf '{"hook_event_name":"SessionStart","source":"compact"}' | (cd "$claude_hub" && sh .claude/hooks/session-context.sh) > "$TMP_ROOT/claude-session-compact.log"
 assert_contains "$TMP_ROOT/claude-session-compact.log" "Resume guidance"
 (cd "$claude_hub" && sh .claude/hooks/pre-compact-protection.sh) > "$TMP_ROOT/claude-pre-compact.log"
-assert_contains "$TMP_ROOT/claude-pre-compact.log" "systemMessage"
+assert_contains "$TMP_ROOT/claude-pre-compact.log" '"systemMessage"'
+assert_contains "$TMP_ROOT/claude-pre-compact.log" "compact reminder"
+assert_contains "$TMP_ROOT/claude-pre-compact.log" "does not block compaction"
+python3 -m json.tool "$TMP_ROOT/claude-pre-compact.log" >/dev/null
 
 opencode_hub="$TMP_ROOT/opencode-hub"
 "$BOOTSTRAP" --runtime opencode "$opencode_hub" > "$TMP_ROOT/opencode.log"
@@ -363,7 +380,16 @@ assert_contains "$opencode_hub/AGENTS.md" "Permission profiles"
 assert_contains "$opencode_hub/AGENTS.md" "Permission profiles gate action categories"
 assert_contains "$opencode_hub/AGENTS.md" "covers \`local\` source edits"
 assert_contains "$opencode_hub/AGENTS.md" "non-destructive worktree create or switch"
+assert_contains "$opencode_hub/opencode.json" '"task": "ask"'
+assert_contains "$opencode_hub/opencode.json" '"todowrite": "ask"'
+assert_contains "$opencode_hub/.opencode/agents/implementer.md" "edit: ask"
 assert_contains "$opencode_hub/.opencode/agents/implementer.md" "coordinator confirmed \`local\` profile"
+assert_contains "$opencode_hub/.opencode/agents/tester.md" "edit: ask"
+assert_contains "$opencode_hub/.opencode/agents/reviewer.md" "todowrite: deny"
+assert_contains "$opencode_hub/.opencode/agents/architect.md" "todowrite: deny"
+assert_contains "$opencode_hub/.opencode/agents/verifier.md" "todowrite: deny"
+assert_contains "$opencode_hub/.opencode/agents/security-reviewer.md" "todowrite: deny"
+assert_contains "$opencode_hub/.opencode/agents/docs-researcher.md" "todowrite: deny"
 assert_contains "$opencode_hub/.opencode/agents/reviewer.md" "active-work.md"
 assert_contains "$opencode_hub/.opencode/agents/reviewer.md" "build-log.md"
 assert_contains "$opencode_hub/.opencode/agents/reviewer.md" "implementation report"
@@ -708,6 +734,7 @@ if grep -R -n 'Update useful active work records, including' "$ROOT/core" "$ROOT
 if grep -R -n 'compact-safe reload state when active work records are in use' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-context-pack-every-planning.log"; then cat "$TMP_ROOT/stale-context-pack-every-planning.log" >&2; fail "Superpowers must defer context-pack unless a resume checkpoint is needed"; fi
 if grep -R -n 'prepare compact-safe state at natural stopping points by updating' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-context-pack-natural-stops.log"; then cat "$TMP_ROOT/stale-context-pack-natural-stops.log" >&2; fail "runtime roots must not imply every natural stop updates context-pack"; fi
 if grep -R -n -E "no artifact needed|short active plan in|written spec and plan required before implementation|For \`S1\`, prefer only \`active-plan.md\`|For \`S2\+\`, write|scope controls artifact|artifact weight|scope-appropriate checkpoints|active-spec\.md|active-plan\.md|verification\.md|specs/|plans/|runs/|plan, spec, task queue, build logs|implementer.s report" "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-scope-artifact-rules.log"; then cat "$TMP_ROOT/stale-scope-artifact-rules.log" >&2; fail "scope tiers and active prompts must use the compact artifact model"; fi
+if grep -R -n -E 'For `S2/S3`, or for `S1`|do not commit unless the user approves through `automation-policy`|Piper Station compact protection|Ralph may spawn the|security_reviewer`, `verifier`, `security_reviewer|Bash\(git branch:\*\)|Bash\(git -C \* branch:\*\)|Bash\(git symbolic-ref:\*\)|Bash\(git -C \* symbolic-ref:\*\)' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-runtime-review-fixes.log"; then cat "$TMP_ROOT/stale-runtime-review-fixes.log" >&2; fail "runtime review fixes must not regress to stale compact, helper, or permission wording"; fi
 if grep -R -n 'piper-workflow router\|piper workflow handles lookup, registration, orientation' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-router.log"; then cat "$TMP_ROOT/stale-router.log" >&2; fail "active instructions must not describe piper-workflow as the broad router"; fi
 if grep -R -n 'openaiDeveloperDocs_\*: allow\|"openaiDeveloperDocs_\\\*": "allow"' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-openai-docs-permission.log"; then cat "$TMP_ROOT/stale-openai-docs-permission.log" >&2; fail "OpenCode docs-researcher must ask before OpenAI docs MCP use"; fi
 if grep -R -n 'read-only band\|creates no hub records' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-brainstorm-readonly.log"; then cat "$TMP_ROOT/stale-brainstorm-readonly.log" >&2; fail "brainstorm registration wording must acknowledge the deterministic write exception"; fi

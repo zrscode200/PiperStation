@@ -17,6 +17,8 @@
   "permission": {
     "edit": "ask",
     "bash": "ask",
+    "task": "ask",
+    "todowrite": "ask",
     "openaiDeveloperDocs_*": "deny"
   },
   "mcp": {

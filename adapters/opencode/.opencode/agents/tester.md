@@ -3,7 +3,7 @@ name: tester
 description: Test-layer writer for Piper Station project slices. Use only when the coordinator explicitly delegates test, fixture, or test-data changes.
 mode: subagent
 permission:
-  edit: allow
+  edit: ask
   bash:
     "*": ask
     "git status *": allow

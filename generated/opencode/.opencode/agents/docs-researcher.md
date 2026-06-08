@@ -6,6 +6,7 @@ permission:
   edit: deny
   bash: deny
   task: deny
+  todowrite: deny
   webfetch: allow
   websearch: allow
   openaiDeveloperDocs_*: ask
