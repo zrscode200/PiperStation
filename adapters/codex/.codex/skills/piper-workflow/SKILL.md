@@ -1,6 +1,6 @@
 ---
 name: piper-workflow
-description: "Codex convergent execution for Piper Station project work — use when executing rather than exploring. Trigger via $piper-workflow or by stating the intent once direction is set: formalize active work, update roadmap or build-log checkpoints, prepare an optional durable Ralph queue, execute one scoped Ralph slice, prepare compact-safe handoff, or route a permission-gated finish action. Routes to the matching procedure under references/."
+description: "Codex convergent execution for Piper Station project work — use when executing rather than exploring. Trigger via $piper-workflow or by stating the intent once direction is set: formalize active work, update roadmap or build-log checkpoints, prepare an optional durable Ralph queue, execute the current Ralph wave, explicit slice, or queued task, prepare compact-safe handoff, or route a permission-gated finish action. Routes to the matching procedure under references/."
 ---
 
 # Piper Workflow (Codex)
@@ -23,8 +23,8 @@ optional `decisions.md` when it exists before executing.
 
 - `references/superpowers.md` — verify the handed-off direction, then specify
   and plan Ralph-ready work.
-- `references/ralph.md` — execute one scoped implementation slice with review
-  discipline.
+- `references/ralph.md` — execute the current wave, explicit slice, or queued
+  task with review discipline.
 - `references/compact-handoff.md` — prepare compact-safe continuity records
   before pause or compaction.
 
@@ -40,8 +40,8 @@ Choose the smallest convergent path that fits:
 | User intent | Route | Procedure |
 | --- | --- | --- |
 | Verify direction, specify, or plan substantial work | Superpowers Mode | `references/superpowers.md` |
-| Execute one clear active-work slice or optional queued task | Ralph Mode | `references/ralph.md` and Ralph sections in `STATION.md`; project source edits require `local` profile coverage |
-| Review code or an implemented slice | Review Mode | the `review` skill |
+| Execute one clear active-work wave, explicit slice, or optional queued task | Ralph Mode | `references/ralph.md` and Ralph sections in `STATION.md`; project source edits require `local` profile coverage |
+| Review code or an implemented wave or slice | Review Mode | the `review` skill |
 | Local git, worktree, PR, dependency, network, CI, exceptional, or external action | Finish Mode or permission flow | the `automation-policy` skill |
 | Pause or compact active work | compact handoff | `references/compact-handoff.md` and compact sections in `STATION.md` |
 | Orient, explore, or decide what to do | hand back | the `brainstorm` skill |
@@ -68,14 +68,14 @@ full intent-to-writes map lives in `STATION.md`.
 
 Formal planning or Ralph preparation may create useful
 `projects/<id>/work/` records when they do a clear job: preserve long-horizon
-direction in `roadmap.md`, stabilize current execution in `active-work.md`,
-create durable queued execution in optional `task-queue.md`, record checkpoint
-history in `build-log.md`, or prepare compact/resume continuity in
-`context-pack.md`. Ralph execution may update those records and edit only the
-real project repo when `local` profile coverage exists. Finish, local git,
-worktree, PR, dependency, network, CI, external, or exceptional actions route
-through `automation-policy` when they cross the active permission profile
-boundary.
+direction in `roadmap.md`, stabilize the current group and wave in
+`active-work.md`, create durable queued execution in optional `task-queue.md`,
+record checkpoint history in `build-log.md`, or prepare compact/resume
+continuity in `context-pack.md`. Ralph execution may update those records and
+edit only the real project repo when `local` profile coverage exists. Finish,
+local git, worktree, PR, dependency, network, CI, external, or exceptional
+actions route through `automation-policy` when they cross the active permission
+profile boundary.
 
 ## Artifact Persistence Checkpoints
 
@@ -88,6 +88,10 @@ self-contained resume packet; roadmap, active-work, queue, and build-log
 records should stay purpose-specific and avoid repeating full
 repo/git/resume state.
 
+Plan in slices, execute in waves, and checkpoint at boundaries. Detail the
+current wave enough to execute safely. Sketch later waves only when the current
+code, context, and prior results make them reliable.
+
 Do not ask to commit after every artifact edit. At natural checkpoints, report
 changed artifacts separately from registered project source changes, inspect
 git state for both the real project repo and the Piper Station hub, and say
@@ -96,16 +100,16 @@ Piper artifacts only when the stopping point or future continuity warrants it:
 
 - `S0`: stay in chat unless a durable need appears.
 - `S1`: use `active-work.md` only when continuity matters.
-- `S2`: create only the records needed for current active work, checkpoint
-  history, compact/resume, or durable queued execution.
-- `S3`: use `roadmap.md` when milestones, deferred work, or revisit triggers
-  need durable direction.
+- `S2`: create only the records needed for current-wave active work,
+  checkpoint history, compact/resume, or durable queued execution.
+- `S3`: use `roadmap.md` when groups, milestones, deferred work, or revisit
+  triggers need durable direction.
 
-After ordinary Ralph slices, append `build-log.md` at checkpoint cadence and
-update `task-queue.md` only when a durable queue is in use. Avoid
-`context-pack.md` updates and commit prompts unless the slice is also a
-milestone, changes active work, or the user is about to pause, compact, switch
-projects, or finish.
+During Ralph execution, append `build-log.md` at wave, review/fix, blocker,
+milestone, finish, or other meaningful boundaries. Update `task-queue.md` only
+when a durable queue is in use. Avoid `context-pack.md` updates and commit
+prompts unless the boundary is also a milestone, active-work change, pause,
+compact, project switch, blocker, or finish.
 
 ## Scope And Risk
 

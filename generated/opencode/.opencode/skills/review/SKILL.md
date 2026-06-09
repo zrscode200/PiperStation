@@ -1,6 +1,6 @@
 ---
 name: review
-description: Use for explicit code review, piper-workflow Review Mode, implementation review, or a Ralph review gate; first check whether the work matches the request or active work, then check whether it is built well.
+description: Use for explicit code review, piper-workflow Review Mode, implementation review, or a Ralph review gate for an implemented wave, explicit slice, or queued task; first check whether the work matches the request or active work, then check whether it is built well.
 ---
 
 # Review
@@ -12,7 +12,9 @@ Use a two-stage review:
 
 Read the request, `active-work.md`, `build-log.md`, optional `task-queue.md`,
 changed code or diff, and relevant surrounding code before reporting findings.
-Read `context-pack.md` when resume state affects the review.
+Use `active-work.md` to identify the selected wave, explicit slice, or queued
+task and its acceptance criteria. Read `context-pack.md` when resume state
+affects the review.
 
 Do not use this skill for general repo orientation, planning, implementation,
 or automation approval. Route orientation, planning, and implementation through

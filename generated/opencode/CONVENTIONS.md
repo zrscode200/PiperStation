@@ -11,6 +11,7 @@ only for substantial decision logs future work should not reopen silently.
 Routine progress, raw command output, temporary plans, secrets, and sensitive
 logs do not belong in durable hub records.
 
-Use Ralph review gates for substantial slices and queued foundational work.
-Risk tier controls Ralph implementation caution; permission profiles control
-action boundaries. Review gate selection comes from scope and change impact.
+Use Ralph review gates for substantial waves, high-impact slices, and queued
+foundational work. Risk tier controls Ralph implementation caution; permission
+profiles control action boundaries. Review gate selection comes from scope and
+change impact.

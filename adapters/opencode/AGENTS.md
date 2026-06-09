@@ -88,6 +88,11 @@ Record artifacts economically: `context-pack.md` is the only fully
 self-contained resume packet. Keep roadmap, active-work, build-log, and queue
 records lean and purpose-specific.
 
+Plan in slices, execute in waves, and checkpoint at boundaries. Slices are
+decomposition units; waves are implementation and checkpoint units. Detail the
+current wave enough to execute safely, and sketch later waves only when the
+current code, context, and prior results make them reliable.
+
 ## Mode Routing
 
 `brainstorm` owns the decision-quality front door for the divergent phase —
@@ -106,9 +111,8 @@ Route each request through the smallest mode that fits:
   registration path.
 - Superpowers Mode: verify the handed-off direction, then specify and plan
   before substantial implementation.
-- Ralph Mode: execute one scoped task at a time from `active-work.md` or an
-  optional durable queue, with an implementation review gate for substantial
-  slices.
+- Ralph Mode: execute the current active-work wave, one explicit slice, or one
+  queued task, with implementation review gates at meaningful boundaries.
 - Review Mode: first check whether the work matches the request or active work,
   then check code quality.
 - Finish Mode: verify, summarize, and present commit or PR options without
@@ -116,7 +120,7 @@ Route each request through the smallest mode that fits:
 
 Use `brainstorm` as the broad natural-language front door and `piper-workflow`
 for convergent execution. Use `/superpowers` for explicit formal planning,
-`/ralph` for explicit one-task execution, `review` for explicit review work or
+`/ralph` for explicit Ralph execution, `review` for explicit review work or
 review gates, and `automation-policy` before crossing the active permission
 profile boundary. Prefer consequence language such as "I will keep this
 read-only" or "I will create Ralph-ready work records" over ceremonial mode
@@ -126,10 +130,10 @@ Scope tiers are advisory sizing, not artifact rules:
 
 - `S0`: direct small task; stay in chat unless a durable need appears.
 - `S1`: modest work; use `active-work.md` only when continuity matters.
-- `S2`: substantial work; active-work continuity, durable checkpoints, or
+- `S2`: substantial work; current-wave continuity, durable checkpoints, or
   durable queued execution may help before execution.
-- `S3`: broad or long-running work; track milestone direction in roadmap when
-  that keeps execution clear.
+- `S3`: broad or long-running work; track group or milestone direction in
+  roadmap when that keeps execution clear.
 
 Risk tiers:
 
@@ -190,17 +194,18 @@ Before editing a registered project:
 ## Ralph Review Gate
 
 During Ralph Mode, run a read-only implementation review after substantial
-slices are implemented and initially verified, before marking the slice
-complete in active work records. The reviewer inspects the actual code or diff
-with `active-work.md`, `build-log.md`, optional `task-queue.md`, and relevant
-surrounding code as context.
+waves, queued work, or high-impact slices are implemented and initially
+verified, before marking the boundary complete in active work records. The
+reviewer inspects the actual code or diff with `active-work.md`,
+`build-log.md`, optional `task-queue.md`, and relevant surrounding code as
+context.
 
 Review gate selection is based on scope and change impact. Risk tier controls
 Ralph implementation confirmation before editing, not permission profile.
-Review gates are required for `S2/S3` slices and queued tasks that touch
-foundational behavior such as bootstrap, install, update, registration,
-generated commands, hooks, settings, config, test harnesses, project or hub
-ownership, security policy, or automation policy.
+Review gates are required for `S2/S3` wave or group boundaries and queued tasks
+that touch foundational behavior such as bootstrap, install, update,
+registration, generated commands, hooks, settings, config, test harnesses,
+project or hub ownership, security policy, or automation policy.
 
 The main agent must validate reviewer findings before acting: give each finding
 an explicit verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or
@@ -216,10 +221,12 @@ tasks until the debt is resolved or explicitly accepted by the user.
 
 During Ralph Mode, update `context-pack.md` when pausing, preparing for compact,
 finishing, blocked, crossing a milestone, context is low, switching projects,
-or materially changing active work. Ordinary slice checkpoints should append
-`build-log.md` and update optional `task-queue.md` only when a durable queue is
-in use. If context is low or the next slice needs a clean context, pause and
-tell the user the state is compact-ready and they may run `/compact`.
+or materially changing active work. Internal slice progress should stay inside
+the current wave unless risk, verification, or drift requires a stop. Append
+`build-log.md` at wave, review/fix, blocker, milestone, finish, or other
+meaningful boundaries, and update optional `task-queue.md` only when a durable
+queue is in use. If context is low or the next wave needs a clean context,
+pause and tell the user the state is compact-ready and they may run `/compact`.
 
 Do not claim `/compact` was run unless the user or active runtime actually ran
 it.

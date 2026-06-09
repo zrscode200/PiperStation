@@ -1,6 +1,6 @@
 ---
 description: Prepare compact-safe project work records before /compact
-argument-hint: "[project-id] [current task]"
+argument-hint: "[project-id] [current boundary]"
 ---
 
 # Compact Handoff
@@ -41,8 +41,8 @@ The user invoked this command with: `$ARGUMENTS`
 Include these fields or equivalent clearly labeled sections:
 
 - Goal
-- Last completed task
-- Current task status
+- Last completed boundary
+- Current boundary status: wave, explicit slice, queued task, or blocker
 - Next exact action: a file to open, command to run, or question to answer,
   specific enough to do cold
 - Scope boundary: files or areas in scope and out of scope
@@ -57,7 +57,7 @@ Include these fields or equivalent clearly labeled sections:
 - Piper artifact state: changed `projects/<project-id>/work/` files, Piper
   Station hub branch/HEAD/status, and whether artifact changes are committed
 - Broad-search triggers: concrete reasons a future session should expand
-  beyond the task neighborhood
+  beyond the active boundary neighborhood
 - Stop reason: why work is pausing, handing off, or compacting
 - What to hand a human or fresh agent
 
@@ -75,7 +75,7 @@ Rules:
   not backfill full resume metadata into roadmap, active-work, queue, or
   build-log artifacts during compact prep.
 - Use the resume packet as designed anchors, not a hard read limit. After
-  compact, verify live repo state, rebuild enough task neighborhood to work
-  safely, and expand deliberately when the packet is stale, incomplete,
+  compact, verify live repo state, rebuild enough active boundary neighborhood
+  to work safely, and expand deliberately when the packet is stale, incomplete,
   cross-cutting, security-sensitive, review-oriented, or contradicted by
   verification.

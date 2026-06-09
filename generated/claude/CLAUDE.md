@@ -43,7 +43,7 @@ Slash commands are the user entry points. Run them from this hub directory.
 
 - `/add-project <repo-path> [project-id]` - register a project repo with this hub.
 - `/superpowers <project-id> [request]` - enter Superpowers Mode: direction verification and active-work planning.
-- `/ralph <project-id> [task]` - enter Ralph Mode: execute one scoped task with verification, Implementation Review Gate, and compact-safe updates.
+- `/ralph <project-id> [boundary]` - enter Ralph Mode: execute the current wave, an explicit slice, or a queued task with verification, Implementation Review Gate, and compact-safe updates.
 - `/compact-handoff [project-id]` - prepare a project's work records so the user can safely run `/compact`.
 
 The deterministic shell equivalent for registration is:
@@ -68,13 +68,13 @@ Route each request through the smallest mode that fits.
 
 - Brainstorm (front door) - orient, frame the problem, weigh options, investigate, route explicit registration through the helper, and produce a decision-ready hand-off brief. Read-only except for that deterministic registration path.
 - Superpowers Mode - verify the handed-off direction, then specify and plan before substantial implementation.
-- Ralph Mode - execute one scoped task at a time, verify, drift-check, and use an implementation review gate for substantial slices.
+- Ralph Mode - execute the current active-work wave, one explicit slice, or one queued task; verify, drift-check, and use implementation review gates at meaningful boundaries.
 - Review Mode - first check whether the work matches the request or active work, then check code quality.
 - Finish Mode - report verification, residual risk, changed files, and commit or pull request options without mutating git automatically.
 
 Use `brainstorm` as the broad natural-language front door and `piper-workflow`
 for convergent execution. Use `/superpowers` for explicit formal planning,
-`/ralph` for explicit one-task execution, the Piper `review` skill for explicit
+`/ralph` for explicit Ralph execution, the Piper `review` skill for explicit
 Piper review work or review gates, Claude Code's native `/review` when you
 specifically want its built-in PR review command, and `automation-policy`
 before crossing the active permission profile boundary. Prefer consequence
@@ -88,8 +88,8 @@ Scope tiers are advisory sizing, not artifact rules.
 
 - `S0` - direct small task; stay in chat unless a durable need appears.
 - `S1` - modest work; use `active-work.md` only when continuity matters.
-- `S2` - substantial work; active-work continuity, durable checkpoints, or durable queued execution may help before execution.
-- `S3` - broad or long-running work; track milestone direction in roadmap when that keeps execution clear.
+- `S2` - substantial work; current-wave continuity, durable checkpoints, or durable queued execution may help before execution.
+- `S3` - broad or long-running work; track group or milestone direction in roadmap when that keeps execution clear.
 
 ### Risk Tiers
 
@@ -140,6 +140,8 @@ When active work artifacts change, report them at natural checkpoints separately
 
 Record artifacts economically: `context-pack.md` is the only fully self-contained resume packet. Keep roadmap, active-work, build-log, and queue records lean and purpose-specific.
 
+Plan in slices, execute in waves, and checkpoint at boundaries. Slices are decomposition units; waves are implementation and checkpoint units. Detail the current wave enough to execute safely, and sketch later waves only when the current code, context, and prior results make them reliable.
+
 ## Working On A Project
 
 Before editing a registered project:
@@ -174,21 +176,21 @@ Root docs are the canonical references. Skills should point back to these docs i
 
 ## Ralph Review Gate
 
-During Ralph Mode, run a read-only implementation review after substantial slices are implemented and initially verified, before marking the slice complete in active work records. The reviewer inspects the actual code or diff with `active-work.md`, `build-log.md`, optional `task-queue.md`, and relevant surrounding code as context.
+During Ralph Mode, run a read-only implementation review after substantial waves, queued work, or high-impact slices are implemented and initially verified, before marking the boundary complete in active work records. The reviewer inspects the actual code or diff with `active-work.md`, `build-log.md`, optional `task-queue.md`, and relevant surrounding code as context.
 
-Review gate selection is based on scope and change impact. Risk tier controls Ralph implementation confirmation before editing, not permission profile. Review gates are required for `S2/S3` slices and queued tasks that touch foundational behavior such as bootstrap, install, update, registration, generated commands, hooks, settings, config, test harnesses, project or hub ownership, security policy, or automation policy.
+Review gate selection is based on scope and change impact. Risk tier controls Ralph implementation confirmation before editing, not permission profile. Review gates are required for `S2/S3` wave or group boundaries and queued tasks that touch foundational behavior such as bootstrap, install, update, registration, generated commands, hooks, settings, config, test harnesses, project or hub ownership, security policy, or automation policy.
 
 The main Claude Code session must validate reviewer findings before acting: give each finding an explicit verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or `false-positive` — before editing any code, then apply only `confirmed-in-scope` fixes, turn `confirmed-out-of-scope` findings into follow-up notes or tasks, and reverify review-driven fixes with the narrowest meaningful command for the fixed behavior. If a required or expected gate is skipped, record review debt and do not continue to dependent tasks until the debt is resolved or explicitly accepted by the user.
 
 ## Compaction
 
-Ralph should update `projects/<id>/work/context-pack.md` when pausing, preparing for compact, finishing, blocked, crossing a milestone, context is low, switching projects, or materially changing active work. Ordinary slice checkpoints should append `build-log.md` and update optional `task-queue.md` only when a durable queue is in use.
+Ralph should update `projects/<id>/work/context-pack.md` when pausing, preparing for compact, finishing, blocked, crossing a milestone, context is low, switching projects, or materially changing active work. Internal slice progress should stay inside the current wave unless risk, verification, or drift requires a stop. Append `build-log.md` at wave, review/fix, blocker, milestone, finish, or other meaningful boundaries, and update optional `task-queue.md` only when a durable queue is in use.
 
-The compact state must include: goal, last completed task, current task status, next exact action, scope boundary, files to inspect first after compact, known reference paths, verification status, review state, drift result, blockers and risks, git state, broad-search triggers, stop reason, and what to hand a human or fresh agent. The next exact action should be a file to open, command to run, or question to answer, specific enough for a fresh Claude Code session to continue cold.
+The compact state must include: goal, last completed boundary, current boundary status, next exact action, scope boundary, files to inspect first after compact, known reference paths, verification status, review state, drift result, blockers and risks, git state, broad-search triggers, stop reason, and what to hand a human or fresh agent. The next exact action should be a file to open, command to run, or question to answer, specific enough for a fresh Claude Code session to continue cold.
 
 Compact summary priorities are the fields that reduce expensive resume work: next exact action, scope boundary, files to inspect first, verification state, review state, drift result, git state, blockers, risks, and broad-search triggers. Keep them concise and specific.
 
-`/compact` is human-triggered. Ralph may pause and say the state is compact-ready when context is low, a milestone just finished, or the next slice needs a clean context. Ralph should continue normally when the next task is safe and context is not a concern. Do not claim `/compact` ran unless the user or Claude Code actually ran it.
+`/compact` is human-triggered. Ralph may pause and say the state is compact-ready when context is low, a milestone just finished, or the next wave needs a clean context. Ralph should continue normally when the next boundary is safe and context is not a concern. Do not claim `/compact` ran unless the user or Claude Code actually ran it.
 
 Claude Code compact-protection hooks provide user-visible lifecycle guidance for manual or automatic compaction. `PreCompact` surfaces the Piper Station fields that matter before compacting, and `PostCompact` surfaces the resume anchors after compacting. The reliable model-visible resume path is still `SessionStart` with source `compact`. Hooks must not edit work records, run verification, commit, push, or invoke `/compact`.
 
@@ -198,7 +200,7 @@ require a reliable active-project/session-state source and explicit ownership
 rules for hook-written records. Keep this as future design work, not current
 hub-lite behavior.
 
-After compact, start from the designed resume anchors: `context-pack.md`, `active-work.md`, `build-log.md`, optional `task-queue.md`, project `project.md`, `memory.md`, optional `decisions.md`, and live branch/HEAD/status. Read `roadmap.md` when longer-horizon direction matters. Then rebuild enough of the active task neighborhood to work safely. Expand beyond that for concrete triggers such as a stale resume packet, missing acceptance criteria, failing verification, generated parity, security or permissions behavior, or review scope.
+After compact, start from the designed resume anchors: `context-pack.md`, `active-work.md`, `build-log.md`, optional `task-queue.md`, project `project.md`, `memory.md`, optional `decisions.md`, and live branch/HEAD/status. Read `roadmap.md` when longer-horizon direction matters. Then rebuild enough of the active boundary neighborhood to work safely. Expand beyond that for concrete triggers such as a stale resume packet, missing acceptance criteria, failing verification, generated parity, security or permissions behavior, or review scope.
 
 ## Project Repos
 

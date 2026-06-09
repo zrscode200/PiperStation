@@ -7,7 +7,7 @@ state.
 Prioritize:
 
 - the user's latest goal and requested project
-- project id, repo path, branch, and current task
+- project id, repo path, branch, and current boundary
 - important facts from `projects/<id>/memory.md`
 - project policy preferences from `projects/<id>/project.md`
 - substantial decision logs from optional `projects/<id>/decisions.md`
@@ -15,7 +15,7 @@ Prioritize:
   when present
 - active work, build-log checkpoints, optional durable queue, and roadmap
   direction when relevant
-- Ralph task status, last completed task, next exact action, stop reason,
+- Ralph boundary status, last completed boundary, next exact action, stop reason,
   blockers, risks, verification status, and drift result when present
 - files changed in the real project repo and why
 - scope boundary, including files or areas in scope and out of scope
@@ -40,7 +40,7 @@ Reload on resume:
 - `projects/<project-id>/work/build-log.md` when present
 - optional `projects/<project-id>/work/task-queue.md` when present
 - `projects/<project-id>/work/roadmap.md` when relevant
-- relevant task-neighborhood files in the real project repo
+- relevant active-boundary-neighborhood files in the real project repo
 
 Rules:
 
@@ -51,7 +51,7 @@ Rules:
 - Treat built-in memories as supplemental recall only.
 - On resume after compaction, reload the listed records when present.
 - Preserve where to start after compact: designed anchors, exact next action,
-  task neighborhood, and when broader exploration is justified.
+  active boundary neighborhood, and when broader exploration is justified.
 - Do not invent completed work, approvals, test results, commits, branches, or
   user decisions.
 - Mark uncertain details as unknown instead of filling gaps.

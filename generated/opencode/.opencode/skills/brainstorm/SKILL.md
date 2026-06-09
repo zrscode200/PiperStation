@@ -136,7 +136,7 @@ brief; it does not perform durable execution itself.
 | --- | --- |
 | "make this a formal plan", "prepare for Ralph", "create the queue", "set this up for later" | `piper-workflow` — formal planning |
 | "start Ralph", "build task X", "execute the queue item", "implement the plan" | `piper-workflow` — Ralph execution |
-| "review this change" or an implemented slice or review gate | `review` |
+| "review this change" or an implemented wave, slice, or review gate | `review` |
 | "commit", "open a PR", "push", "install", "run CI", worktree change, or external/exceptional action | `automation-policy` |
 | "pause", "hand off", or "get this compact-ready" | `piper-workflow` — `/compact-handoff` |
 

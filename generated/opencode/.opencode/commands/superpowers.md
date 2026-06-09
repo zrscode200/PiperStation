@@ -1,5 +1,5 @@
 ---
-description: Enter Superpowers Mode for discovery, specification, and planning
+description: Enter Superpowers Mode for direction verification and planning
 argument-hint: "[project id or repo path and request]"
 ---
 
@@ -9,8 +9,9 @@ Enter Superpowers Mode for a registered project.
 
 The user invoked this command with: `$ARGUMENTS`
 
-Use Superpowers Mode to verify a direction, specify, plan, and decompose
-Ralph-ready tasks before substantial implementation.
+Use Superpowers Mode to verify a direction, define the group or milestone
+boundary, detail the current wave, and decompose Ralph-ready slices before
+substantial implementation.
 
 Use this command for formal planning, not for divergent exploration or general
 repo orientation (those belong to `brainstorm`), implementation, review, or
@@ -38,13 +39,16 @@ still route through `automation-policy`.
    when they do a clear job: preserve long-horizon direction, stabilize current
    active work, create durable queued execution, record a checkpoint, or prepare
    compact/resume continuity.
-8. Write `active-work.md` only when requirements, acceptance criteria,
-   strategy, tradeoffs, sequence, or verification strategy need a durable target
-   before execution. Keep work artifacts in `projects/<project-id>/work/`
-   unless the user explicitly asks for a project-local copy.
+8. Write `active-work.md` as the live group and wave workbench only when the
+   work needs durable execution continuity. Detail the current wave enough to
+   act safely: acceptance criteria, expected diff boundary, verification,
+   review expectations, stop conditions, and useful slice breakdown. Sketch
+   later waves only when the current code, context, and prior results make them
+   reliable. Keep work artifacts in `projects/<project-id>/work/` unless the
+   user explicitly asks for a project-local copy.
 9. Update `roadmap.md` only when long-term direction, milestones, deferred
    work, risks, or revisit triggers change.
-10. Produce a Ralph-ready `task-queue.md` only when tasks are clear,
+10. Produce a Ralph-ready `task-queue.md` only when waves or slices are clear,
     verifiable, and must survive the current session or move across agents.
 11. Append `build-log.md` at formal planning completion when the plan
     materially changes future execution.
@@ -68,18 +72,20 @@ machinery for planning.
 
 Create only under `projects/<project-id>/work/`, and only when useful:
 
-- `roadmap.md`: longer-horizon direction, milestones, deferred work, risks,
-  and revisit triggers.
-- `active-work.md`: current goal, requirements, acceptance criteria, approach,
-  slices, risks, verification strategy, and open questions.
-- `build-log.md`: concise checkpoint ledger for planning outcomes,
-  implementation summaries, review and verification results, risks, next
-  steps, and commits.
-- `context-pack.md`: compact/resume and handoff anchor with the current task,
-  next exact action, files to inspect first, git state, verification, review
-  state, drift, blockers, stop reason, and what to hand a human or fresh agent.
-- `task-queue.md`: optional durable Ralph task list with ids, status, risk,
-  acceptance criteria, verification, and expected diff boundary.
+- `roadmap.md`: longer-horizon direction, groups, milestones, deferred work,
+  risks, and revisit triggers.
+- `active-work.md`: live group and wave workbench: group boundary, current wave
+  details, reliable later-wave sketches, slice breakdown, risks, verification
+  strategy, and open questions.
+- `build-log.md`: primary durable checkpoint ledger for planning outcomes,
+  implemented contracts, implementation summaries, review and verification
+  results, risks, next steps, and commits.
+- `context-pack.md`: compact/resume and handoff anchor with the current
+  boundary, next exact action, files to inspect first, git state,
+  verification, review state, drift, blockers, stop reason, and what to hand a
+  human or fresh agent.
+- `task-queue.md`: optional durable Ralph wave or slice list with ids, status,
+  risk, acceptance criteria, verification, and expected diff boundary.
 
 Keep artifacts lean: `context-pack.md` is the only fully self-contained resume
 packet. Do not duplicate branch, HEAD, full git state, review state, blockers,
@@ -93,24 +99,28 @@ create active work artifacts.
 
 Superpowers is a natural artifact checkpoint. Updating work artifacts is part
 of planning, but committing them is not automatic. At the end of planning,
-summarize the artifact files touched, their role in the next Ralph slice or
-future session, and whether they remain uncommitted in the Piper Station hub.
+summarize the artifact files touched, their role in the next Ralph wave,
+explicit slice, or future session, and whether they remain uncommitted in the
+Piper Station hub.
 Offer a single artifact commit only when the artifact checkpoint matters for
 future continuity; permission profiles gate whether that local git action can
 proceed, not whether the checkpoint exists.
 
 ## Spec Shape
 
-`active-work.md` should include problem or opportunity, goals and non-goals,
-users and workflows, proposed behavior, acceptance criteria, approach and
-tradeoffs, risks and guardrails, verification strategy, and open questions.
+`active-work.md` should include the group or milestone boundary, goals and
+non-goals, current assumptions, current wave details, acceptance criteria,
+expected diff boundary, slice breakdown for the current wave, risks and
+guardrails, verification strategy, review expectations, stop conditions, and
+open questions. Later waves are optional; include only reliable sketches,
+dependencies, and revisit triggers.
 
 ## Task Shape
 
-Each queued Ralph task should include id, title, status, risk, likely files or
-areas, acceptance criteria, verification command or documented fallback,
-expected diff boundary, context needed by a fresh session or reviewer, and
-dependencies.
+Each queued Ralph wave or slice should include id, title, status, risk, likely
+files or areas, acceptance criteria, verification command or documented
+fallback, expected diff boundary, context needed by a fresh session or
+reviewer, and dependencies.
 
 ## Guardrails
 
