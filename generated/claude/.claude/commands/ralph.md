@@ -85,8 +85,10 @@ still route through `automation-policy`.
 17. If a required or expected review gate was skipped, record review debt and do
     not continue to a dependent task until it is resolved or explicitly
     accepted by the user.
-18. Prepare compact-safe state at natural stopping points.
-19. Continue only if the next task is safe and the user asked for continuation.
+18. Prepare compact-safe state at pause, compact, handoff, blocker, milestone,
+    finish, or project-switch boundaries.
+19. Continue only if the next boundary is safe and the user asked for
+    continuation.
 
 Do not commit, push, open PRs, create or switch worktrees, install dependencies,
 or run external automation unless the selected workflow has reached that action
@@ -100,10 +102,10 @@ compaction; it does not invoke `/compact` itself.
 Drift-check the actual diff:
 
 - None: actual changes are a subset of expected.
-- Expected expansion: required touching files outside the task list but clearly
-  in scope; record the file and reason.
-- Out-of-scope work: changes include behavior the task did not ask for; stop
-  and split or revert that work.
+- Expected expansion: required touching files outside the selected boundary but
+  still clearly in scope; record the file and reason.
+- Out-of-scope work: changes include behavior outside the selected boundary;
+  stop and split or revert that work.
 - Wrong scope: actual changes do not satisfy the task; stop and ask.
 
 Stop and hand control back when the same verification fails twice without

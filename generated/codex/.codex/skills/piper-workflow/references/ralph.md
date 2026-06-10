@@ -99,10 +99,10 @@ does not invoke `/compact` itself.
 Drift-check the actual diff:
 
 - None: actual changes are a subset of expected.
-- Expected expansion: required touching files outside the task list but clearly
-  in scope; record the file and reason.
-- Out-of-scope work: changes include behavior the task did not ask for; stop
-  and split or revert that work.
+- Expected expansion: required touching files outside the selected boundary but
+  still clearly in scope; record the file and reason.
+- Out-of-scope work: changes include behavior outside the selected boundary;
+  stop and split or revert that work.
 - Wrong scope: actual changes do not satisfy the task; stop and ask.
 
 Stop and hand control back when the same verification fails twice without

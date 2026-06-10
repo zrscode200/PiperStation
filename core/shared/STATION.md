@@ -314,9 +314,9 @@ accepted by the user.
 
 ## Compaction
 
-At natural stopping points, prepare compact-safe state in
-`projects/<id>/work/context-pack.md`, which also carries the handoff fields when
-pausing or transferring work.
+At pause, compact, handoff, blocker, milestone, finish, or project-switch
+boundaries, prepare compact-safe state in `projects/<id>/work/context-pack.md`.
+That file also carries the handoff fields when pausing or transferring work.
 
 Compact-safe state must include goal, last completed boundary, current boundary
 status, next exact action, scope boundary, files to inspect first after compact,
