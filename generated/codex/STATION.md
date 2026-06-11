@@ -77,8 +77,8 @@ Use this dispatch table when intent is unclear:
 | Register a repo | `brainstorm`, `/add-project`, or `./bin/add-project` | deterministic registration helper |
 | Orient, explore, compare options, or decide what to do | `brainstorm` | `brainstorm` |
 | Verify a direction, specify, or plan substantial work | Superpowers Mode or `/superpowers` | `piper-workflow`, `/superpowers`, and this guide |
-| Execute one clear active-work wave, explicit slice, or optional queued task | Ralph Mode or `/ralph` | `/ralph` and this guide; project source edits require `local` profile coverage |
-| Review code, an implemented wave, or an implemented slice | Review Mode | `review` |
+| Execute one clear active-work wave, group review, explicit slice, or optional queued task | Ralph Mode or `/ralph` | `/ralph` and this guide; project source edits require `local` profile coverage |
+| Review code, an implemented wave, group, or slice | Review Mode | `review` |
 | Local git, worktree, PR, dependency, network, CI, exceptional, or external action | Finish Mode or permission approval flow | `automation-policy` |
 | Pause or compact active work | `/compact-handoff` | compact handoff guidance |
 
@@ -105,7 +105,7 @@ actions):
 | "what would it take", "how should we approach", "compare this to", or "plan the refactor" before registration | Conversational planning | None by default | Produce a grounded plan in chat. Avoid hub records unless the user asks to formalize. |
 | "register this", "track this project", or "this is formal work now" | Registration | `project.md` and `memory.md` only | Use the registration helper. Prefer hub-only records unless repo marker files are explicitly wanted. Do not create `work/` or start implementation. |
 | "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Create only the durable records the work needs: long-horizon direction, active work continuity, durable task tracking, checkpoint history, or compact/resume continuity. State that source remains untouched. |
-| "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the real project repo when `local` profile coverage exists | Confirm the selected wave, explicit slice, or queued task; diff boundary; risk; verification; writable repo access; and `local` profile coverage before editing. Route through `automation-policy` if coverage is absent. Execute the current boundary. |
+| "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the real project repo when `local` profile coverage exists | Confirm the selected wave, group review, explicit slice, or queued task; diff boundary; risk; verification; writable repo access; and `local` profile coverage before editing. Route through `automation-policy` if coverage is absent. Execute the current boundary. |
 | "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/exceptional action | Finish or permission-gated action | Local/external actions only after the workflow reaches that action and the permission profile allows it; exceptional actions only after explicit one-off approval | Summarize state, verification, and risk first. Route through `automation-policy` before crossing the active profile boundary or requesting exceptional approval. |
 
 Ambiguous signals must not silently escalate durable writes. If the next step
@@ -147,6 +147,12 @@ decomposition units; waves are implementation and checkpoint units. Detail the
 current wave enough to execute safely. Sketch later waves only when the current
 code, context, and prior results make them reliable.
 
+Groups bundle related waves under a shared acceptance target and one
+integrating review gate. Use a group when multiple waves land before the larger
+boundary is accepted, or when cross-wave interaction risk matters. A group has
+its own boundary in `active-work.md`, its own checkpoint in `build-log.md`, and
+its own review gate over the integrated cross-wave diff before acceptance.
+
 ### Work Artifact Reference
 
 Create these only under `projects/<project-id>/work/`, never in the registered
@@ -156,10 +162,10 @@ continuity, quality, or compact/resume.
 | Artifact | Purpose | Create or update when |
 | --- | --- | --- |
 | `roadmap.md` | Longer-horizon direction: groups, milestones, deferred work, risks, and revisit triggers. | Project direction, group order, milestone sequence, deferred scope, or revisit triggers change. |
-| `active-work.md` | Live group and wave workbench: current goal, group boundary, current wave details, reliable later-wave sketches, slice breakdown, acceptance criteria, risks, verification strategy, and open questions. | Current group or wave needs durable continuity before implementation, review, compact, or delayed execution. |
+| `active-work.md` | Live group and wave workbench: current goal, group boundary, current wave details, reliable later-wave sketches, slice breakdown, required gates, group review state, acceptance criteria, risks, verification strategy, and open questions. | Current group or wave needs durable continuity before implementation, review, compact, or delayed execution. |
 | `build-log.md` | Primary durable checkpoint ledger: what actually happened, final contracts, implementation summaries, review and verification results, risks, next steps, and commits. | A meaningful planning, wave, review/fix, finish, compact, blocker, group, or milestone checkpoint occurs. |
-| `context-pack.md` | The full compact/resume packet: goal, current boundary, next exact action, key files, what to inspect first, branch/HEAD/status, verification state, review state, drift, blockers, stop reason, and what to hand a human or fresh agent. | Active work may pause, compact, finish, hit a blocker, reach a milestone, switch projects, or hand off. |
-| `task-queue.md` | Optional durable Ralph execution queue: task ids with status, risk, acceptance criteria, verification, dependencies, and expected diff boundary. | Native runtime task tracking is insufficient because waves or slices must survive the current session or move across agents. |
+| `context-pack.md` | The full compact/resume packet: goal, current boundary, next exact action, key files, what to inspect first, branch/HEAD/status, verification state, review state including group-level review state when relevant, drift, blockers, stop reason, and what to hand a human or fresh agent. | Active work may pause, compact, finish, hit a blocker, reach a milestone, switch projects, or hand off. |
+| `task-queue.md` | Optional durable Ralph execution queue: task ids with status, risk, acceptance criteria, verification, dependencies, expected diff boundary, and explicit group review gate items for multi-wave groups. | Native runtime task tracking is insufficient because waves, slices, or group gates must survive the current session or move across agents. |
 
 ### Artifact Recording Economy
 
@@ -172,15 +178,20 @@ artifact's purpose.
 - `roadmap.md`: long-term direction only. Do not turn it into the current work
   tracker or checkpoint ledger.
 - `active-work.md`: live group and wave planning only. Keep the current wave
-  actionable; sketch later waves only when reliable. Do not duplicate the full
-  resume packet or chronological log.
+  actionable; sketch later waves only when reliable. When a group exists, make
+  the group header, wave list, required gates, group review state, and
+  acceptance target explicit. Do not duplicate the full resume packet or
+  chronological log.
 - `build-log.md`: checkpoint summaries and final implemented contracts only.
-  Prefer concise entries over raw logs or step-by-step transcripts.
+  Prefer concise entries over raw logs or step-by-step transcripts. Give group
+  closeout its own entry when a group boundary is reached.
 - `context-pack.md`: full resume state and cross-artifact pointers. Update it
   at pause, compact preparation, finish, blocker, milestone boundary, context
   low stop, project switch, or material active-work change.
-- `task-queue.md`: durable queued waves or slices only. Native runtime task
-  tracking is the default for short-lived in-session steps.
+- `task-queue.md`: durable queued waves, slices, or group gate items only.
+  Native runtime task tracking is the default for short-lived in-session steps.
+  For multi-wave groups, list the group review gate as an explicit acceptance
+  criterion before the acceptance task.
 
 ### Artifact Persistence
 
@@ -228,11 +239,12 @@ is driven by durable need:
   `active-work.md` for the current group and wave, and checkpoint entries in
   `build-log.md`.
 
-During Ralph execution, append `build-log.md` at wave, review/fix, blocker,
-milestone, finish, or other meaningful boundaries. Update `task-queue.md` only
-when a durable queue is in use. Do not update `context-pack.md` or ask to
-commit artifacts unless the boundary is also a milestone, material active-work
-change, pause, compact, context switch, blocker, or finish.
+During Ralph execution, append `build-log.md` at wave, group, review/fix,
+blocker, milestone, finish, or other meaningful boundaries. Update
+`task-queue.md` only when a durable queue is in use. Do not update
+`context-pack.md` or ask to commit artifacts unless the boundary is also a
+group closeout, milestone, material active-work change, pause, compact, context
+switch, blocker, or finish.
 
 ## Mode Routing
 
@@ -245,11 +257,12 @@ Route requests through `brainstorm` (the front door), `piper-workflow`
   registration path.
 - Superpowers Mode: verify the handed-off direction, then specify and plan
   before substantial implementation.
-- Ralph Mode: execute the current active-work wave, one explicit slice, or one
-  queued task; verify, drift-check, and use implementation review gates at
-  meaningful boundaries.
-- Review Mode: first check whether the work matches the request or active work, then
-  check code quality.
+- Ralph Mode: execute the current active-work wave, group review, one explicit
+  slice, or one queued task; verify, drift-check, and use implementation review
+  gates at meaningful boundaries.
+- Review Mode: first check whether the work matches the request or active work,
+  then check code quality; group reviews inspect the integrated cross-wave
+  diff.
 - Finish Mode: report verification, residual risk, changed files, and commit or
   pull request options without mutating git automatically.
 
@@ -302,6 +315,9 @@ profile. Review gates are required for `S2/S3` wave or group boundaries and
 queued tasks that touch foundational behavior such as bootstrap, install,
 update, registration, generated commands, hooks, settings, config, test
 harnesses, project or hub ownership, security policy, or automation policy.
+After the final wave in a group lands, run a group-level review gate over the
+integrated cross-wave diff before the slice, group, or acceptance task is
+marked complete, even if every per-wave gate already passed.
 
 The main session must validate reviewer findings before acting: give each
 finding an explicit verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or
@@ -320,8 +336,9 @@ That file also carries the handoff fields when pausing or transferring work.
 
 Compact-safe state must include goal, last completed boundary, current boundary
 status, next exact action, scope boundary, files to inspect first after compact,
-known reference paths, verification status, review state, drift result,
-blockers and risks, git state, broad-search triggers, and stop reason.
+known reference paths, verification status, review state, group-level review
+state when a group exists, drift result, blockers and risks, git state,
+broad-search triggers, and stop reason.
 
 `/compact` is human-triggered. Ralph may pause and say the state is
 compact-ready when context is low, a milestone just finished, or the next wave

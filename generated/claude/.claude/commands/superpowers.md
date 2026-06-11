@@ -44,12 +44,17 @@ still route through `automation-policy`.
    act safely: acceptance criteria, expected diff boundary, verification,
    review expectations, stop conditions, and useful slice breakdown. Sketch
    later waves only when the current code, context, and prior results make them
-   reliable. Keep work artifacts in `projects/<project-id>/work/` unless the
-   user explicitly asks for a project-local copy.
+   reliable. When multiple waves share one acceptance target or cross-wave
+   interaction risk matters, include an explicit group header with the goal,
+   wave list, required gates, group review state, and acceptance target. Keep
+   work artifacts in `projects/<project-id>/work/` unless the user explicitly
+   asks for a project-local copy.
 9. Update `roadmap.md` only when long-term direction, milestones, deferred
    work, risks, or revisit triggers change.
-10. Produce a Ralph-ready `task-queue.md` only when waves or slices are clear,
-    verifiable, and must survive the current session or move across agents.
+10. Produce a Ralph-ready `task-queue.md` only when waves, slices, or group
+    gates are clear, verifiable, and must survive the current session or move
+    across agents. For a multi-wave group, list the group review gate as an
+    explicit acceptance criterion before the acceptance task.
 11. Append `build-log.md` at formal planning completion when the plan
     materially changes future execution.
 12. Defer `context-pack.md` unless planning is stopping, pausing, preparing
@@ -75,17 +80,18 @@ Create only under `projects/<project-id>/work/`, and only when useful:
 - `roadmap.md`: longer-horizon direction, groups, milestones, deferred work,
   risks, and revisit triggers.
 - `active-work.md`: live group and wave workbench: group boundary, current wave
-  details, reliable later-wave sketches, slice breakdown, risks, verification
-  strategy, and open questions.
+  details, reliable later-wave sketches, slice breakdown, required gates, group
+  review state, risks, verification strategy, and open questions.
 - `build-log.md`: primary durable checkpoint ledger for planning outcomes,
   implemented contracts, implementation summaries, review and verification
   results, risks, next steps, and commits.
 - `context-pack.md`: compact/resume and handoff anchor with the current
   boundary, next exact action, files to inspect first, git state,
-  verification, review state, drift, blockers, stop reason, and what to hand a
-  human or fresh agent.
-- `task-queue.md`: optional durable Ralph wave or slice list with ids, status,
-  risk, acceptance criteria, verification, and expected diff boundary.
+  verification, review state, group-level review state when relevant, drift,
+  blockers, stop reason, and what to hand a human or fresh agent.
+- `task-queue.md`: optional durable Ralph wave, slice, or group gate list with
+  ids, status, risk, acceptance criteria, verification, and expected diff
+  boundary.
 
 Keep artifacts lean: `context-pack.md` is the only fully self-contained resume
 packet. Do not duplicate branch, HEAD, full git state, review state, blockers,
@@ -112,15 +118,18 @@ proceed, not whether the checkpoint exists.
 non-goals, current assumptions, current wave details, acceptance criteria,
 expected diff boundary, slice breakdown for the current wave, risks and
 guardrails, verification strategy, review expectations, stop conditions, and
-open questions. Later waves are optional; include only reliable sketches,
-dependencies, and revisit triggers.
+open questions. When a group exists, include a `Group` section with goal,
+waves, required gates, group review state, and acceptance target. Later waves
+are optional; include only reliable sketches, dependencies, and revisit
+triggers.
 
 ## Task Shape
 
-Each queued Ralph wave or slice should include id, title, status, risk, likely
-files or areas, acceptance criteria, verification command or documented
-fallback, expected diff boundary, context needed by a fresh session or
-reviewer, and dependencies.
+Each queued Ralph wave, slice, or group gate should include id, title, status,
+risk, likely files or areas, acceptance criteria, verification command or
+documented fallback, expected diff boundary, context needed by a fresh session
+or reviewer, and dependencies. Multi-wave groups should include an explicit
+group review gate before the acceptance task.
 
 ## Guardrails
 

@@ -26,19 +26,23 @@ still route through `automation-policy`.
 2. Read relevant files under `projects/<project-id>/work/`, especially
    `active-work.md`, `build-log.md`, `context-pack.md`, and optional
    `task-queue.md`.
-3. Select one execution boundary: the wave, explicit slice, or task matching
-   `$ARGUMENTS` if specified; otherwise the current wave from
-   `active-work.md`; otherwise the top ready item in the optional queue.
+3. Select one execution boundary: the wave, group review, explicit slice, or
+   task matching `$ARGUMENTS` if specified; otherwise the current boundary from
+   `active-work.md` or `context-pack.md`; otherwise the top ready item in the
+   optional queue. If the final wave in a group has landed and the group review
+   is pending, select the group review before any acceptance task.
 4. Confirm the boundary has acceptance criteria, a verification command or
-   fallback, risk tier, expected diff boundary, and enough slice breakdown to
-   execute safely.
+   fallback, risk tier, and expected diff boundary. For implementation
+   boundaries, confirm enough slice breakdown to execute safely. For group
+   review boundaries, confirm the wave list, integrated diff scope, acceptance
+   target, and current group review state.
 5. Verify the real project repo is writable in the active session. If the repo
    is outside the current workspace or sandbox, state that writable access is
    required before execution instead of declaring the task Ralph-ready. Confirm
    the active permission profile covers `local` project source edits; if not,
    route through `automation-policy` before editing.
-6. State the selected wave, explicit slice, or queued task and its expected diff
-   boundary before editing.
+6. State the selected wave, group review, explicit slice, or queued task and
+   its expected diff boundary before editing.
 7. Mark the boundary active in `projects/<project-id>/work/task-queue.md` only
    when a durable queue exists.
 8. Stop if the boundary is ambiguous, lacks verification, is `L3`, is outside
@@ -53,7 +57,11 @@ still route through `automation-policy`.
    foundational work, expected for meaningful behavior-changing `S1`, optional
    for `S0/L0`, docs-only, or trivial work. Risk tier controls Ralph
    implementation confirmation before editing, not review selection or
-   permission profile.
+   permission profile. After the final wave in a group lands, run a
+   group-level review gate over the integrated diff before the slice, group, or
+   acceptance task is marked complete, even if every per-wave gate already
+   passed. Per-wave gates inspect one wave; the group gate inspects cross-wave
+   interactions.
 12. Validate reviewer findings before editing: give each finding an explicit
     verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or
     `false-positive` — and do not edit code until every finding has one. Then
@@ -67,14 +75,15 @@ still route through `automation-policy`.
 14. For boundary bookkeeping, append `build-log.md` at checkpoint cadence with
     changed source areas, verification result, review result, drift, risks, and
     next step. Update `task-queue.md` status only when a durable queue is in
-    use. Update `active-work.md` only when the group boundary, current wave,
-    slice breakdown, requirements, approach, or verification strategy
-    materially changed.
+    use, including explicit group review gate status for multi-wave groups.
+    Update `active-work.md` only when the group boundary, current wave, slice
+    breakdown, requirements, approach, verification strategy, or group review
+    state materially changed.
 15. Report changed Piper artifacts separately from registered project source
     changes. During internal slice progress, do not ask to commit artifact
-    updates or update `context-pack.md`. At wave, milestone, blocker, pause,
-    compact, project switch, or finish boundaries, update only the artifacts
-    needed for continuity.
+    updates or update `context-pack.md`. At wave, group, milestone, blocker,
+    pause, compact, project switch, or finish boundaries, update only the
+    artifacts needed for continuity.
 16. Record project policy preferences in `project.md`, and use optional
     `decisions.md` only for substantial decision logs.
 17. If a required or expected review gate was skipped, record review debt and do
@@ -117,6 +126,11 @@ cannot run, or the plan appears wrong after repeated implementation attempts.
 Use the review gate after the selected boundary is implemented and initially
 verified, before marking it complete in durable work records.
 
+For groups, run a separate gate after the final wave lands and before the
+group or slice acceptance task. The reviewer must inspect the integrated
+cross-wave diff and the interactions between waves, not only the last wave's
+diff.
+
 Review gate examples:
 
 - `S0/L0` typo fix or docs wording tweak: gate optional.
@@ -146,14 +160,15 @@ unless the user explicitly accepts the review debt.
 ## Compaction Discipline
 
 At each natural stopping point, prepare compact-safe state before continuing or
-pausing. Natural stopping points include a completed wave or queued task, a
-milestone boundary, a failed verification stop, a blocked task, or transition
-to a larger next boundary.
+pausing. Natural stopping points include a completed wave, group closeout,
+queued task, milestone boundary, failed verification stop, blocked task, or
+transition to a larger next boundary.
 
 When active work records are in use:
 
 1. Append `build-log.md` with the current checkpoint, including commands,
-   results, review state, drift, risks, and next step.
+   results, review state, group-level review state when relevant, drift, risks,
+   and next step.
 2. Update `task-queue.md` with the current boundary status only when a durable
    queue exists.
 3. Update `context-pack.md` only when pausing, preparing for compact, finishing,
@@ -162,8 +177,8 @@ When active work records are in use:
    boundary, current boundary status, next exact action, scope boundary, files
    changed, files to inspect first after compact, known reference paths,
    branch, HEAD, `git status --short`, verification status, review state,
-   drift result, blockers, risks, broad search triggers, stop reason, and what
-   to hand a human or fresh agent.
+   group-level review state when relevant, drift result, blockers, risks, broad
+   search triggers, stop reason, and what to hand a human or fresh agent.
 4. Report artifact files updated in the Piper Station hub and whether they are
    committed. If the stop is a milestone boundary, compact preparation, finish
    mode, project switch, or material active-work change, ask once whether to

@@ -41,7 +41,7 @@ Choose the smallest convergent path that fits:
 | --- | --- | --- |
 | Verify direction, specify, or plan substantial work | Superpowers Mode | `references/superpowers.md` |
 | Execute one clear active-work wave, explicit slice, or optional queued task | Ralph Mode | `references/ralph.md` and Ralph sections in `STATION.md`; project source edits require `local` profile coverage |
-| Review code or an implemented wave or slice | Review Mode | the `review` skill |
+| Review code or an implemented wave, group, or slice | Review Mode | the `review` skill |
 | Local git, worktree, PR, dependency, network, CI, exceptional, or external action | Finish Mode or permission flow | the `automation-policy` skill |
 | Pause or compact active work | compact handoff | `references/compact-handoff.md` and compact sections in `STATION.md` |
 | Orient, explore, or decide what to do | hand back | the `brainstorm` skill |
@@ -92,6 +92,13 @@ Plan in slices, execute in waves, and checkpoint at boundaries. Detail the
 current wave enough to execute safely. Sketch later waves only when the current
 code, context, and prior results make them reliable.
 
+Groups bundle related waves under a shared acceptance target and one
+integrating review gate. Use a group when multiple waves land before the larger
+boundary is accepted, or when cross-wave interaction risk matters. Make the
+group boundary, wave list, required gates, group review state, and acceptance
+target visible in `active-work.md`; for durable queues, list the group review
+gate before the acceptance task.
+
 Do not ask to commit after every artifact edit. At natural checkpoints, report
 changed artifacts separately from registered project source changes, inspect
 git state for both the real project repo and the Piper Station hub, and say
@@ -105,11 +112,12 @@ Piper artifacts only when the stopping point or future continuity warrants it:
 - `S3`: use `roadmap.md` when groups, milestones, deferred work, or revisit
   triggers need durable direction.
 
-During Ralph execution, append `build-log.md` at wave, review/fix, blocker,
-milestone, finish, or other meaningful boundaries. Update `task-queue.md` only
-when a durable queue is in use. Avoid `context-pack.md` updates and commit
-prompts unless the boundary is also a milestone, active-work change, pause,
-compact, project switch, blocker, or finish.
+During Ralph execution, append `build-log.md` at wave, group, review/fix,
+blocker, milestone, finish, or other meaningful boundaries. Update
+`task-queue.md` only when a durable queue is in use. Avoid `context-pack.md`
+updates and commit prompts unless the boundary is also a group closeout,
+milestone, active-work change, pause, compact, project switch, blocker, or
+finish.
 
 ## Scope And Risk
 

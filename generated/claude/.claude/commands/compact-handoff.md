@@ -42,7 +42,8 @@ Include these fields or equivalent clearly labeled sections:
 
 - Goal
 - Last completed boundary
-- Current boundary status: wave, explicit slice, queued task, or blocker
+- Current boundary status: wave, group review, explicit slice, queued task, or
+  blocker
 - Next exact action: a file to open, command to run, or question to answer,
   specific enough to do cold
 - Scope boundary: files or areas in scope and out of scope
@@ -50,6 +51,7 @@ Include these fields or equivalent clearly labeled sections:
 - Known reference paths or repos
 - Verification status: commands run, pass/fail result, and known gaps
 - Review state
+- Group-level review state when a group exists
 - Drift result: none, expected expansion, out-of-scope, or unknown
 - Blockers and risks
 - Git state: repo path, branch, HEAD, changed tracked files, untracked files,

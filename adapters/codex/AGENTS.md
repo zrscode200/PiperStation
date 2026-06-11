@@ -130,6 +130,12 @@ decomposition units; waves are implementation and checkpoint units. Detail the
 current wave enough to execute safely, and sketch later waves only when the
 current code, context, and prior results make them reliable.
 
+Groups bundle related waves under a shared acceptance target and one
+integrating review gate. Use a group when multiple waves land before the larger
+boundary is accepted, or when cross-wave interaction risk matters. Make the
+group boundary, wave list, required gates, group review state, and acceptance
+target visible in `active-work.md`.
+
 ## Mode Routing
 
 `brainstorm` owns the decision-quality front door for the divergent phase —
@@ -147,10 +153,12 @@ Route each request through the smallest mode that fits:
   registration path.
 - Superpowers Mode: verify the handed-off direction, then specify and plan
   before substantial implementation.
-- Ralph Mode: execute the current active-work wave, one explicit slice, or one
-  queued task, with implementation review gates at meaningful boundaries.
+- Ralph Mode: execute the current active-work wave, group review, one explicit
+  slice, or one queued task, with implementation review gates at meaningful
+  boundaries.
 - Review Mode: first check whether the work matches the request or active work,
-  then check code quality.
+  then check code quality; group reviews inspect the integrated cross-wave
+  diff.
 - Finish Mode: verify, summarize, and present commit or PR options without
   mutating git automatically.
 
@@ -265,6 +273,9 @@ Review gates are required for `S2/S3` wave or group boundaries and queued tasks
 that touch foundational behavior such as bootstrap, install, update,
 registration, generated commands, hooks, settings, config, test harnesses,
 project or hub ownership, security policy, or automation policy.
+After the final wave in a group lands, run a group-level review gate over the
+integrated cross-wave diff before the slice, group, or acceptance task is
+marked complete, even if every per-wave gate already passed.
 
 The main agent must validate reviewer findings before acting: give each finding
 an explicit verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or
@@ -289,10 +300,11 @@ During Ralph Mode, update `context-pack.md` when pausing, preparing for compact,
 finishing, blocked, crossing a milestone, context is low, switching projects,
 or materially changing active work. Internal slice progress should stay inside
 the current wave unless risk, verification, or drift requires a stop. Append
-`build-log.md` at wave, review/fix, blocker, milestone, finish, or other
+`build-log.md` at wave, group, review/fix, blocker, milestone, finish, or other
 meaningful boundaries, and update optional `task-queue.md` only when a durable
-queue is in use. If context is low or the next wave needs a clean context,
-pause and tell the user the state is compact-ready and they may run `/compact`.
+queue is in use, including explicit group review gate status for multi-wave
+groups. If context is low or the next wave needs a clean context, pause and
+tell the user the state is compact-ready and they may run `/compact`.
 
 Do not claim `/compact` was run unless the user or Codex actually ran it.
 
