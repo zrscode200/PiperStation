@@ -76,7 +76,7 @@ Use this dispatch table when intent is unclear:
 | --- | --- | --- |
 | Register a repo | `brainstorm`, `/add-project`, or `./bin/add-project` | deterministic registration helper |
 | Orient, explore, compare options, or decide what to do | `brainstorm` | `brainstorm` |
-| Verify a direction, specify, or plan substantial work | Superpowers Mode or `/superpowers` | `piper-workflow`, `/superpowers`, and this guide |
+| Verify a direction, define group or milestone structure, or formalize the current wave | Superpowers Mode or `/superpowers` | `piper-workflow`, `/superpowers`, and this guide |
 | Execute one clear active-work wave, group review, explicit slice, or optional queued task | Ralph Mode or `/ralph` | `/ralph` and this guide; project source edits require `local` profile coverage |
 | Review code, an implemented wave, group, or slice | Review Mode | `review` |
 | Local git, worktree, PR, dependency, network, CI, exceptional, or external action | Finish Mode or permission approval flow | `automation-policy` |
@@ -255,8 +255,9 @@ Route requests through `brainstorm` (the front door), `piper-workflow`
   investigate, route explicit registration through the helper, and produce a
   decision-ready hand-off brief; stay read-only except for that deterministic
   registration path.
-- Superpowers Mode: verify the handed-off direction, then specify and plan
-  before substantial implementation.
+- Superpowers Mode: verify the handed-off direction, commit the group or
+  milestone structure (Structural Planning), then formalize the current wave
+  (Wave Formalization) before substantial implementation.
 - Ralph Mode: execute the current active-work wave, group review, one explicit
   slice, or one queued task; verify, drift-check, and use implementation review
   gates at meaningful boundaries.

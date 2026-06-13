@@ -42,7 +42,7 @@ delegated roles.
 Slash commands are the user entry points. Run them from this hub directory.
 
 - `/add-project <repo-path> [project-id]` - register a project repo with this hub.
-- `/superpowers <project-id> [request]` - enter Superpowers Mode: direction verification and active-work planning.
+- `/superpowers <project-id> [request]` - enter Superpowers Mode: direction verification, group/milestone structure (Structural Planning), and current-wave detail (Wave Formalization).
 - `/ralph <project-id> [boundary]` - enter Ralph Mode: execute the current wave, an explicit slice, or a queued task with verification, Implementation Review Gate, and compact-safe updates.
 - `/compact-handoff [project-id]` - prepare a project's work records so the user can safely run `/compact`.
 
@@ -67,7 +67,7 @@ execution signal enters through `brainstorm`.
 Route each request through the smallest mode that fits.
 
 - Brainstorm (front door) - orient, frame the problem, weigh options, investigate, route explicit registration through the helper, and produce a decision-ready hand-off brief. Read-only except for that deterministic registration path.
-- Superpowers Mode - verify the handed-off direction, then specify and plan before substantial implementation.
+- Superpowers Mode - verify the handed-off direction, commit the group or milestone structure (Structural Planning), then formalize the current wave (Wave Formalization) before substantial implementation.
 - Ralph Mode - execute the current active-work wave, group review, one explicit slice, or one queued task; verify, drift-check, and use implementation review gates at meaningful boundaries.
 - Review Mode - first check whether the work matches the request or active work, then check code quality; group reviews inspect the integrated cross-wave diff.
 - Finish Mode - report verification, residual risk, changed files, and commit or pull request options without mutating git automatically.

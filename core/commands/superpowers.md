@@ -5,8 +5,16 @@ Enter Superpowers Mode for a registered project.
 The user invoked this command with: `$ARGUMENTS`
 
 Use Superpowers Mode to verify a direction, define the group or milestone
-boundary, detail the current wave, and decompose Ralph-ready slices before
-substantial implementation.
+structure, and formalize the current wave into Ralph-ready detail before
+substantial implementation. The work runs as two named passes:
+
+- Structural Planning verifies the direction and commits the group or
+  milestone structure.
+- Wave Formalization details the current wave enough to execute safely.
+
+A full `/superpowers` invocation runs both passes in order. Wave Formalization
+also stands alone: Ralph runs it at a wave boundary when the selected wave is
+still a sketch, without re-running Structural Planning.
 
 Use this command for formal planning, not for divergent exploration or general
 repo orientation (those belong to `brainstorm`), implementation, review, or
@@ -14,7 +22,7 @@ automation approval. Natural-language routing reaches this behavior through
 `piper-workflow`; actions that cross the active permission profile boundary
 still route through `automation-policy`.
 
-## Steps
+## Pass 1: Structural Planning
 
 1. Read `{{INSTRUCTION_DOC}}` and `STATION.md`.
 2. Identify the project id or repo path from `$ARGUMENTS`. Look up the project
@@ -34,34 +42,55 @@ still route through `automation-policy`.
    when they do a clear job: preserve long-horizon direction, stabilize current
    active work, create durable queued execution, record a checkpoint, or prepare
    compact/resume continuity.
-8. Write `active-work.md` as the live group and wave workbench only when the
-   work needs durable execution continuity. Detail the current wave enough to
-   act safely: acceptance criteria, expected diff boundary, verification,
-   review expectations, stop conditions, and useful slice breakdown. Sketch
-   later waves only when the current code, context, and prior results make them
-   reliable. When multiple waves share one acceptance target or cross-wave
-   interaction risk matters, include an explicit group header with the goal,
-   wave list, required gates, group review state, and acceptance target. Keep
-   work artifacts in `projects/<project-id>/work/` unless the user explicitly
-   asks for a project-local copy.
-9. Update `roadmap.md` only when long-term direction, milestones, deferred
-   work, risks, or revisit triggers change.
-10. Produce a Ralph-ready `task-queue.md` only when waves, slices, or group
+8. Define the group or milestone structure: give each in-scope group a
+   boundary, an acceptance target, and risks or revisit triggers. Update
+   `roadmap.md` only when long-term direction, milestones, deferred work,
+   risks, or revisit triggers change.
+9. When multiple waves share one acceptance target or cross-wave interaction
+   risk matters, write the group header in `active-work.md` with the goal,
+   wave list, required gates, group review state, and acceptance target.
+10. Check structural readiness: the structure is complete when every in-scope
+    group has a boundary, an acceptance target, and revisit triggers.
+    Wave-level detail is not part of this bar; later waves and groups may stay
+    sketches and are formalized at their own boundaries.
+11. Close the pass by reporting the structure and stating which wave Wave
+    Formalization will detail next.
+
+## Pass 2: Wave Formalization
+
+Formalize one wave into Ralph-ready detail. Inputs are the group or milestone
+structure from Structural Planning and the current state of the real code.
+This pass stands alone: Ralph runs it at a wave boundary when the selected
+wave is still a sketch.
+
+12. Write `active-work.md` as the live group and wave workbench only when the
+    work needs durable execution continuity. Detail the current wave enough to
+    act safely: acceptance criteria, expected diff boundary, verification,
+    review expectations, stop conditions, and useful slice breakdown. Sketch
+    later waves only when the current code, context, and prior results make
+    them reliable; this economy rule scopes artifact detail, not execution
+    readiness — a sketched wave is formalized through this pass when its
+    boundary arrives. Keep work artifacts in `projects/<project-id>/work/`
+    unless the user explicitly asks for a project-local copy.
+13. Produce a Ralph-ready `task-queue.md` only when waves, slices, or group
     gates are clear, verifiable, and must survive the current session or move
     across agents. For a multi-wave group, list the group review gate as an
     explicit acceptance criterion before the acceptance task.
-11. Append `build-log.md` at formal planning completion when the plan
+
+## Closeout
+
+14. Append `build-log.md` at formal planning completion when the plan
     materially changes future execution.
-12. Defer `context-pack.md` unless planning is stopping, pausing, preparing
+15. Defer `context-pack.md` unless planning is stopping, pausing, preparing
     for compact, handing off, blocked, or crossing a milestone boundary.
-13. At the planning checkpoint, report changed Piper artifacts separately from
+16. At the planning checkpoint, report changed Piper artifacts separately from
     source changes, inspect the Piper Station hub git state when artifacts
     changed, and state whether those artifact changes are uncommitted.
-14. Offer one Piper artifact commit at planning finish only when the changed
+17. Offer one Piper artifact commit at planning finish only when the changed
     artifacts matter for future continuity. Do not commit unless the checkpoint
     decision is made and the active permission profile covers local git actions;
     otherwise route through `automation-policy`.
-15. Stop before implementation unless the user explicitly asks to proceed.
+18. Stop before implementation unless the user explicitly asks to proceed.
 
 Registration must not create `projects/<project-id>/work/`; {{RUNTIME_NAME}}
 creates these files only when useful for active work. Keep Superpowers as
@@ -114,9 +143,10 @@ non-goals, current assumptions, current wave details, acceptance criteria,
 expected diff boundary, slice breakdown for the current wave, risks and
 guardrails, verification strategy, review expectations, stop conditions, and
 open questions. When a group exists, include a `Group` section with goal,
-waves, required gates, group review state, and acceptance target. Later waves
-are optional; include only reliable sketches, dependencies, and revisit
-triggers.
+waves, required gates, group review state, and acceptance target. The group
+section is Structural Planning output; current-wave detail is Wave
+Formalization output. Later waves are optional; include only reliable
+sketches, dependencies, and revisit triggers.
 
 ## Task Shape
 

@@ -21,8 +21,9 @@ optional `decisions.md` when it exists before executing.
 
 ## References
 
-- `references/superpowers.md` — verify the handed-off direction, then specify
-  and plan Ralph-ready work.
+- `references/superpowers.md` — verify the handed-off direction, commit the
+  group or milestone structure (Structural Planning), and formalize the
+  current wave (Wave Formalization).
 - `references/ralph.md` — execute the current wave, explicit slice, or queued
   task with review discipline.
 - `references/compact-handoff.md` — prepare compact-safe continuity records
@@ -39,7 +40,8 @@ Choose the smallest convergent path that fits:
 
 | User intent | Route | Procedure |
 | --- | --- | --- |
-| Verify direction, specify, or plan substantial work | Superpowers Mode | `references/superpowers.md` |
+| Verify direction and define group or milestone structure | Superpowers Mode — Structural Planning | `references/superpowers.md` |
+| Formalize the current wave into Ralph-ready detail | Superpowers Mode — Wave Formalization | `references/superpowers.md`; Ralph runs this pass at a wave boundary when the selected wave is still a sketch |
 | Execute one clear active-work wave, explicit slice, or optional queued task | Ralph Mode | `references/ralph.md` and Ralph sections in `STATION.md`; project source edits require `local` profile coverage |
 | Review code or an implemented wave, group, or slice | Review Mode | the `review` skill |
 | Local git, worktree, PR, dependency, network, CI, exceptional, or external action | Finish Mode or permission flow | the `automation-policy` skill |
@@ -58,6 +60,13 @@ open exploration: take the direction from brainstorm's hand-off brief and
 confirm it against the real code — validate the brief's flagged assumptions,
 check the files and call sites the work will touch, and confirm acceptance
 criteria are testable — before locking durable active work.
+
+Superpowers runs as two named passes. Structural Planning verifies the
+direction and commits the group or milestone structure: every in-scope group
+gets a boundary, an acceptance target, and revisit triggers, while later waves
+and groups may stay sketches. Wave Formalization details the current wave into
+Ralph-ready form; it also stands alone, run by Ralph at a wave boundary when
+the selected wave is still a sketch.
 
 ## Artifact Signal Policy
 

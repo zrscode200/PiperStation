@@ -30,7 +30,8 @@ Choose the smallest convergent path that fits:
 
 | User intent | Mode | Supporting behavior |
 | --- | --- | --- |
-| Verify the direction, specify, or plan substantial work | Superpowers | this skill and `/superpowers` |
+| Verify the direction and define group or milestone structure | Superpowers — Structural Planning | this skill and `/superpowers` |
+| Formalize the current wave into Ralph-ready detail | Superpowers — Wave Formalization | `/superpowers`; Ralph runs this pass at a wave boundary when the selected wave is still a sketch |
 | Execute one clear active-work wave, explicit slice, or optional queued task | Ralph | `/ralph` and Ralph sections in `STATION.md`; project source edits require `local` profile coverage |
 | Review an implemented wave, group, or slice | Review | `review` |
 | Local git, worktree, PR, dependency, network, CI, exceptional, or external action | Finish or permission flow | `automation-policy` |
@@ -51,6 +52,13 @@ confirm it against the real code — validate the brief's flagged assumptions,
 check the specific files and call sites the work will touch, and confirm the
 acceptance criteria are testable — before locking durable active work. Open
 exploration belongs to `brainstorm`.
+
+Superpowers runs as two named passes. Structural Planning verifies the
+direction and commits the group or milestone structure: every in-scope group
+gets a boundary, an acceptance target, and revisit triggers, while later waves
+and groups may stay sketches. Wave Formalization details the current wave into
+Ralph-ready form; it also stands alone, run by Ralph at a wave boundary when
+the selected wave is still a sketch.
 
 ## Artifact Signal Policy
 

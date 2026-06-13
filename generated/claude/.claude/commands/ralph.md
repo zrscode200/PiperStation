@@ -17,10 +17,12 @@ and updates compact-safe records when active work records are in use.
 Ralph is not a shell runner and not a general planner. Use it after a wave,
 explicit slice, or queued task is clear from the user request,
 `projects/<project-id>/work/active-work.md`, or the optional durable
-`task-queue.md`. Slices are decomposition units; waves are execution and
-checkpoint units. Natural-language routing can choose this behavior through
-`piper-workflow`; actions that cross the active permission profile boundary
-still route through `automation-policy`.
+`task-queue.md`. If the selected wave is still a sketch, Ralph formalizes it
+first through the Wave Formalization pass in `/superpowers`; open-ended
+planning stays out of scope. Slices are decomposition units; waves are
+execution and checkpoint units. Natural-language routing can choose this
+behavior through `piper-workflow`; actions that cross the active permission
+profile boundary still route through `automation-policy`.
 
 ## Steps
 
@@ -40,7 +42,12 @@ still route through `automation-policy`.
    fallback, risk tier, and expected diff boundary. For implementation
    boundaries, confirm enough slice breakdown to execute safely. For group
    review boundaries, confirm the wave list, integrated diff scope, acceptance
-   target, and current group review state.
+   target, and current group review state. If the selected implementation wave
+   is still a sketch — missing acceptance criteria, verification, or an
+   expected diff boundary — run the Wave Formalization pass from `/superpowers`
+   to formalize it, then continue. A sketched current wave is a formalization
+   input, not a stop, and later waves being sketches is
+   never a reason to down-scope the selected work.
 5. Verify the real project repo is writable in the active session. If the repo
    is outside the current workspace or sandbox, state that writable access is
    required before execution instead of declaring the task Ralph-ready. Confirm
@@ -50,9 +57,10 @@ still route through `automation-policy`.
    its expected diff boundary before editing.
 7. Mark the boundary active in `projects/<project-id>/work/task-queue.md` only
    when a durable queue exists.
-8. Stop if the boundary is ambiguous, lacks verification, is `L3`, is outside
-   the approved active work, lacks `local` profile coverage for source edits,
-   or is `L2` without explicit user confirmation.
+8. Stop if the boundary is ambiguous, still lacks verification after Wave
+   Formalization, is `L3`, is outside the approved active work,
+   lacks `local` profile coverage for source edits, or is `L2` without
+   explicit user confirmation.
 9. Implement only the selected boundary in the real project repo. Within a
    wave, use slices to organize the work; do not turn each internal slice into a
    mandatory stop unless risk, verification, or drift requires it.
