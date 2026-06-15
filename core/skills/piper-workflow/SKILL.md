@@ -110,7 +110,8 @@ than escalating durable writes.
 
 Piper artifacts stay in `projects/<project-id>/work/` by default. Updating
 them during active work is allowed local assistance; committing those updates
-is a `local` permission action and stays at the existing artifact checkpoint.
+is a `local` permission action and must go through `automation-policy` when
+the active permission profile does not cover local git.
 Record artifacts economically: `context-pack.md` is the only fully
 self-contained resume packet; roadmap, active-work, queue, and build-log
 records should stay purpose-specific and avoid repeating full
