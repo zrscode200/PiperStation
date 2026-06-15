@@ -14,7 +14,9 @@ substantial implementation. The work runs as two named passes:
 
 A full `/superpowers` invocation runs both passes in order. Wave Formalization
 also stands alone: Ralph runs it at a wave boundary when the selected wave is
-still a sketch, without re-running Structural Planning.
+still a sketch, without re-running Structural Planning. Structural Planning also
+runs scoped to a single group at that group's Entry, re-verifying its sketch
+against current code before its first wave (see `STATION.md` → Group Lifecycle).
 
 Use this command for formal planning, not for divergent exploration or general
 repo orientation (those belong to `brainstorm`), implementation, review, or

@@ -14,7 +14,9 @@ Superpowers runs as two named passes:
 
 A full Superpowers entry runs both passes in order. Wave Formalization also
 stands alone: Ralph runs it at a wave boundary when the selected wave is still
-a sketch, without re-running Structural Planning.
+a sketch, without re-running Structural Planning. Structural Planning also runs
+scoped to a single group at that group's Entry, re-verifying its sketch against
+current code before its first wave (see `STATION.md` → Group Lifecycle).
 
 Use this procedure for formal planning, not for divergent exploration or general
 repo orientation (those belong to `brainstorm`), implementation, review, or

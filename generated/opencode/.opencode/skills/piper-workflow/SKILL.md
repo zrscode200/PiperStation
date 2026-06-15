@@ -1,13 +1,16 @@
 ---
 name: piper-workflow
-description: "Use when executing rather than exploring on a registered Piper Station project: formalize active work, update roadmap or build-log checkpoints, prepare an optional durable Ralph queue, execute the current Ralph wave, explicit slice, or queued task with verification and review gates, prepare compact-safe handoff, or route a permission-gated finish action. Entered from brainstorm once direction is set, or via /superpowers, /ralph, /compact-handoff."
+description: "Use when executing rather than exploring on a registered Piper Station project: formalize active work, update roadmap or build-log checkpoints, prepare an optional durable Ralph queue, execute the current Ralph wave, explicit slice, or queued task with verification and review gates, operate the group lifecycle across entry, execution, closeout, and transition between groups, prepare compact-safe handoff, or route a permission-gated finish action. Entered from brainstorm once direction is set, or via /superpowers, /ralph, /compact-handoff."
 ---
 
 # Piper Workflow
 
-Piper Workflow owns convergent execution for Piper Station project work: formal
-planning, Ralph preparation, Ralph execution, compaction handoff, and finish
-routing. It is entered from the `brainstorm` front door once a request has
+Piper Workflow owns convergent execution for Piper Station project work —
+within-group and across the group lifecycle: formal planning, Ralph preparation,
+Ralph execution, group entry, closeout, and transition, compaction handoff, and
+finish routing. It operates not only inside a single wave or group but across the
+full sequence of groups toward a milestone. It is entered from the `brainstorm`
+front door once a request has
 converged on a direction, or directly through `/superpowers`, `/ralph`, and
 `/compact-handoff`.
 
@@ -59,6 +62,28 @@ gets a boundary, an acceptance target, and revisit triggers, while later waves
 and groups may stay sketches. Wave Formalization details the current wave into
 Ralph-ready form; it also stands alone, run by Ralph at a wave boundary when
 the selected wave is still a sketch.
+
+## Group Lifecycle
+
+Piper Workflow operates across groups, not only within one. The group lifecycle —
+defined in `STATION.md` — has four stages, each run through this skill's modes:
+
+- **Entry**: re-verify the next group's structural sketch against current code;
+  run Superpowers Structural Planning scoped to that group if it needs repair,
+  then Wave Formalization for its first wave.
+- **Execution**: run the group's waves through Ralph Mode with per-wave gates.
+  Commit the project source per completed wave when the active profile covers
+  `local` — commit and report, no per-wave ask — separate from artifact commits.
+- **Closeout**: run the group review gate over the integrated diff, commit any
+  remaining group source, write the build-log closeout entry, tick the group's
+  acceptance in `roadmap.md`, and record contracts later groups depend on.
+- **Transition**: check whether the outcome reshapes later groups; carry
+  learnings forward; continue to the next group's Entry, or surface for
+  re-planning when the roadmap materially changes. Keep re-planning here in
+  Superpowers; hand back to `brainstorm` only for a genuinely divergent question.
+
+See `STATION.md` → Group Lifecycle for the canonical stage policy, gates, and
+artifact obligations.
 
 ## Artifact Signal Policy
 

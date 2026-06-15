@@ -77,7 +77,7 @@ Use this dispatch table when intent is unclear:
 | Register a repo | `brainstorm`, `/add-project`, or `./bin/add-project` | deterministic registration helper |
 | Orient, explore, compare options, or decide what to do | `brainstorm` | `brainstorm` |
 | Verify a direction, define group or milestone structure, or formalize the current wave | Superpowers Mode or `/superpowers` | `piper-workflow`, `/superpowers`, and this guide |
-| Execute one clear active-work wave, group review, explicit slice, or optional queued task | Ralph Mode or `/ralph` | `/ralph` and this guide; project source edits require `local` profile coverage |
+| Execute one clear active-work wave, group review and closeout, explicit slice, or optional queued task | Ralph Mode or `/ralph` | `/ralph` and this guide; project source edits require `local` profile coverage |
 | Review code, an implemented wave, group, or slice | Review Mode | `review` |
 | Local git, worktree, PR, dependency, network, CI, exceptional, or external action | Finish Mode or permission approval flow | `automation-policy` |
 | Pause or compact active work | `/compact-handoff` | compact handoff guidance |
@@ -151,7 +151,8 @@ Groups bundle related waves under a shared acceptance target and one
 integrating review gate. Use a group when multiple waves land before the larger
 boundary is accepted, or when cross-wave interaction risk matters. A group has
 its own boundary in `active-work.md`, its own checkpoint in `build-log.md`, and
-its own review gate over the integrated cross-wave diff before acceptance.
+its own review gate over the integrated cross-wave diff before acceptance. Its
+operating stages are defined under Group Lifecycle.
 
 ### Work Artifact Reference
 
@@ -258,9 +259,10 @@ Route requests through `brainstorm` (the front door), `piper-workflow`
 - Superpowers Mode: verify the handed-off direction, commit the group or
   milestone structure (Structural Planning), then formalize the current wave
   (Wave Formalization) before substantial implementation.
-- Ralph Mode: execute the current active-work wave, group review, one explicit
-  slice, or one queued task; verify, drift-check, and use implementation review
-  gates at meaningful boundaries.
+- Ralph Mode: execute the current active-work wave, group review and closeout,
+  one explicit slice, or one queued task; verify, drift-check, commit completed
+  waves under `local`, and use implementation review gates at meaningful
+  boundaries.
 - Review Mode: first check whether the work matches the request or active work,
   then check code quality; group reviews inspect the integrated cross-wave
   diff.
@@ -328,6 +330,67 @@ reverify review-driven fixes with the narrowest meaningful command for the fixed
 behavior. If a required or expected gate is skipped, record review debt
 and do not continue to dependent tasks until the debt is resolved or explicitly
 accepted by the user.
+
+## Group Lifecycle
+
+The group lifecycle is the operating layer above the wave: it bounds a group and
+carries work from one group to the next, so long-running multi-group work does
+not rely on ad hoc judgment at each boundary. `piper-workflow` owns this
+lifecycle as convergent execution above the wave and operates each stage through
+its existing modes. Within-group execution — waves, slices, and per-wave review
+gates — is covered under Mode Routing and the Ralph Review Gate.
+
+A group moves through four stages, each driven by `piper-workflow`:
+
+1. **Entry.** Before the group's first wave, `piper-workflow` re-verifies the
+   group's structural sketch — boundary, acceptance target, and revisit triggers
+   — against the current code, which may have moved since the roadmap was drawn
+   or since a prior group landed. It runs Superpowers Structural Planning scoped
+   to this group when the sketch needs repair, then Wave Formalization for the
+   first wave. Repair drift that only reshapes this group here; escalate drift
+   that invalidates the group's premise or changes other groups (see Transition).
+2. **Execution.** `piper-workflow` implements the group's waves through Ralph
+   Mode, with verification, drift checks, and per-wave review gates. A wave that
+   is implemented, verified, drift-checked, and reviewed when its gate applies
+   is a natural commit point for the project source (see commit cadence below).
+3. **Closeout.** After the final wave lands, `piper-workflow` runs the group
+   review gate over the integrated cross-wave diff, resolves findings, writes the
+   group-closeout entry in `build-log.md`, marks the acceptance target met and
+   ticks the group's status in `roadmap.md`, captures any contracts or learnings
+   later groups depend on, and commits any remaining group source not already
+   committed per wave. A group is complete only when its acceptance target is met
+   and the integrating review gate has passed.
+4. **Transition.** Between closeout and the next group's Entry, `piper-workflow`
+   checks whether this group's actual outcome changes the sketches, ordering, or
+   premises of later groups, and carries the captured contracts and learnings
+   forward. It proceeds to the next group's Entry when the outcome holds the
+   roadmap, and surfaces the change for re-planning when it materially reshapes
+   later groups or a milestone. Re-planning stays within `piper-workflow`
+   (Superpowers); hand back to `brainstorm` only when the change reopens a
+   genuinely divergent question.
+
+Advancing through these stages follows normal mode routing: `piper-workflow`
+proceeds when the next stage is clear and authorized, and waits for go-ahead when
+confirmation is required or the next group's direction is unsettled.
+
+Commit cadence rides on these boundaries: per-wave source commits during
+Execution and a group source commit at Closeout, each a `local` action under
+`automation-policy`. Under `local` coverage, commit and report each completed
+wave without a per-wave ask; surface for approval when the profile is below
+`local`. Keep source commits separate from Piper artifact commits, at wave and
+group boundaries, not mid-slice. These are commits only — push and pull requests
+remain `external` actions.
+
+Milestones are roadmap-level markers that a sequence of groups completes a larger
+deliverable; they are not a separate lifecycle. When a group closeout also
+completes a milestone, note it in the closeout entry and mark the milestone met
+in `roadmap.md`.
+
+The lifecycle composes existing `piper-workflow` mechanisms — Superpowers
+Structural Planning and Wave Formalization at Entry, Ralph Mode at Execution, the
+group review gate and build-log closeout entry at Closeout — adding only the
+cross-group steps: entry re-verification, the roadmap acceptance tick,
+carry-forward, and the transition check.
 
 ## Compaction
 

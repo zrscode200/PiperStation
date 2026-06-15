@@ -42,8 +42,8 @@ Include these fields or equivalent clearly labeled sections:
 
 - Goal
 - Last completed boundary
-- Current boundary status: wave, group review, explicit slice, queued task, or
-  blocker
+- Current boundary status: wave, group entry, group review, closeout, transition,
+  explicit slice, queued task, or blocker
 - Next exact action: a file to open, command to run, or question to answer,
   specific enough to do cold
 - Scope boundary: files or areas in scope and out of scope

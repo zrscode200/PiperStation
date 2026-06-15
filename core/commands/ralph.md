@@ -32,7 +32,9 @@ profile boundary still route through `automation-policy`.
    task matching `$ARGUMENTS` if specified; otherwise the current boundary from
    `active-work.md` or `context-pack.md`; otherwise the top ready item in the
    optional queue. If the final wave in a group has landed and the group review
-   is pending, select the group review before any acceptance task.
+   is pending, select the group review before any acceptance task. Once a
+   group's closeout completes, the next boundary is the next group's Entry:
+   re-verify its sketch per the Group Lifecycle before selecting its first wave.
 4. Confirm the boundary has acceptance criteria, a verification command or
    fallback, risk tier, and expected diff boundary. For implementation
    boundaries, confirm enough slice breakdown to execute safely. For group
@@ -69,7 +71,10 @@ profile boundary still route through `automation-policy`.
    group-level review gate over the integrated diff before the slice, group, or
    acceptance task is marked complete, even if every per-wave gate already
    passed. Per-wave gates inspect one wave; the group gate inspects cross-wave
-   interactions.
+   interactions. When the group gate passes, complete closeout: write the
+   build-log group-closeout entry, mark the acceptance target met and tick the
+   group in `roadmap.md`, and capture contracts later groups depend on (see
+   `STATION.md` → Group Lifecycle).
 12. Validate reviewer findings before editing: give each finding an explicit
     verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or
     `false-positive` — and do not edit code until every finding has one. Then
@@ -79,7 +84,12 @@ profile boundary still route through `automation-policy`.
     fixed behavior. Run broader verification only when fixes touch shared,
     risky, or cross-cutting behavior.
 13. Drift-check the diff against the selected boundary, active work, and user
-    request.
+    request. Once the drift-check passes, commit the wave's project source when
+    the active profile covers `local` — commit and report, without a per-wave
+    confirmation, separate from any Piper artifact commit; route through
+    `automation-policy` when `local` coverage is absent; never commit mid-slice;
+    and do not push or open PRs. At group closeout, commit any remaining group
+    source.
 14. For boundary bookkeeping, append `build-log.md` at checkpoint cadence with
     changed source areas, verification result, review result, drift, risks, and
     next step. Update `task-queue.md` status only when a durable queue is in
