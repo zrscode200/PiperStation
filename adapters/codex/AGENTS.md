@@ -151,7 +151,7 @@ Route each request through the smallest mode that fits:
   investigate, route explicit registration through the helper, and produce a
   decision-ready hand-off brief. Read-only except for that deterministic
   registration path.
-- Superpowers Mode: verify the handed-off direction, commit the group or
+- Superpowers Mode: verify the handed-off direction, define the group or
   milestone structure (Structural Planning), then formalize the current wave
   (Wave Formalization) before substantial implementation.
 - Ralph Mode: execute the current active-work wave, group review and closeout,

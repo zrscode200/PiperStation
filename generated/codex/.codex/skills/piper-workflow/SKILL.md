@@ -24,7 +24,7 @@ optional `decisions.md` when it exists before executing.
 
 ## References
 
-- `references/superpowers.md` — verify the handed-off direction, commit the
+- `references/superpowers.md` — verify the handed-off direction, define the
   group or milestone structure (Structural Planning), and formalize the
   current wave (Wave Formalization).
 - `references/ralph.md` — execute the current wave, explicit slice, or queued
@@ -65,7 +65,7 @@ check the files and call sites the work will touch, and confirm acceptance
 criteria are testable — before locking durable active work.
 
 Superpowers runs as two named passes. Structural Planning verifies the
-direction and commits the group or milestone structure: every in-scope group
+direction and defines the group or milestone structure: every in-scope group
 gets a boundary, an acceptance target, and revisit triggers, while later waves
 and groups may stay sketches. Wave Formalization details the current wave into
 Ralph-ready form; it also stands alone, run by Ralph at a wave boundary when

@@ -8,7 +8,7 @@ decompose Ralph-ready slices before substantial implementation.
 
 Superpowers runs as two named passes:
 
-- Structural Planning verifies the direction and commits the group or
+- Structural Planning verifies the direction and defines the group or
   milestone structure.
 - Wave Formalization details the current wave enough to execute safely.
 

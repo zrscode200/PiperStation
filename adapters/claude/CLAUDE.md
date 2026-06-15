@@ -67,7 +67,7 @@ execution signal enters through `brainstorm`.
 Route each request through the smallest mode that fits.
 
 - Brainstorm (front door) - orient, frame the problem, weigh options, investigate, route explicit registration through the helper, and produce a decision-ready hand-off brief. Read-only except for that deterministic registration path.
-- Superpowers Mode - verify the handed-off direction, commit the group or milestone structure (Structural Planning), then formalize the current wave (Wave Formalization) before substantial implementation.
+- Superpowers Mode - verify the handed-off direction, define the group or milestone structure (Structural Planning), then formalize the current wave (Wave Formalization) before substantial implementation.
 - Ralph Mode - execute the current active-work wave, group review and closeout, one explicit slice, or one queued task; verify, drift-check, commit completed waves under `local`, and use implementation review gates at meaningful boundaries.
 - Review Mode - first check whether the work matches the request or active work, then check code quality; group reviews inspect the integrated cross-wave diff.
 - Finish Mode - report verification, residual risk, changed files, and commit or pull request options without mutating git automatically.

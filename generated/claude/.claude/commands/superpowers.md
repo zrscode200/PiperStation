@@ -13,7 +13,7 @@ Use Superpowers Mode to verify a direction, define the group or milestone
 structure, and formalize the current wave into Ralph-ready detail before
 substantial implementation. The work runs as two named passes:
 
-- Structural Planning verifies the direction and commits the group or
+- Structural Planning verifies the direction and defines the group or
   milestone structure.
 - Wave Formalization details the current wave enough to execute safely.
 

@@ -47,6 +47,10 @@ Include these fields or equivalent clearly labeled sections:
 - Verification status: commands run, pass/fail result, and known gaps
 - Review state
 - Group-level review state when a group exists
+- Cross-group transition state (when between groups): next group candidate and
+  its entry-readiness, carry-forward contracts/learnings, roadmap drift or
+  deferred scope, and the transition decision (proceed to next Entry vs surface
+  for re-planning)
 - Drift result: none, expected expansion, out-of-scope, or unknown
 - Blockers and risks
 - Git state: repo path, branch, HEAD, changed tracked files, untracked files,

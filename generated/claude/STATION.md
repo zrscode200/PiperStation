@@ -68,7 +68,7 @@ command has selected the route.
 
 The boundary between them is the same verb, different intent: `brainstorm`
 explores to *generate* a direction; `piper-workflow` (Superpowers) verifies that
-direction against the code to *commit* it before durable planning.
+direction against the code to *follow through* on it before durable planning.
 
 Use this dispatch table when intent is unclear:
 
@@ -162,10 +162,10 @@ continuity, quality, or compact/resume.
 
 | Artifact | Purpose | Create or update when |
 | --- | --- | --- |
-| `roadmap.md` | Longer-horizon direction: groups, milestones, deferred work, risks, and revisit triggers. | Project direction, group order, milestone sequence, deferred scope, or revisit triggers change. |
+| `roadmap.md` | Longer-horizon direction: groups, milestones, their durable order and acceptance status, deferred work, risks, and revisit triggers. | Project direction, group order, milestone sequence, acceptance status, deferred scope, or revisit triggers change. |
 | `active-work.md` | Live group and wave workbench: current goal, group boundary, current wave details, reliable later-wave sketches, slice breakdown, required gates, group review state, acceptance criteria, risks, verification strategy, and open questions. | Current group or wave needs durable continuity before implementation, review, compact, or delayed execution. |
 | `build-log.md` | Primary durable checkpoint ledger: what actually happened, final contracts, implementation summaries, review and verification results, risks, next steps, and commits. | A meaningful planning, wave, review/fix, finish, compact, blocker, group, or milestone checkpoint occurs. |
-| `context-pack.md` | The full compact/resume packet: goal, current boundary, next exact action, key files, what to inspect first, branch/HEAD/status, verification state, review state including group-level review state when relevant, drift, blockers, stop reason, and what to hand a human or fresh agent. | Active work may pause, compact, finish, hit a blocker, reach a milestone, switch projects, or hand off. |
+| `context-pack.md` | The full compact/resume packet: goal, current boundary, next exact action, key files, what to inspect first, branch/HEAD/status, verification state, review state including group-level review state when relevant, cross-group transition state when between groups, drift, blockers, stop reason, and what to hand a human or fresh agent. | Active work may pause, compact, finish, hit a blocker, reach a milestone, switch projects, or hand off. |
 | `task-queue.md` | Optional durable Ralph execution queue: task ids with status, risk, acceptance criteria, verification, dependencies, expected diff boundary, and explicit group review gate items for multi-wave groups. | Native runtime task tracking is insufficient because waves, slices, or group gates must survive the current session or move across agents. |
 
 ### Artifact Recording Economy
@@ -177,7 +177,10 @@ blockers, review state, or commit state unless that detail is intrinsic to the
 artifact's purpose.
 
 - `roadmap.md`: long-term direction only. Do not turn it into the current work
-  tracker or checkpoint ledger.
+  tracker or checkpoint ledger. It may carry durable group and milestone order
+  and acceptance status (pending to accepted) — that is direction-level; the
+  fine-grained current tracker is `active-work.md` and the checkpoint ledger is
+  `build-log.md`.
 - `active-work.md`: live group and wave planning only. Keep the current wave
   actionable; sketch later waves only when reliable. When a group exists, make
   the group header, wave list, required gates, group review state, and
@@ -256,7 +259,7 @@ Route requests through `brainstorm` (the front door), `piper-workflow`
   investigate, route explicit registration through the helper, and produce a
   decision-ready hand-off brief; stay read-only except for that deterministic
   registration path.
-- Superpowers Mode: verify the handed-off direction, commit the group or
+- Superpowers Mode: verify the handed-off direction, define the group or
   milestone structure (Structural Planning), then formalize the current wave
   (Wave Formalization) before substantial implementation.
 - Ralph Mode: execute the current active-work wave, group review and closeout,
@@ -356,14 +359,16 @@ A group moves through four stages, each driven by `piper-workflow`:
 3. **Closeout.** After the final wave lands, `piper-workflow` runs the group
    review gate over the integrated cross-wave diff, resolves findings, writes the
    group-closeout entry in `build-log.md`, marks the acceptance target met and
-   ticks the group's status in `roadmap.md`, captures any contracts or learnings
-   later groups depend on, and commits any remaining group source not already
+   ticks the group's status in `roadmap.md`, records in that closeout entry the
+   contracts or learnings later groups depend on, and commits any remaining group
+   source not already
    committed per wave. A group is complete only when its acceptance target is met
    and the integrating review gate has passed.
 4. **Transition.** Between closeout and the next group's Entry, `piper-workflow`
    checks whether this group's actual outcome changes the sketches, ordering, or
    premises of later groups, and carries the captured contracts and learnings
-   forward. It proceeds to the next group's Entry when the outcome holds the
+   forward, recording any reshaped later-group scope or roadmap drift in
+   `roadmap.md`. It proceeds to the next group's Entry when the outcome holds the
    roadmap, and surfaces the change for re-planning when it materially reshapes
    later groups or a milestone. Re-planning stays within `piper-workflow`
    (Superpowers); hand back to `brainstorm` only when the change reopens a

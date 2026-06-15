@@ -57,7 +57,7 @@ acceptance criteria are testable — before locking durable active work. Open
 exploration belongs to `brainstorm`.
 
 Superpowers runs as two named passes. Structural Planning verifies the
-direction and commits the group or milestone structure: every in-scope group
+direction and defines the group or milestone structure: every in-scope group
 gets a boundary, an acceptance target, and revisit triggers, while later waves
 and groups may stay sketches. Wave Formalization details the current wave into
 Ralph-ready form; it also stands alone, run by Ralph at a wave boundary when
