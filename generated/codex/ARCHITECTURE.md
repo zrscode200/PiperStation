@@ -41,7 +41,10 @@ review, testing, subagents, handoff, and git operations stay native to the
 active runtime.
 
 Optional active artifacts may be created under `projects/<id>/work/` only when
-useful: `roadmap.md`, `active-work.md`, `build-log.md`, `context-pack.md`, and
-optional `task-queue.md`.
+useful: `roadmap.md`, `active-work.md`, `build-log.md`, `context-pack.md`,
+optional `task-queue.md`, and optional per-initiative design notes under
+`work/design/<slug>.md`. See `STATION.md` for their temporal roles (accumulative
+sinks vs current windows vs topical references), fact ownership, and the rule
+that git is the source of truth for commit and HEAD history.
 
 Registration must not create active work artifacts.

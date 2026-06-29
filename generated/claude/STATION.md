@@ -132,12 +132,18 @@ projects/<project-id>/
 
 `project.md` stores repo binding, overview, and project policy preferences such
 as permission profile, one-off approvals, accepted risks, and project-level
-automation notes. `memory.md` stores durable facts, preferences, stable
-conventions, and reusable context. `decisions.md` is optional for substantial
-decision logs; registration does not create it.
+automation notes. It is not a commit ledger or a per-wave changelog — commit and
+acceptance history live in `build-log.md`, anchored to git. `memory.md` stores
+durable facts, preferences, stable conventions, and reusable context, not a
+per-wave completion log. `decisions.md` is optional for substantial decision
+logs; registration does not create it, and it is created only when a real
+decision needs a durable home. Supersede a reversed decision in place — mark it
+`Superseded` with a pointer to the decision that replaced it rather than deleting
+it.
 
 `work/` may contain `roadmap.md`, `active-work.md`, `build-log.md`,
-`context-pack.md`, and optional `task-queue.md`.
+`context-pack.md`, optional `task-queue.md`, and optional per-initiative design
+notes under `work/design/<slug>.md`.
 
 Registration must not create `work/`.
 
@@ -164,38 +170,79 @@ continuity, quality, or compact/resume.
 | --- | --- | --- |
 | `roadmap.md` | Longer-horizon direction: groups, milestones, their durable order and acceptance status, deferred work, risks, and revisit triggers. | Project direction, group order, milestone sequence, acceptance status, deferred scope, or revisit triggers change. |
 | `active-work.md` | Live group and wave workbench: current goal, group boundary, current wave details, reliable later-wave sketches, slice breakdown, required gates, group review state, acceptance criteria, risks, verification strategy, and open questions. | Current group or wave needs durable continuity before implementation, review, compact, or delayed execution. |
-| `build-log.md` | Primary durable checkpoint ledger: what actually happened, final contracts, implementation summaries, review and verification results, risks, next steps, and commits. | A meaningful planning, wave, review/fix, finish, compact, blocker, group, or milestone checkpoint occurs. |
-| `context-pack.md` | The full compact/resume packet: goal, current boundary, next exact action, key files, what to inspect first, branch/HEAD/status, verification state, review state including group-level review state when relevant, cross-group transition state when between groups, drift, blockers, stop reason, and what to hand a human or fresh agent. | Active work may pause, compact, finish, hit a blocker, reach a milestone, switch projects, or hand off. |
-| `task-queue.md` | Optional durable Ralph execution queue: task ids with status, risk, acceptance criteria, verification, dependencies, expected diff boundary, and explicit group review gate items for multi-wave groups. | Native runtime task tracking is insufficient because waves, slices, or group gates must survive the current session or move across agents. |
+| `build-log.md` | The single interpretive checkpoint ledger: concise summaries of what happened, final contracts, the per-wave acceptance commit, review and verification results, risks, and next steps. Not a per-commit changelog or raw transcript — the commit list and diffs derive from git. | A meaningful planning, wave, review/fix, finish, compact, blocker, group, or milestone checkpoint occurs. |
+| `context-pack.md` | The full compact/resume packet, rewritten in full to reflect only the current boundary: goal, current boundary, next exact action, key files, what to inspect first, branch/HEAD/status (derived live), verification state, review state including group-level review state when relevant, cross-group transition state when between groups, drift, blockers, stop reason, and what to hand a human or fresh agent. | Active work may pause, compact, finish, hit a blocker, reach a milestone, switch projects, or hand off. |
+| `task-queue.md` | Optional durable Ralph execution queue: task ids with status, risk, acceptance criteria, verification, dependencies, expected diff boundary, and explicit group review gate items for multi-wave groups. Holds pending work only; completed items roll off at group closeout. | Native runtime task tracking is insufficient because waves, slices, or group gates must survive the current session or move across agents. |
+| `work/design/<slug>.md` | Optional per-initiative design home: the durable shape and rationale of one initiative (contracts, alternatives, open questions) that is too substantial to hold inline without bloating the active-work window. Topical, superseded in place, referenced from `active-work.md`. | An initiative's design is deep enough that keeping it in `active-work.md` would turn the window into an archive. |
 
 ### Artifact Recording Economy
 
 Record the least artifact state that preserves continuity. `context-pack.md` is
-the only fully self-contained resume packet; other artifacts should stay lean
-and avoid repeating repo path, branch, HEAD, full git state, next action,
-blockers, review state, or commit state unless that detail is intrinsic to the
-artifact's purpose.
+the only fully self-contained resume packet; every other artifact stays lean and
+holds only what is intrinsic to its own purpose.
+
+**Temporal roles.** Most lifecycle problems come from mixing three roles:
+
+- *Sinks* accumulate by design and should grow with the project — `build-log.md`
+  (the chronological ledger), `decisions.md`, and durable `memory.md` facts. Do
+  not prune them; their growth is correct.
+- *Windows* hold only current state — `active-work.md`, `task-queue.md`, and
+  `context-pack.md`. Superseded detail rolls off into a sink at the next
+  boundary; a window that retains completed history has become a second-rate
+  sink.
+- *Topical references* are durable but organized by subject, not time, and are
+  superseded in place — `decisions.md` and optional `work/design/<slug>.md`.
+
+**Derive, do not copy.** Git in the registered project repo is the source of
+truth for the mechanical history axis: raw diffs, the commit list, and current
+branch/HEAD/status. Artifacts must not store these as copied fields; read them
+live from git at each checkpoint and resume. Re-recording a commit hash or HEAD
+across several artifacts is the main cause of cross-artifact drift, because each
+copy ages on its own. This extends the existing default of leaning on native
+runtime task tracking for short-lived steps — here, lean on git for history.
+
+**Fact ownership.** Each fact has one home; other artifacts reference it, they do
+not restate it:
+
+| Fact | Single home |
+| --- | --- |
+| Raw diff, commit list, current branch/HEAD/status | git (project repo), read live |
+| Per-wave acceptance commit, review verdict, contracts, next step | `build-log.md`, recorded once at the boundary |
+| Current boundary pointer and the full resume packet | `context-pack.md` |
+| Current wave detail, slice breakdown, acceptance criteria, current scope and non-goals | `active-work.md` |
+| Long-horizon direction, group/milestone order and acceptance status, milestone labels, durable non-goals | `roadmap.md` |
+| Substantial decision rationale | `decisions.md` (supersede in place) |
+| Repo binding and project policy preferences | `project.md` |
+| Durable facts and stable conventions | `memory.md` |
+
+Per-artifact rules follow from the roles and ownership above:
 
 - `roadmap.md`: long-term direction only. Do not turn it into the current work
-  tracker or checkpoint ledger. It may carry durable group and milestone order
-  and acceptance status (pending to accepted) — that is direction-level; the
-  fine-grained current tracker is `active-work.md` and the checkpoint ledger is
-  `build-log.md`.
-- `active-work.md`: live group and wave planning only. Keep the current wave
+  tracker or checkpoint ledger. It owns durable group and milestone order and
+  acceptance status (pending to accepted); the fine-grained current tracker is
+  `active-work.md` and the checkpoint ledger is `build-log.md`.
+- `active-work.md`: the current group and wave window only. Keep the current wave
   actionable; sketch later waves only when reliable. When a group exists, make
-  the group header, wave list, required gates, group review state, and
-  acceptance target explicit. Do not duplicate the full resume packet or
-  chronological log.
-- `build-log.md`: checkpoint summaries and final implemented contracts only.
-  Prefer concise entries over raw logs or step-by-step transcripts. Give group
-  closeout its own entry when a group boundary is reached.
-- `context-pack.md`: full resume state and cross-artifact pointers. Update it
-  at pause, compact preparation, finish, blocker, milestone boundary, context
-  low stop, project switch, or material active-work change.
+  the group header, wave list, required gates, group review state, and acceptance
+  target explicit. Do not duplicate the resume packet or chronological log. At
+  group closeout, its completed-wave detail rolls off into the build-log closeout
+  entry, leaving a one-line pointer.
+- `build-log.md`: the single interpretive ledger. Record concise checkpoint
+  summaries, final contracts, the per-wave acceptance commit, and review and
+  verification results once at each boundary. It is not a per-commit changelog or
+  a raw verification transcript — the commit list and diffs derive from git. Give
+  group closeout its own entry.
+- `context-pack.md`: the full resume packet, rewritten in full to reflect only
+  the current boundary (see Compaction). Derive git state live; reference
+  `build-log.md` for history rather than replaying it.
 - `task-queue.md`: durable queued waves, slices, or group gate items only.
   Native runtime task tracking is the default for short-lived in-session steps.
-  For multi-wave groups, list the group review gate as an explicit acceptance
+  Completed items roll off at group closeout; keep only pending work. For
+  multi-wave groups, list the group review gate as an explicit acceptance
   criterion before the acceptance task.
+- `work/design/<slug>.md`: optional per-initiative design home, superseded in
+  place and referenced from `active-work.md`. Create only when an initiative's
+  design is too substantial to hold inline without bloating the window.
 
 ### Artifact Persistence
 
@@ -203,11 +250,11 @@ Piper work artifacts are hub-owned project state. Keep them in
 `projects/<project-id>/work/` by default; do not move them into the registered
 project repo unless the user explicitly asks for a project-local copy.
 
-When `context-pack.md` changes, make it self-contained enough for a fresh
-session to resume without transcript archaeology: include the target repo path,
-branch, HEAD or relevant source commit, active scope, verification and review
-state, changed source areas, next exact action, blockers, and whether related
-source or hub changes are committed.
+When `context-pack.md` changes, rewrite it in full so it is self-contained enough
+for a fresh session to resume without transcript archaeology: include the target
+repo path, branch, HEAD or relevant source commit, active scope, verification and
+review state, changed source areas, next exact action, blockers, and whether
+related source or hub changes are committed.
 
 Artifact updates are normal local assistance while work is active. Permission
 profiles gate whether a commit action can proceed; they do not make artifact
@@ -228,6 +275,10 @@ At every checkpoint:
 4. If the workflow checkpoint chooses an artifact commit, treat it as a
    `local` permission action under `automation-policy.md` and keep it separate
    from any registered project source commit.
+5. Reconcile before continuing: `context-pack.md`'s HEAD should match the latest
+   `build-log.md` acceptance commit and live git, and `active-work.md`'s current
+   wave should match `context-pack.md`'s current boundary. Resolve any mismatch
+   rather than carrying it forward.
 
 Scope informs how strongly artifact persistence is surfaced; artifact creation
 is driven by durable need:
@@ -361,9 +412,13 @@ A group moves through four stages, each driven by `piper-workflow`:
    group-closeout entry in `build-log.md`, marks the acceptance target met and
    ticks the group's status in `roadmap.md`, records in that closeout entry the
    contracts or learnings later groups depend on, and commits any remaining group
-   source not already
-   committed per wave. A group is complete only when its acceptance target is met
-   and the integrating review gate has passed.
+   source not already committed per wave. It then **rolls the group off the
+   windows**: the completed-wave detail is condensed into the build-log closeout
+   entry (summarized, not relocated verbatim, so build-log keeps concise entries),
+   and `active-work.md` and `task-queue.md` drop that group's now-superseded
+   detail and keep a one-line pointer to the build-log entry, so the windows hold
+   only the current group and pending work. A group is complete only when its
+   acceptance target is met and the integrating review gate has passed.
 4. **Transition.** Between closeout and the next group's Entry, `piper-workflow`
    checks whether this group's actual outcome changes the sketches, ordering, or
    premises of later groups, and carries the captured contracts and learnings
@@ -408,6 +463,18 @@ status, next exact action, scope boundary, files to inspect first after compact,
 known reference paths, verification status, review state, group-level review
 state when a group exists, drift result, blockers and risks, git state,
 broad-search triggers, and stop reason.
+
+Regenerate, do not append. Rewrite `context-pack.md` in full so it reflects only
+the current boundary; never section-edit or append, which is what lets stale
+lower sections — verification, review, stop reason — survive and contradict the
+header. Superseded verification and review history stays in `build-log.md` and is
+referenced, not replayed; git state is derived live rather than copied from a HEAD
+that can age.
+
+Cold-resume guard: a full rewrite must first read the existing packet, preserve
+the complete required field list above, and reconcile against that prior packet
+and live git before replacing it. Never regenerate purely from freshly compacted,
+lossy working memory — that can drop a still-relevant field.
 
 `/compact` is human-triggered. Ralph may pause and say the state is
 compact-ready when context is low, a milestone just finished, or the next wave

@@ -73,8 +73,10 @@ profile boundary still route through `automation-policy`.
    passed. Per-wave gates inspect one wave; the group gate inspects cross-wave
    interactions. When the group gate passes, complete closeout: write the
    build-log group-closeout entry, mark the acceptance target met and tick the
-   group in `roadmap.md`, and capture contracts later groups depend on (see
-   `STATION.md` → Group Lifecycle).
+   group in `roadmap.md`, capture contracts later groups depend on, and roll the
+   group off the windows — condense its completed-wave detail into that build-log
+   entry and drop it from `active-work.md` and `task-queue.md`, leaving a one-line
+   pointer (see `STATION.md` → Group Lifecycle).
 12. Validate reviewer findings before editing: give each finding an explicit
     verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or
     `false-positive` — and do not edit code until every finding has one. Then
@@ -189,12 +191,15 @@ When active work records are in use:
    and next step.
 2. Update `task-queue.md` with the current boundary status only when a durable
    queue exists.
-3. Update `context-pack.md` only when pausing, preparing for compact, finishing,
-   blocked, crossing a milestone, context is low, switching projects, or
-   materially changing active work. When updated, include last completed
-   boundary, current boundary status, next exact action, scope boundary, files
-   changed, files to inspect first after compact, known reference paths,
-   branch, HEAD, `git status --short`, verification status, review state,
+3. Rewrite `context-pack.md` in full only when pausing, preparing for compact,
+   finishing, blocked, crossing a milestone, context is low, switching projects,
+   or materially changing active work — regenerate the whole packet to reflect
+   only the current boundary rather than section-editing it, but first read the
+   existing packet and reconcile against it and live git so the rewrite drops
+   nothing still relevant. Include last completed boundary, current boundary
+   status, next exact action, scope boundary, files changed, files to inspect
+   first after compact, known reference paths, branch, HEAD, and
+   `git status --short` (derived live), verification status, review state,
    group-level review state when relevant, drift result, blockers, risks, broad
    search triggers, stop reason, and what to hand a human or fresh agent.
 4. Report artifact files updated in the Piper Station hub and whether they are

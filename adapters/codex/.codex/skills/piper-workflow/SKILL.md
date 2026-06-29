@@ -84,7 +84,9 @@ defined in `STATION.md` — has four stages, each run through this skill's modes
   `local` — commit and report, no per-wave ask — separate from artifact commits.
 - **Closeout**: run the group review gate over the integrated diff, commit any
   remaining group source, write the build-log closeout entry, tick the group's
-  acceptance in `roadmap.md`, and record contracts later groups depend on.
+  acceptance in `roadmap.md`, record contracts later groups depend on, and roll
+  the group off the windows — condense its completed-wave detail into that
+  build-log entry and drop it from `active-work.md` and `task-queue.md`.
 - **Transition**: check whether the outcome reshapes later groups; carry
   learnings forward; continue to the next group's Entry, or surface for
   re-planning when the roadmap materially changes. Keep re-planning here in
@@ -118,9 +120,12 @@ them during active work is allowed local assistance; committing those updates
 is a `local` permission action and must go through `automation-policy` when the
 active permission profile does not cover local git.
 Record artifacts economically: `context-pack.md` is the only fully
-self-contained resume packet; roadmap, active-work, queue, and build-log
-records should stay purpose-specific and avoid repeating full
-repo/git/resume state.
+self-contained resume packet, rewritten in full when updated; roadmap,
+active-work, queue, and build-log records stay purpose-specific. Git is the
+source of truth for branch/HEAD/commit/diff history — derive it live, never copy
+it across records. See `STATION.md` for the temporal roles (accumulative sinks vs
+current windows vs topical references), fact ownership, and the group-closeout
+roll-off that keeps windows from becoming sinks.
 
 Plan in slices, execute in waves, and checkpoint at boundaries. Detail the
 current wave enough to execute safely. Sketch later waves only when the current
@@ -190,11 +195,12 @@ follow-up notes or queue items.
 Update hub records only when useful:
 
 - `memory.md`: durable facts, user preferences, stable repo conventions, and
-  reusable context.
+  reusable context — not a per-wave changelog.
 - `project.md`: project policy preferences, one-off approvals, accepted risks,
-  and project-level automation notes.
+  and project-level automation notes — not a commit ledger; commit history lives
+  in `build-log.md`, anchored to git.
 - optional `decisions.md`: substantial decision logs future work should not
-  silently reopen.
+  silently reopen; supersede a reversed decision in place rather than deleting it.
 
 Routine progress, command output, and transient notes should stay in the
 conversation unless substantial active work needs continuity under

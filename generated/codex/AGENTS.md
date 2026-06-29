@@ -91,11 +91,13 @@ projects/<project-id>/
 ```
 
 - `project.md` binds the project id to the real repo path and stores a small
-  project overview plus project policy preferences.
+  project overview plus project policy preferences — not a commit ledger; commit
+  and acceptance history live in `build-log.md`, anchored to git.
 - `memory.md` stores durable facts, preferences, stable conventions, and
-  reusable context.
+  reusable context, not a per-wave changelog.
 - Optional `decisions.md` stores substantial decision logs future work should
-  not silently reopen.
+  not silently reopen; supersede a reversed decision in place rather than
+  deleting it.
 - `work/` stores optional active work continuity such as roadmap, active work,
   build log, compact pack, and durable task queue records.
 
@@ -122,8 +124,11 @@ git. Do not ask to commit after every artifact edit; ask only at continuity
 checkpoints defined in `STATION.md`.
 
 Record artifacts economically: `context-pack.md` is the only fully
-self-contained resume packet. Keep roadmap, active-work, build-log, and queue
-records lean and purpose-specific.
+self-contained resume packet, rewritten in full when updated. Git is the source
+of truth for branch/HEAD/commit/diff history — derive it live, do not copy it
+across roadmap, active-work, build-log, or queue records; superseded detail rolls
+off into a sink at group closeout. See `STATION.md` for temporal roles and fact
+ownership.
 
 Plan in slices, execute in waves, and checkpoint at boundaries. Slices are
 decomposition units; waves are implementation and checkpoint units. Detail the
@@ -297,9 +302,11 @@ post-compact context arrives via the `SessionStart` hook (with
 `hookSpecificOutput.additionalContext`). The hooks must not edit work
 records, commit, push, or invoke `/compact`.
 
-During Ralph Mode, update `context-pack.md` when pausing, preparing for compact,
-finishing, blocked, crossing a milestone, context is low, switching projects,
-or materially changing active work. Internal slice progress should stay inside
+During Ralph Mode, rewrite `context-pack.md` in full — regenerate it to the
+current boundary, not section-edit, reconciling against the prior packet and live
+git first — when pausing, preparing for compact, finishing, blocked, crossing a
+milestone, context is low, switching projects, or materially changing active
+work. Internal slice progress should stay inside
 the current wave unless risk, verification, or drift requires a stop. Append
 `build-log.md` at wave, group, review/fix, blocker, milestone, finish, or other
 meaningful boundaries, and update optional `task-queue.md` only when a durable

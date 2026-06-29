@@ -11,7 +11,7 @@ Claude Code auto-loads this file. It is the always-on operating contract for wor
 - Treat this hub as lightweight cross-project context, not as a source repo for registered projects.
 - Do not copy project source code into the hub.
 - Register projects with `/add-project` or `./bin/add-project`.
-- Keep project records small: `project.md`, `memory.md`, optional `decisions.md`, and optional lazy `work/`.
+- Keep project records small: `project.md` (binding and policy, not a commit ledger), `memory.md` (durable facts, not a per-wave changelog), optional `decisions.md` (supersede in place), and optional lazy `work/`.
 - Use Claude Code-native behavior for planning, implementation, review, testing, subagents, handoff, and git operations.
 - Do not start work, create plans, checkpoint state, commit, push, install dependencies, or edit project source as a side effect of registration.
 - Do not store secrets, credentials, private keys, customer data, or raw sensitive logs in hub records.
@@ -138,7 +138,7 @@ Piper work artifacts stay under `projects/<project-id>/work/` by default. Do not
 
 When active work artifacts change, report them at natural checkpoints separately from registered project source changes. Check git state for both the real project repo and the Piper Station hub before finish or compact when artifacts changed. Updating artifacts is allowed local assistance; committing Piper artifact changes is a `local` permission action handled through `automation-policy.md` when the active profile does not already cover local git. Do not ask to commit after every artifact edit; ask only at continuity checkpoints defined in `STATION.md`.
 
-Record artifacts economically: `context-pack.md` is the only fully self-contained resume packet. Keep roadmap, active-work, build-log, and queue records lean and purpose-specific.
+Record artifacts economically: `context-pack.md` is the only fully self-contained resume packet, rewritten in full when updated. Git is the source of truth for branch/HEAD/commit/diff history — derive it live, do not copy it across roadmap, active-work, build-log, or queue records; superseded detail rolls off into a sink at group closeout. See `STATION.md` for temporal roles and fact ownership.
 
 Plan in slices, execute in waves, and checkpoint at boundaries. Slices are decomposition units; waves are implementation and checkpoint units. Detail the current wave enough to execute safely, and sketch later waves only when the current code, context, and prior results make them reliable.
 
@@ -187,7 +187,7 @@ The main Claude Code session must validate reviewer findings before acting: give
 
 ## Compaction
 
-Ralph should update `projects/<id>/work/context-pack.md` when pausing, preparing for compact, finishing, blocked, crossing a milestone, context is low, switching projects, or materially changing active work. Internal slice progress should stay inside the current wave unless risk, verification, or drift requires a stop. Append `build-log.md` at wave, group, review/fix, blocker, milestone, finish, or other meaningful boundaries, and update optional `task-queue.md` only when a durable queue is in use, including explicit group review gate status for multi-wave groups.
+Ralph should rewrite `projects/<id>/work/context-pack.md` in full — regenerate it to the current boundary rather than section-editing, reconciling against the prior packet and live git first — when pausing, preparing for compact, finishing, blocked, crossing a milestone, context is low, switching projects, or materially changing active work. Internal slice progress should stay inside the current wave unless risk, verification, or drift requires a stop. Append `build-log.md` at wave, group, review/fix, blocker, milestone, finish, or other meaningful boundaries, and update optional `task-queue.md` only when a durable queue is in use, including explicit group review gate status for multi-wave groups.
 
 The compact state must include: goal, last completed boundary, current boundary status, next exact action, scope boundary, files to inspect first after compact, known reference paths, verification status, review state, group-level review state when a group exists, drift result, blockers and risks, git state, broad-search triggers, stop reason, and what to hand a human or fresh agent. The next exact action should be a file to open, command to run, or question to answer, specific enough for a fresh Claude Code session to continue cold.
 

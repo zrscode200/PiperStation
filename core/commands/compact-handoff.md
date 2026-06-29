@@ -19,9 +19,10 @@ The user invoked this command with: `$ARGUMENTS`
 4. Inspect the Piper Station hub git state when `projects/<project-id>/work/`
    exists or will be updated, so the packet can distinguish hub artifact
    changes from registered project source changes.
-5. Update `projects/<project-id>/work/context-pack.md` with the required
-   compact resume packet below; it also carries the handoff fields when pausing
-   or transferring work.
+5. Rewrite `projects/<project-id>/work/context-pack.md` in full from the required
+   compact resume packet below — regenerate the whole packet to reflect only the
+   current boundary; do not section-edit or append. It also carries the handoff
+   fields when pausing or transferring work.
 6. Report changed Piper artifacts separately from registered project source
    changes. State whether artifact changes are uncommitted in the hub.
 7. Ask once whether to commit Piper artifact updates before compacting only when
@@ -74,7 +75,10 @@ Rules:
   needed for safe compaction.
 - Treat `context-pack.md` as the only fully self-contained resume packet; do
   not backfill full resume metadata into roadmap, active-work, queue, or
-  build-log artifacts during compact prep.
+  build-log artifacts during compact prep. Regenerate it in full rather than
+  section-editing, but first read the existing packet and reconcile against it
+  and live git so the rewrite never drops a still-relevant field; derive
+  branch/HEAD/status live from git rather than copying a value that can age.
 - Use the resume packet as designed anchors, not a hard read limit. After
   compact, verify live repo state, rebuild enough active boundary neighborhood
   to work safely, and expand deliberately when the packet is stale, incomplete,
