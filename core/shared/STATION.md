@@ -193,13 +193,17 @@ holds only what is intrinsic to its own purpose.
 - *Topical references* are durable but organized by subject, not time, and are
   superseded in place — `decisions.md` and optional `work/design/<slug>.md`.
 
-**Derive, do not copy.** Git in the registered project repo is the source of
+**Derive, do not duplicate.** Git in the registered project repo is the source of
 truth for the mechanical history axis: raw diffs, the commit list, and current
-branch/HEAD/status. Artifacts must not store these as copied fields; read them
-live from git at each checkpoint and resume. Re-recording a commit hash or HEAD
-across several artifacts is the main cause of cross-artifact drift, because each
-copy ages on its own. This extends the existing default of leaning on native
-runtime task tracking for short-lived steps — here, lean on git for history.
+branch/HEAD/status. Read these live at each checkpoint and resume rather than
+trusting a stored value; record an observed commit or HEAD only in the artifact
+that owns it — `context-pack.md`'s resume snapshot and `build-log.md`'s per-wave
+acceptance commit — and do not repeat it across the other records (`roadmap.md`,
+`active-work.md`, `task-queue.md`, `project.md`, `memory.md`). Re-recording the
+same commit hash or HEAD across several artifacts is the main cause of
+cross-artifact drift, because each copy ages on its own. This extends the existing
+default of leaning on native runtime task tracking for short-lived steps — here,
+lean on git for history.
 
 **Fact ownership.** Each fact has one home; other artifacts reference it, they do
 not restate it:
@@ -275,10 +279,13 @@ At every checkpoint:
 4. If the workflow checkpoint chooses an artifact commit, treat it as a
    `local` permission action under `automation-policy.md` and keep it separate
    from any registered project source commit.
-5. Reconcile before continuing: `context-pack.md`'s HEAD should match the latest
-   `build-log.md` acceptance commit and live git, and `active-work.md`'s current
-   wave should match `context-pack.md`'s current boundary. Resolve any mismatch
-   rather than carrying it forward.
+5. Reconcile before continuing: the windows and the ledger must agree on where
+   work is, with any divergence explained rather than silently carried. At an
+   accepted boundary, `context-pack.md`'s HEAD is the latest `build-log.md`
+   acceptance commit; mid-wave it is the current HEAD, which may be ahead of the
+   last acceptance, with uncommitted files noted; and `active-work.md`'s current
+   wave matches `context-pack.md`'s current boundary. Resolve unexplained
+   mismatches.
 
 Scope informs how strongly artifact persistence is surfaced; artifact creation
 is driven by durable need:
