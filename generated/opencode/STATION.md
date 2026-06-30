@@ -201,9 +201,13 @@ that owns it — `context-pack.md`'s resume snapshot and `build-log.md`'s per-wa
 acceptance commit — and do not repeat it across the other records (`roadmap.md`,
 `active-work.md`, `task-queue.md`, `project.md`, `memory.md`). Re-recording the
 same commit hash or HEAD across several artifacts is the main cause of
-cross-artifact drift, because each copy ages on its own. This extends the existing
-default of leaning on native runtime task tracking for short-lived steps — here,
-lean on git for history.
+cross-artifact drift, because each copy ages on its own. Read the cheap
+current-position facts first — `git rev-parse HEAD`, `git status --short`, and
+branch — and take the acceptance commit from `build-log.md`; reach for full diffs
+or history (`git diff`, `git log`) only when the task itself needs them, such as a
+review or drift-check, not to reconstruct breadcrumbs that are already recorded.
+This extends the existing default of leaning on native runtime task tracking for
+short-lived steps — here, lean on git for history.
 
 **Fact ownership.** Each fact has one home; other artifacts reference it, they do
 not restate it:
