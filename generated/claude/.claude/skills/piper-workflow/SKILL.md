@@ -117,8 +117,10 @@ the active permission profile does not cover local git.
 Record artifacts economically: `context-pack.md` is the only fully
 self-contained resume packet, rewritten in full when updated; roadmap,
 active-work, queue, and build-log records stay purpose-specific. Git is the
-source of truth for branch/HEAD/commit/diff history — derive it live, never copy
-it across records. See `STATION.md` for the temporal roles (accumulative sinks vs
+source of truth for branch/HEAD/commit/diff history — derive it live and let the
+owning artifact record what it needs (context-pack's resume snapshot, build-log's
+acceptance commit) rather than repeating it elsewhere. See `STATION.md` for the
+temporal roles (accumulative sinks vs
 current windows vs topical references), fact ownership, and the group-closeout
 roll-off that keeps windows from becoming sinks.
 

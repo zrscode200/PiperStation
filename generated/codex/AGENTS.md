@@ -125,10 +125,11 @@ checkpoints defined in `STATION.md`.
 
 Record artifacts economically: `context-pack.md` is the only fully
 self-contained resume packet, rewritten in full when updated. Git is the source
-of truth for branch/HEAD/commit/diff history — derive it live, do not copy it
-across roadmap, active-work, build-log, or queue records; superseded detail rolls
-off into a sink at group closeout. See `STATION.md` for temporal roles and fact
-ownership.
+of truth for branch/HEAD/commit/diff history — derive it live and let the owning
+artifact record what it needs (context-pack's resume snapshot, build-log's
+acceptance commit) rather than repeating it across roadmap, active-work, project,
+or queue records; superseded detail rolls off into a sink at group closeout. See
+`STATION.md` for temporal roles and fact ownership.
 
 Plan in slices, execute in waves, and checkpoint at boundaries. Slices are
 decomposition units; waves are implementation and checkpoint units. Detail the

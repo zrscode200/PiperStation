@@ -129,9 +129,11 @@ Create only under `projects/<project-id>/work/`, and only when useful:
 
 Keep artifacts lean: `context-pack.md` is the only fully self-contained resume
 packet, rewritten in full when updated. Git is the source of truth for branch,
-HEAD, commit, and diff history — derive it live, do not copy it across roadmap,
-active-work, queue, or build-log records. See `STATION.md` for the temporal roles
-(sinks vs windows vs topical references) and fact ownership.
+HEAD, commit, and diff history — derive it live and let the owning artifact record
+what it needs (context-pack's resume snapshot, build-log's acceptance commit)
+rather than repeating it across roadmap, active-work, queue, or project records.
+See `STATION.md` for the temporal roles (sinks vs windows vs topical references)
+and fact ownership.
 
 Keep stable facts in `memory.md`, project policy preferences in `project.md`,
 and substantial decision logs in optional `decisions.md`. Registration must not
