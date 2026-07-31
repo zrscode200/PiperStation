@@ -16,6 +16,21 @@ assert_contains() { grep -q -- "$2" "$1" || fail "expected '$2' in $1"; }
 assert_not_contains() { if grep -q -- "$2" "$1"; then fail "did not expect '$2' in $1"; fi; }
 assert_file_count() { actual=$(find "$1" -type f -name "$2" | wc -l | tr -d ' '); [ "$actual" = "$3" ] || fail "expected $3 files matching $2 under $1, found $actual"; }
 init_git_repo() { git -C "$1" init -q; git -C "$1" config user.name "Piper Unified Tests"; git -C "$1" config user.email "tests@example.invalid"; }
+assert_design_studio_contract() {
+  studio_skill_dir=$1
+  assert_contains "$studio_skill_dir/SKILL.md" "Enter only on explicit intent"
+  assert_contains "$studio_skill_dir/SKILL.md" "projects/<project-id>/project.md"
+  assert_contains "$studio_skill_dir/SKILL.md" "One studio represents one design initiative"
+  assert_contains "$studio_skill_dir/SKILL.md" "Reuse an existing studio when its initiative matches"
+  assert_contains "$studio_skill_dir/SKILL.md" "derive a stable lower-kebab-case slug"
+  assert_contains "$studio_skill_dir/SKILL.md" "If the slug already belongs to different work"
+  assert_contains "$studio_skill_dir/SKILL.md" "edits to the registered project's source repository"
+  assert_contains "$studio_skill_dir/SKILL.md" "Design Studio is discussion-first"
+  assert_contains "$studio_skill_dir/references/artifact-contracts.md" "Each mutable fact has one owner"
+  assert_contains "$studio_skill_dir/references/artifact-contracts.md" "work/design/<studio-slug>/"
+  assert_contains "$studio_skill_dir/references/artifact-contracts.md" "accepted_revision: <current revision>"
+  assert_contains "$studio_skill_dir/references/artifact-contracts.md" "Do not force artifacts"
+}
 
 echo "test root: $TMP_ROOT"
 sh -n "$BOOTSTRAP"
@@ -58,6 +73,10 @@ assert_file "$codex_hub/.codex/skills/piper-workflow/references/compact-handoff.
 assert_file "$codex_hub/.codex/skills/piper-workflow/SKILL.md"
 assert_file "$codex_hub/.codex/skills/brainstorm/SKILL.md"
 assert_file "$codex_hub/.codex/skills/brainstorm/references/add-project.md"
+assert_file "$codex_hub/.codex/skills/design-studio/SKILL.md"
+assert_file "$codex_hub/.codex/skills/design-studio/references/studio-method.md"
+assert_file "$codex_hub/.codex/skills/design-studio/references/artifact-contracts.md"
+assert_design_studio_contract "$codex_hub/.codex/skills/design-studio"
 assert_file "$codex_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$codex_hub/bin/add-project"
 assert_executable "$codex_hub/.codex/hooks/session-context.sh"
@@ -74,10 +93,12 @@ assert_contains "$codex_hub/AGENTS.md" "--add-dir"
 assert_file_count "$codex_hub/.codex/agents" "*.toml" 7
 assert_file_count "$codex_hub/.codex/skills/piper-workflow/references" "*.md" 3
 assert_file_count "$codex_hub/.codex/skills/brainstorm/references" "*.md" 1
+assert_file_count "$codex_hub/.codex/skills/design-studio/references" "*.md" 2
 assert_not_exists "$codex_hub/.codex/commands"
-assert_file_count "$codex_hub/.codex/skills" "SKILL.md" 4
+assert_file_count "$codex_hub/.codex/skills" "SKILL.md" 5
 assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/piper-workflow"'
 assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/brainstorm"'
+assert_contains "$codex_hub/.codex/config.toml" 'path = "./skills/design-studio"'
 assert_not_contains "$codex_hub/.codex/config.toml" 'skills/hub-workflow'
 assert_not_contains "$codex_hub/.codex/config.toml" 'skills/superpowers-planning'
 assert_not_contains "$codex_hub/.codex/config.toml" 'skills/ralph-loop'
@@ -276,11 +297,15 @@ assert_file "$claude_hub/.claude/commands/ralph.md"
 assert_file "$claude_hub/.claude/commands/compact-handoff.md"
 assert_file "$claude_hub/.claude/skills/piper-workflow/SKILL.md"
 assert_file "$claude_hub/.claude/skills/brainstorm/SKILL.md"
+assert_file "$claude_hub/.claude/skills/design-studio/SKILL.md"
+assert_file "$claude_hub/.claude/skills/design-studio/references/studio-method.md"
+assert_file "$claude_hub/.claude/skills/design-studio/references/artifact-contracts.md"
+assert_design_studio_contract "$claude_hub/.claude/skills/design-studio"
 assert_file "$claude_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$claude_hub/bin/add-project"
 assert_executable "$claude_hub/.claude/hooks/session-context.sh"
 assert_file_count "$claude_hub/.claude/commands" "*.md" 4
-assert_file_count "$claude_hub/.claude/skills" "SKILL.md" 4
+assert_file_count "$claude_hub/.claude/skills" "SKILL.md" 5
 assert_file_count "$claude_hub/.claude/agents" "*.md" 8
 assert_not_exists "$claude_hub/AGENTS.md"
 assert_not_exists "$claude_hub/.codex"
@@ -417,11 +442,15 @@ assert_file "$opencode_hub/.opencode/commands/ralph.md"
 assert_file "$opencode_hub/.opencode/commands/compact-handoff.md"
 assert_file "$opencode_hub/.opencode/skills/piper-workflow/SKILL.md"
 assert_file "$opencode_hub/.opencode/skills/brainstorm/SKILL.md"
+assert_file "$opencode_hub/.opencode/skills/design-studio/SKILL.md"
+assert_file "$opencode_hub/.opencode/skills/design-studio/references/studio-method.md"
+assert_file "$opencode_hub/.opencode/skills/design-studio/references/artifact-contracts.md"
+assert_design_studio_contract "$opencode_hub/.opencode/skills/design-studio"
 assert_file "$opencode_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$opencode_hub/bin/add-project"
 assert_file_count "$opencode_hub/.opencode/agents" "*.md" 8
 assert_file_count "$opencode_hub/.opencode/commands" "*.md" 4
-assert_file_count "$opencode_hub/.opencode/skills" "SKILL.md" 4
+assert_file_count "$opencode_hub/.opencode/skills" "SKILL.md" 5
 assert_not_exists "$opencode_hub/CLAUDE.md"
 assert_not_exists "$opencode_hub/.codex"
 assert_not_exists "$opencode_hub/.claude"
@@ -853,7 +882,7 @@ if "$BOOTSTRAP" --runtime codex "$ROOT" > "$TMP_ROOT/source-refuse.log" 2>&1; th
 assert_contains "$TMP_ROOT/source-refuse.log" "refusing to initialize the bootstrap source"
 if grep -R -n '{{' "$ROOT/generated/codex" "$ROOT/generated/claude" "$ROOT/generated/opencode" > "$TMP_ROOT/placeholders.log"; then cat "$TMP_ROOT/placeholders.log" >&2; fail "unrendered template placeholder found"; fi
 if grep -R -n '^argument-hint: [^"]' "$ROOT/generated/claude/.claude/commands" "$ROOT/generated/opencode/.opencode/commands" > "$TMP_ROOT/frontmatter.log"; then cat "$TMP_ROOT/frontmatter.log" >&2; fail "unquoted argument-hint frontmatter found"; fi
-if grep -R -n '^argument-hint:\|^allowed-tools:\|^description:' "$ROOT/generated/codex/.codex/skills/piper-workflow/references" "$ROOT/generated/codex/.codex/skills/brainstorm/references" > "$TMP_ROOT/codex-refs-frontmatter.log"; then cat "$TMP_ROOT/codex-refs-frontmatter.log" >&2; fail "Codex skill references must not carry slash-command frontmatter"; fi
+if grep -R -n '^argument-hint:\|^allowed-tools:\|^description:' "$ROOT/generated/codex/.codex/skills/piper-workflow/references" "$ROOT/generated/codex/.codex/skills/brainstorm/references" "$ROOT/generated/codex/.codex/skills/design-studio/references" > "$TMP_ROOT/codex-refs-frontmatter.log"; then cat "$TMP_ROOT/codex-refs-frontmatter.log" >&2; fail "Codex skill references must not carry slash-command frontmatter"; fi
 if grep -R -n '^description: [^"].*: ' "$ROOT/core/skills" "$ROOT/generated/codex/.codex/skills" "$ROOT/generated/claude/.claude/skills" "$ROOT/generated/opencode/.opencode/skills" > "$TMP_ROOT/skill-frontmatter.log"; then cat "$TMP_ROOT/skill-frontmatter.log" >&2; fail "unquoted skill description frontmatter with colon found"; fi
 if grep -R -n -E '`(handoff|progress)\.md`' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-work-artifacts.log"; then cat "$TMP_ROOT/stale-work-artifacts.log" >&2; fail "active instructions must not use stale handoff.md or progress.md artifacts"; fi
 if grep -R -n 'established docs location' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-project-local-artifacts.log"; then cat "$TMP_ROOT/stale-project-local-artifacts.log" >&2; fail "artifact persistence must keep Piper work artifacts hub-owned by default"; fi

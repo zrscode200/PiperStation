@@ -46,6 +46,10 @@ path = "./skills/brainstorm"
 enabled = true
 
 [[skills.config]]
+path = "./skills/design-studio"
+enabled = true
+
+[[skills.config]]
 path = "./skills/piper-workflow"
 enabled = true
 

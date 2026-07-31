@@ -13,10 +13,11 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNTIMES = ("codex", "claude", "opencode")
 COMMANDS = ("add-project.md", "superpowers.md", "ralph.md", "compact-handoff.md")
 SKILLS = (
-    "brainstorm/SKILL.md",
-    "piper-workflow/SKILL.md",
-    "review/SKILL.md",
-    "automation-policy/SKILL.md",
+    "brainstorm",
+    "design-studio",
+    "piper-workflow",
+    "review",
+    "automation-policy",
 )
 # In Codex, slash commands are surfaced as reference files under their owning
 # skill. add-project belongs to the brainstorm front door; the planning and
@@ -124,16 +125,28 @@ def command_dir_for(runtime: str, command: str) -> str:
     return RUNTIME_CONFIG[runtime]["command_dir"]
 
 
+def render_skill_tree(runtime: str, out: Path, skill: str) -> None:
+    cfg = RUNTIME_CONFIG[runtime]
+    src_root = ROOT / "core/skills" / skill
+    dst_root = out / cfg["skill_dir"] / skill
+    for src in sorted(src_root.rglob("*")):
+        if not src.is_file():
+            continue
+        rel = src.relative_to(src_root)
+        text = render_text(src.read_text(encoding="utf-8"), runtime)
+        write(dst_root / rel, text)
+
+
 def render_behavior(runtime: str, out: Path) -> None:
     cfg = RUNTIME_CONFIG[runtime]
+    for skill in SKILLS:
+        render_skill_tree(runtime, out, skill)
+    # Commands render after skill trees so Codex's command-owned references win
+    # if a core skill ever contains a file with the same relative path.
     for command in COMMANDS:
         src = ROOT / "core/commands" / command
         text = render_text(src.read_text(encoding="utf-8"), runtime, cfg["frontmatter"][command])
         write(out / command_dir_for(runtime, command) / command, text)
-    for skill in SKILLS:
-        src = ROOT / "core/skills" / skill
-        text = render_text(src.read_text(encoding="utf-8"), runtime)
-        write(out / cfg["skill_dir"] / skill, text)
 
 
 def render_runtime(runtime: str, out_root: Path) -> None:
