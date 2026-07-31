@@ -62,7 +62,8 @@ projects/<project-id>/
   not silently reopen; supersede a reversed decision in place rather than
   deleting it.
 - `work/` stores optional active work continuity such as roadmap, active work,
-  build log, compact pack, and durable task queue records.
+  build log, compact pack, durable task queue records, lightweight design
+  notes, and explicitly entered Design Studio folders.
 
 Do not put routine progress logs, command output, temporary plans, secrets, or
 raw sensitive logs into durable hub records.
@@ -109,11 +110,13 @@ target visible in `active-work.md`.
 
 `brainstorm` owns the decision-quality front door for the divergent phase —
 orientation, framing, divergence, investigation, and routing — and stays
-read-only. `piper-workflow` owns convergent execution once a direction is set.
-Slash commands are explicit shortcuts into convergent execution:
-`/superpowers`, `/ralph`, and `/compact-handoff`. The front door needs no
-command — a project-work request that is ambiguous or lacks an explicit
-execution signal enters through `brainstorm`.
+read-only. `design-studio` is an optional deeper path inside that divergent
+movement, directly invokable through OpenCode's skill surface or natural
+language and entered from brainstorm only after explicit user choice.
+`piper-workflow` owns convergent execution once a direction is set. Slash
+commands are explicit shortcuts into convergent execution: `/superpowers`,
+`/ralph`, and `/compact-handoff`. An ambiguous project-work request still
+enters through `brainstorm`.
 
 Route each request through the smallest mode that fits:
 
@@ -121,6 +124,11 @@ Route each request through the smallest mode that fits:
   investigate, route explicit registration through the helper, and produce a
   decision-ready hand-off brief. Read-only except for that deterministic
   registration path.
+- Design Studio (optional divergent path): after explicit user choice, create
+  or reuse hub-owned studio artifacts, work discussion-first across sessions,
+  and continue, pause, conclude without execution, or hand an explicitly
+  accepted revision to Piper Workflow. It does not edit project source or
+  create groups and waves.
 - Superpowers Mode: verify the handed-off direction, define the group or
   milestone structure (Structural Planning), then formalize the current wave
   (Wave Formalization) before substantial implementation.
@@ -133,13 +141,13 @@ Route each request through the smallest mode that fits:
 - Finish Mode: verify, summarize, and present commit or PR options without
   mutating git automatically.
 
-Use `brainstorm` as the broad natural-language front door and `piper-workflow`
-for convergent execution. Use `/superpowers` for explicit formal planning,
-`/ralph` for explicit Ralph execution, `review` for explicit review work or
-review gates, and `automation-policy` before crossing the active permission
-profile boundary. Prefer consequence language such as "I will keep this
-read-only" or "I will create Ralph-ready work records" over ceremonial mode
-announcements.
+Use `brainstorm` as the broad natural-language front door, `design-studio` only
+for explicit deeper design, and `piper-workflow` for convergent execution. Use
+`/superpowers` for explicit formal planning, `/ralph` for explicit Ralph
+execution, `review` for explicit review work or review gates, and
+`automation-policy` before crossing the active permission profile boundary.
+Prefer consequence language such as "I will keep this read-only" or "I will
+create Ralph-ready work records" over ceremonial mode announcements.
 
 Scope tiers are advisory sizing, not artifact rules:
 

@@ -31,6 +31,74 @@ assert_design_studio_contract() {
   assert_contains "$studio_skill_dir/references/artifact-contracts.md" "accepted_revision: <current revision>"
   assert_contains "$studio_skill_dir/references/artifact-contracts.md" "Do not force artifacts"
 }
+assert_design_studio_journeys() {
+  journey_root=$1
+  journey_brainstorm=$2
+  journey_studio_dir=$3
+  journey_piper=$4
+  journey_superpowers=$5
+  journey_station=$6
+  journey_testing=$7
+  journey_direct_invocation=$8
+
+  # 1. Lightweight brainstorm: no studio is required and direct handoff stays valid.
+  assert_contains "$journey_brainstorm" "may still hand directly to \`piper-workflow\`"
+  assert_contains "$journey_brainstorm" "studio merely because"
+
+  # 2. Suggested studio: brainstorm explains the value and waits for explicit opt-in.
+  assert_contains "$journey_brainstorm" "enter only after the user explicitly chooses it"
+
+  # 3. Direct studio: every runtime root exposes direct and optional entry.
+  assert_contains "$journey_root" "$journey_direct_invocation"
+  assert_contains "$journey_root" "Design Studio (optional divergent path)"
+  assert_contains "$journey_root" "explicit user choice"
+  assert_contains "$journey_studio_dir/SKILL.md" "Enter only on explicit intent"
+
+  # 4. Emergent artifacts: descriptive outputs are not forced into category trees.
+  assert_contains "$journey_studio_dir/references/artifact-contracts.md" "registration-flow.md"
+  assert_contains "$journey_studio_dir/references/artifact-contracts.md" "Do not force artifacts into"
+
+  # 5. Multi-session resume: one initiative is reused and Piper owns resume state.
+  assert_contains "$journey_studio_dir/SKILL.md" "One studio represents one design initiative across conversations"
+  assert_contains "$journey_studio_dir/references/artifact-contracts.md" "A studio README never replaces \`context-pack.md\`"
+
+  # 6. Conclude without execution: useful design may end without a fake handoff.
+  assert_contains "$journey_studio_dir/SKILL.md" "conclude as useful durable design without implementation"
+
+  # 7. Accepted handoff: the exact pair is validated and referenced, not copied.
+  assert_contains "$journey_piper" "studio is never a blocker"
+  assert_contains "$journey_piper" "design_artifact: projects/<project-id>/work/design/<studio-slug>/design.md"
+  assert_contains "$journey_piper" "accepted_revision: N"
+  assert_contains "$journey_piper" "handed-off revision must be an integer"
+  assert_contains "$journey_piper" "status: accepted-for-planning"
+  assert_contains "$journey_piper" "both metadata revisions must equal the handed-off"
+  assert_contains "$journey_superpowers" "require the exact pair"
+  assert_contains "$journey_superpowers" "design_artifact: projects/<project-id>/work/design/<studio-slug>/design.md"
+  assert_contains "$journey_superpowers" "accepted_revision: N"
+  assert_contains "$journey_superpowers" "status: accepted-for-planning"
+  assert_contains "$journey_superpowers" "integer \`revision\`, and integer"
+  assert_contains "$journey_superpowers" "non-integer, or mismatched metadata"
+  assert_contains "$journey_superpowers" "both metadata revisions equal to the handed-off"
+  assert_contains "$journey_superpowers" "significant supporting artifacts linked by \`design.md\`"
+  assert_contains "$journey_superpowers" "core premises against live"
+  assert_contains "$journey_superpowers" "Make choices inside recorded implementation freedoms"
+  assert_contains "$journey_superpowers" "return upstream to Design Studio"
+  assert_contains "$journey_superpowers" "reference rather than copy the canonical design"
+
+  # 8. Post-handoff revision: a changed design is stale until accepted and reverified.
+  assert_contains "$journey_piper" "prior pair stale"
+  assert_contains "$journey_piper" "Superpowers reverifies it against live source"
+  assert_contains "$journey_superpowers" "revision mismatch"
+  assert_contains "$journey_superpowers" "changes materially after handoff"
+  assert_contains "$journey_superpowers" "metadata and live-source verification before planning resumes"
+  assert_contains "$journey_testing" "post-handoff revision"
+
+  # Shared canon keeps the capability optional inside the divergent movement.
+  assert_contains "$journey_station" "Ordinary brainstorm may still hand"
+  assert_contains "$journey_station" "optional deeper practice inside that divergent"
+  assert_contains "$journey_studio_dir/references/artifact-contracts.md" "For an existing lightweight note or ad hoc folder"
+  assert_contains "$journey_studio_dir/references/artifact-contracts.md" "Never silently move or delete the original"
+}
 
 echo "test root: $TMP_ROOT"
 sh -n "$BOOTSTRAP"
@@ -77,6 +145,15 @@ assert_file "$codex_hub/.codex/skills/design-studio/SKILL.md"
 assert_file "$codex_hub/.codex/skills/design-studio/references/studio-method.md"
 assert_file "$codex_hub/.codex/skills/design-studio/references/artifact-contracts.md"
 assert_design_studio_contract "$codex_hub/.codex/skills/design-studio"
+assert_design_studio_journeys \
+  "$codex_hub/AGENTS.md" \
+  "$codex_hub/.codex/skills/brainstorm/SKILL.md" \
+  "$codex_hub/.codex/skills/design-studio" \
+  "$codex_hub/.codex/skills/piper-workflow/SKILL.md" \
+  "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" \
+  "$codex_hub/STATION.md" \
+  "$codex_hub/TESTING.md" \
+  '`$design-studio ...` or natural-language intent'
 assert_file "$codex_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$codex_hub/bin/add-project"
 assert_executable "$codex_hub/.codex/hooks/session-context.sh"
@@ -301,6 +378,15 @@ assert_file "$claude_hub/.claude/skills/design-studio/SKILL.md"
 assert_file "$claude_hub/.claude/skills/design-studio/references/studio-method.md"
 assert_file "$claude_hub/.claude/skills/design-studio/references/artifact-contracts.md"
 assert_design_studio_contract "$claude_hub/.claude/skills/design-studio"
+assert_design_studio_journeys \
+  "$claude_hub/CLAUDE.md" \
+  "$claude_hub/.claude/skills/brainstorm/SKILL.md" \
+  "$claude_hub/.claude/skills/design-studio" \
+  "$claude_hub/.claude/skills/piper-workflow/SKILL.md" \
+  "$claude_hub/.claude/commands/superpowers.md" \
+  "$claude_hub/STATION.md" \
+  "$claude_hub/TESTING.md" \
+  "Invoke Design Studio directly through Claude Code's skill"
 assert_file "$claude_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$claude_hub/bin/add-project"
 assert_executable "$claude_hub/.claude/hooks/session-context.sh"
@@ -446,6 +532,15 @@ assert_file "$opencode_hub/.opencode/skills/design-studio/SKILL.md"
 assert_file "$opencode_hub/.opencode/skills/design-studio/references/studio-method.md"
 assert_file "$opencode_hub/.opencode/skills/design-studio/references/artifact-contracts.md"
 assert_design_studio_contract "$opencode_hub/.opencode/skills/design-studio"
+assert_design_studio_journeys \
+  "$opencode_hub/AGENTS.md" \
+  "$opencode_hub/.opencode/skills/brainstorm/SKILL.md" \
+  "$opencode_hub/.opencode/skills/design-studio" \
+  "$opencode_hub/.opencode/skills/piper-workflow/SKILL.md" \
+  "$opencode_hub/.opencode/commands/superpowers.md" \
+  "$opencode_hub/STATION.md" \
+  "$opencode_hub/TESTING.md" \
+  "directly invokable through OpenCode's skill surface"
 assert_file "$opencode_hub/.piper/lib/bootstrap/add-project.sh"
 assert_executable "$opencode_hub/bin/add-project"
 assert_file_count "$opencode_hub/.opencode/agents" "*.md" 8

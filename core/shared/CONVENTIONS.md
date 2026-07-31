@@ -11,6 +11,15 @@ only for substantial decision logs future work should not reopen silently.
 Routine progress, raw command output, temporary plans, secrets, and sensitive
 logs do not belong in durable hub records.
 
+Keep lightweight `work/design/<topic>.md` notes available. A full Design Studio
+uses `work/design/<studio-slug>/` only after explicit user choice: the project
+README indexes design work, the studio README navigates its files, and
+`design.md` alone owns the integrated design, integer revision, and explicit
+revision-specific acceptance. Create optional artifacts with descriptive names
+only when useful; do not impose topic, aspect, research, probe, or prototype
+directories. Promotion from an existing note or ad hoc folder is
+discussion-led and non-destructive.
+
 Groups bundle related waves under a shared acceptance target and one
 integrating review gate. Use a group when multiple waves land before the larger
 boundary is accepted, or when cross-wave interaction risk matters. A group has

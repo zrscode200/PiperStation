@@ -1,6 +1,6 @@
 ---
 name: brainstorm
-description: "Use when the user wants to explore, understand, decide, or explicitly register rather than execute on a Piper Station project: orient to a repo or registered project, ask what it does or what a change would take, compare approaches, frame a problem, think through direction in conversation, or route deterministic registration. Stays read-only except explicit registration through the helper. Hand off to piper-workflow for formal planning or Ralph execution, review for review, and automation-policy for permission-gated actions."
+description: "Use when the user wants to explore, understand, decide, or explicitly register rather than execute on a Piper Station project: orient to a repo or registered project, compare approaches, frame a problem, think through direction, optionally suggest Design Studio for deeper durable design, or route deterministic registration. Stays read-only except explicit registration through the helper. Hand off to design-studio only after explicit user choice, piper-workflow for convergent execution, review for review, and automation-policy for permission-gated actions."
 ---
 
 # Brainstorm
@@ -12,13 +12,20 @@ space to frame a problem, weigh options, and ground them in reality *before*
 that machinery commits. It answers "what should we build, and is it the right
 thing?" while `piper-workflow` answers "how do we build it well?"
 
+Some initiatives need more design depth and multi-session durability than
+ordinary brainstorm, but are not ready for execution planning. `design-studio`
+is that optional deeper path inside the divergent movement. Ordinary brainstorm
+may still hand directly to `piper-workflow`.
+
 Brainstorm is read-only by contract for orientation, exploration, and
 conversational planning. Premature artifacts are the failure this skill exists
 to prevent, so it creates no `work/` files and no project source edits. The
 only durable write exception is explicit registration through the deterministic
 helper, which may create or update the narrow registration records. When a
 request converges toward other durable work, brainstorm hands off to the
-convergent surfaces.
+appropriate surface. Even when the user chooses Design Studio, this skill does
+not create studio artifacts itself; the `design-studio` skill owns those
+writes.
 
 Read `CLAUDE.md` and `STATION.md` first. Use the other root docs as
 canonical references when product, architecture, convention, testing, security,
@@ -76,6 +83,26 @@ exists because it lowers the chance of converging on the wrong thing.
   verification of a chosen one — that verification is `piper-workflow`'s job at
   the convergent boundary.
 
+## Optional Design Studio
+
+Suggest `design-studio` when deeper design would materially improve the
+decision: several substantive design tensions, source-grounded architecture or
+contract work, scenario/state/interface modeling, failure or authority pressure
+testing, multi-session continuity, or durable rationale before implementation
+planning.
+
+The suggestion is not an automatic transition. Explain why the deeper path
+would help and enter only after the user explicitly chooses it. Do not create a
+studio merely because a request mentions design, is complex, or could benefit
+from more discussion. If the user declines or the ordinary brainstorm is
+already decision-ready, continue here and hand directly to `piper-workflow`
+when execution planning is wanted.
+
+A direct request to open, enter, start, or continue Design Studio is already an
+explicit choice; route it directly to the `design-studio` skill. That skill may
+create or reuse hub-owned studio artifacts, but it still does not authorize
+project-source edits or implementation planning.
+
 ## Hand-Off Brief
 
 When direction converges, produce a decision-ready brief **in the conversation**
@@ -88,8 +115,8 @@ checklist `piper-workflow` verifies. Include:
 - A short pressure-test of that direction: likely failure modes or a quick
   pre-mortem — try to break it before committing.
 - Open questions and assumptions that should be verified before durable work.
-- Suggested next surface: formal planning, a single Ralph task, review, or an
-  automation-policy permission flow.
+- Suggested next surface: optional Design Studio, formal planning, a single
+  Ralph task, review, or an automation-policy permission flow.
 
 ## Register
 
@@ -109,17 +136,19 @@ regenerate it with `./bin/add-project --rebuild`.
 
 ## Artifact Signal Policy
 
-Brainstorm acts on the band of signals up to and including registration;
-everything beyond it is a convergent escalation (see Escalation). State the
+Brainstorm acts on the band of signals up to and including registration. An
+explicit Design Studio choice routes to a deeper divergent owner; formal
+planning and execution route to convergent owners (see Escalation). State the
 consequence when adjacent requests imply different writes. The full
 intent-to-writes map lives in `STATION.md`.
 
 The front-door band covers read-only orientation and conversational planning,
 plus explicit deterministic registration. Registration may create only
 `project.md`, `memory.md`, `projects/registry.json`, and optional repo markers
-through the helper. Beyond registration — formal planning, Ralph execution,
-finish, or automation — the signal is convergent: escalate per the table below
-rather than writing here.
+through the helper. Explicit Design Studio intent routes to that skill, which
+owns useful hub design artifacts without becoming convergent execution. Beyond
+those routes — formal planning, Ralph execution, finish, or automation — the
+signal is convergent: escalate per the table below rather than writing here.
 
 Ambiguous signals must not silently escalate durable writes. If the next step
 would create hub work records, edit project source, or cross the active
@@ -128,12 +157,14 @@ choose the less durable action or ask.
 
 ## Escalation
 
-When the request converges, hand it to the smallest convergent surface that
-fits. Escalation is one-way: brainstorm states the consequence and passes the
-brief; it does not perform durable execution itself.
+When the request is ready to leave ordinary brainstorm, hand it to the smallest
+surface that fits. The Design Studio route remains divergent; the other routes
+below are convergent. Brainstorm states the consequence and passes the brief or
+current frame; it does not perform the destination's durable work itself.
 
-| Converged signal | Hand off to |
+| Exit signal | Hand off to |
 | --- | --- |
+| "open a design studio", "enter design studio", "continue the studio", or acceptance of a brainstorm suggestion | `design-studio` — optional deep divergent design |
 | "make this a formal plan", "prepare for Ralph", "create the queue", "set this up for later" | `piper-workflow` — formal planning |
 | "start Ralph", "build task X", "execute the queue item", "implement the plan" | `piper-workflow` — Ralph execution |
 | "review this change" or an implemented wave, slice, or review gate | `review` |
@@ -155,6 +186,9 @@ before any recommendation.
 - Read-only is the point. While deciding, do not create hub records or project
   `work/` files and do not edit project source. Crossing into durable work is an
   explicit escalation, never a side effect.
+- Do not force Design Studio into ordinary brainstorming. Suggest it only when
+  the benefit is material and wait for explicit user choice; preserve the
+  direct brainstorm-to-Piper Workflow path.
 - Registration runs only through the deterministic helper; do not hand-write its
   records.
 - Do not copy source code into the hub.

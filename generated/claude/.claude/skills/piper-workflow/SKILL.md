@@ -1,6 +1,6 @@
 ---
 name: piper-workflow
-description: "Use when executing rather than exploring on a registered Piper Station project: formalize active work, update roadmap or build-log checkpoints, prepare an optional durable Ralph queue, execute the current Ralph wave, explicit slice, or queued task with verification and review gates, operate the group lifecycle across entry, execution, closeout, and transition between groups, prepare compact-safe handoff, or route a permission-gated finish action. Entered from brainstorm once direction is set, or via /superpowers, /ralph, /compact-handoff."
+description: "Use when executing rather than exploring on a registered Piper Station project: verify an ordinary brainstorm direction or an explicitly accepted Design Studio revision, formalize active work, prepare Ralph execution, operate waves and group lifecycle gates, prepare compact-safe handoff, or route a permission-gated finish action. Entered from brainstorm, an accepted design-studio handoff, or /superpowers, /ralph, /compact-handoff."
 ---
 
 # Piper Workflow
@@ -11,16 +11,18 @@ Ralph execution, group entry, closeout, and transition, compaction handoff, and
 finish routing. It operates not only inside a single wave or group but across the
 full sequence of groups toward a milestone. It is entered from the `brainstorm`
 front door once a request has
-converged on a direction, or directly through `/superpowers`, `/ralph`, and
-`/compact-handoff`.
+converged on a direction, from `design-studio` with an explicitly accepted
+revision, or directly through `/superpowers`, `/ralph`, and `/compact-handoff`.
 
 `brainstorm` owns the divergent phase — orientation, framing, exploration,
-conversational planning, registration, and routing. This skill assumes a
-registered project and a direction that has converged toward durable work. If a
-request is actually still divergent (orienting, exploring, or deciding what to
-do), hand it back to `brainstorm`. Use the narrow skills when their consequence
-applies: `review` for explicit review or review gates, and `automation-policy`
-before crossing the active permission profile boundary.
+conversational planning, registration, and routing. `design-studio` owns the
+optional deeper divergent path and its canonical design revisions. This skill
+assumes a registered project and a direction that has converged toward durable
+work. If a request is actually still divergent, hand it back to `brainstorm` or
+to Design Studio when an existing design premise must be reconsidered. Use the
+narrow skills when their consequence applies: `review` for explicit review or
+review gates, and `automation-policy` before crossing the active permission
+profile boundary.
 
 Read `CLAUDE.md` and `STATION.md` first. Resolve the project in
 `projects/registry.json` to its `repo_path` and read
@@ -49,12 +51,12 @@ request is ambiguous.
 
 ## Superpowers Entry
 
-Superpowers begins where `brainstorm` ended. Its lead step is verification, not
-open exploration: take the direction from brainstorm's hand-off brief and
-confirm it against the real code — validate the brief's flagged assumptions,
-check the specific files and call sites the work will touch, and confirm the
-acceptance criteria are testable — before locking durable active work. Open
-exploration belongs to `brainstorm`.
+Superpowers begins where upstream divergence ended: either an ordinary
+brainstorm hand-off brief or an explicitly accepted Design Studio revision. Its
+lead step is verification, not open exploration: confirm the upstream direction
+against real code, validate flagged assumptions, check the files and call sites
+the work will touch, and confirm the acceptance criteria are testable before
+locking durable active work. Open exploration belongs upstream.
 
 Superpowers runs as two named passes. Structural Planning verifies the
 direction and defines the group or milestone structure: every in-scope group
@@ -62,6 +64,41 @@ gets a boundary, an acceptance target, and revisit triggers, while later waves
 and groups may stay sketches. Wave Formalization details the current wave into
 Ralph-ready form; it also stands alone, run by Ralph at a wave boundary when
 the selected wave is still a sketch.
+
+## Design Studio Handoff
+
+An ordinary brainstorm hand-off brief remains valid input, and the absence of a
+studio is never a blocker. Lightweight `work/design/<topic>.md` notes also
+remain supported. Apply this additional contract only when the upstream handoff
+declares:
+
+```text
+design_artifact: projects/<project-id>/work/design/<studio-slug>/design.md
+accepted_revision: N
+```
+
+Before Structural Planning relies on that design:
+
+1. Resolve the artifact inside the registered project's hub records and read
+   its current metadata. The handed-off revision must be an integer.
+2. Require `status: accepted-for-planning`, integer `revision`, and integer
+   `accepted_revision`; both metadata revisions must equal the handed-off
+   `accepted_revision: N`. A missing, provisional, superseded, or mismatched
+   design is stale and returns to Design Studio.
+3. Read the canonical design and the significant supporting artifacts it links.
+   Follow evidence and rationale links; do not treat supporting material as a
+   replacement authority for `design.md`.
+4. Verify its goals, assumptions, fixed contracts, and core premises against
+   the live registered source before formal planning. Record the artifact path
+   and exact accepted revision in execution work records, but reference rather
+   than copy the design.
+5. Make implementation choices only inside the recorded implementation
+   freedoms. If live source invalidates a fixed contract or core premise,
+   return upstream to Design Studio instead of silently redesigning it here.
+
+A material design edit after handoff increments the current revision and makes
+the prior pair stale. Do not proceed on the new revision until the user
+explicitly accepts it and Superpowers reverifies it against live source.
 
 ## Group Lifecycle
 
@@ -90,8 +127,9 @@ artifact obligations.
 ## Artifact Signal Policy
 
 This skill handles the convergent signals. Brainstorm owns the front-door band:
-read-only orientation and planning, plus explicit deterministic registration.
-When intent reaches these rows, durable writes are expected. The full
+read-only orientation and planning, plus explicit deterministic registration;
+Design Studio owns optional deeper design and its hub artifacts. When intent
+reaches Piper Workflow, durable execution records are expected. The full
 intent-to-writes map lives in `STATION.md`.
 
 Formal planning or Ralph preparation may create useful
@@ -104,6 +142,10 @@ edit only the real project repo when `local` profile coverage exists. Finish,
 local git, worktree, PR, dependency, network, CI, external, or exceptional
 actions route through `automation-policy` when they cross the active permission
 profile boundary.
+
+When work starts from Design Studio, `active-work.md` records only the
+`design_artifact` and exact `accepted_revision` plus downstream execution state;
+it does not duplicate the canonical design.
 
 If a request is actually still divergent, hand it back to `brainstorm` rather
 than escalating durable writes.
@@ -192,6 +234,9 @@ session. If the repo is outside the hub, ensure Claude Code has workspace access
   registration.
 - Orientation and registration belong to `brainstorm`; this skill assumes a
   registered, converged target.
+- Do not make Design Studio mandatory. Preserve direct brainstorm-to-Piper
+  planning, and do not silently reinterpret a stale or contradicted accepted
+  design during Superpowers.
 - Do not commit, push, merge, create or switch worktrees, install dependencies,
   or run external automation unless the selected workflow has reached that
   action and the active permission profile allows it; see

@@ -54,26 +54,34 @@ The deterministic shell equivalent for registration is:
 
 Use `--hub-only` when repo marker files are not wanted.
 
+The divergent skill entry points are `brainstorm` and optional
+`design-studio`. Invoke Design Studio directly through Claude Code's skill
+surface or state a clear natural-language request to open or continue one;
+brainstorm may suggest it, but may not enter it without explicit user choice.
+
 ## Mode Routing
 
 `brainstorm` owns the decision-quality front door for the divergent phase —
 orientation, framing, divergence, investigation, and routing — and stays
-read-only. `piper-workflow` owns convergent execution once a direction is set.
-Slash commands are explicit shortcuts into convergent execution:
-`/superpowers`, `/ralph`, and `/compact-handoff`. The front door needs no
-command — a project-work request that is ambiguous or lacks an explicit
-execution signal enters through `brainstorm`.
+read-only. `design-studio` is an optional deeper path inside that divergent
+movement, entered directly or after a user accepts brainstorm's suggestion.
+`piper-workflow` owns convergent execution once a direction is set. Slash
+commands are explicit shortcuts into convergent execution: `/superpowers`,
+`/ralph`, and `/compact-handoff`. An ambiguous project-work request still
+enters through `brainstorm`.
 
 Route each request through the smallest mode that fits.
 
 - Brainstorm (front door) - orient, frame the problem, weigh options, investigate, route explicit registration through the helper, and produce a decision-ready hand-off brief. Read-only except for that deterministic registration path.
+- Design Studio (optional divergent path) - after explicit user choice, create or reuse hub-owned studio artifacts, work discussion-first across sessions, and continue, pause, conclude without execution, or hand an explicitly accepted revision to Piper Workflow; do not edit project source or create groups and waves.
 - Superpowers Mode - verify the handed-off direction, define the group or milestone structure (Structural Planning), then formalize the current wave (Wave Formalization) before substantial implementation.
 - Ralph Mode - execute the current active-work wave, group review and closeout, one explicit slice, or one queued task; verify, drift-check, commit completed waves under `local`, and use implementation review gates at meaningful boundaries.
 - Review Mode - first check whether the work matches the request or active work, then check code quality; group reviews inspect the integrated cross-wave diff.
 - Finish Mode - report verification, residual risk, changed files, and commit or pull request options without mutating git automatically.
 
-Use `brainstorm` as the broad natural-language front door and `piper-workflow`
-for convergent execution. Use `/superpowers` for explicit formal planning,
+Use `brainstorm` as the broad natural-language front door, `design-studio` only
+for explicit deeper design, and `piper-workflow` for convergent execution. Use
+`/superpowers` for explicit formal planning,
 `/ralph` for explicit Ralph execution, the Piper `review` skill for explicit
 Piper review work or review gates, Claude Code's native `/review` when you
 specifically want its built-in PR review command, and `automation-policy`
@@ -126,7 +134,7 @@ projects/<project-id>/
 - `project.md` binds the project id to the real repo path and stores a small project overview plus project policy preferences.
 - `memory.md` stores durable facts, preferences, stable conventions, and reusable context.
 - Optional `decisions.md` stores substantial decision logs future work should not silently reopen.
-- `work/` stores optional active continuity such as roadmap, active work, build log, compact pack, and durable task queue records.
+- `work/` stores optional active continuity such as roadmap, active work, build log, compact pack, durable task queue records, lightweight design notes, and explicitly entered Design Studio folders.
 
 Do not put routine progress logs, command output, temporary plans, secrets, or raw sensitive logs into durable hub records.
 
@@ -166,7 +174,9 @@ Before editing a registered project:
 The Claude Code layer is intentionally small:
 
 - Commands are user entry points under `.claude/commands/`.
-- Skills are behavior guides under `.claude/skills/`.
+- Skills are behavior guides under `.claude/skills/`; `brainstorm` is the broad
+  front door, `design-studio` is the directly invokable optional deeper design
+  path, and `piper-workflow` owns convergent execution.
 - Subagents live under `.claude/agents/` for the same helper role set as the
   Codex surface: reviewer, implementer, tester, verifier, architect,
   docs-researcher, and security-reviewer.

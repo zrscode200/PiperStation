@@ -61,8 +61,11 @@ and global ownership rules belong in the canonical docs above.
 orientation, framing, divergence, investigation, registration routing, and
 route selection. It stays read-only for orientation and planning; explicit
 registration is the narrow exception and must go through the deterministic
-helper. `piper-workflow` owns convergent execution once a direction is set.
-Slash commands are explicit shortcuts into the same behavior. Commands, narrow
+helper. `design-studio` is an optional deeper practice inside that divergent
+movement: brainstorm may suggest it, and the user may invoke it directly, but
+entry and durable studio artifacts require an explicit user choice.
+`piper-workflow` owns convergent execution once a direction is set. Slash
+commands are explicit shortcuts into the same behavior. Commands, narrow
 skills, agents, hooks, and docs provide supporting behavior after a skill or
 command has selected the route.
 
@@ -76,6 +79,7 @@ Use this dispatch table when intent is unclear:
 | --- | --- | --- |
 | Register a repo | `brainstorm`, `/add-project`, or `./bin/add-project` | deterministic registration helper |
 | Orient, explore, compare options, or decide what to do | `brainstorm` | `brainstorm` |
+| Open or continue an in-depth, durable design session | `design-studio` after explicit user choice | `design-studio`; may be suggested by `brainstorm` or invoked directly |
 | Verify a direction, define group or milestone structure, or formalize the current wave | Superpowers Mode or `/superpowers` | `piper-workflow`, `/superpowers`, and this guide |
 | Execute one clear active-work wave, group review and closeout, explicit slice, or optional queued task | Ralph Mode or `/ralph` | `/ralph` and this guide; project source edits require `local` profile coverage |
 | Review code, an implemented wave, group, or slice | Review Mode | `review` |
@@ -85,25 +89,30 @@ Use this dispatch table when intent is unclear:
 If a project-work request is ambiguous or arrives without a slash command, treat
 it as an implicit `brainstorm` request — skill descriptions match by phase
 (explore vs execute), and this contract owns the tie-break for genuine
-ambiguity. Use visible mode names when they help continuity, but do not make the
-user operate the mode layer. Prefer consequence language such as "I will keep
-this read-only" or "I will create Ralph-ready work records" over ceremonial mode
-announcements.
+ambiguity. A request does not enter Design Studio merely because it mentions
+design or is complex; brainstorm explains the value of the deeper path and
+waits for the user's explicit choice. Ordinary brainstorm may still hand
+directly to Piper Workflow. Use visible mode names when they help continuity,
+but do not make the user operate the mode layer. Prefer consequence language
+such as "I will keep this read-only" or "I will create Ralph-ready work
+records" over ceremonial mode announcements.
 
 ### Artifact Signal Policy
 
 Infer durable artifacts from the user's intent signal and state the consequence
 when it matters. `brainstorm` acts on the front-door band: read-only
 orientation and conversational planning, plus explicit deterministic
-registration. The convergent rows below belong to `piper-workflow` (formal
-planning, Ralph execution) and `automation-policy` (permission-gated finish
-actions):
+registration. Explicit Design Studio entry owns useful hub design and
+continuity artifacts without authorizing source implementation. The convergent
+rows below belong to `piper-workflow` (formal planning, Ralph execution) and
+`automation-policy` (permission-gated finish actions):
 
 | User signal | Interpretation | Durable writes | Assistant stance |
 | --- | --- | --- | --- |
 | "review this repo", "understand what this does", "what is this project", or a repo path with an explanation or review request | Orientation or review | None by default | Inspect the repo in place. Say the work is read-only and that registration or hub records will wait unless asked. |
 | "what would it take", "how should we approach", "compare this to", or "plan the refactor" before registration | Conversational planning | None by default | Produce a grounded plan in chat. Avoid hub records unless the user asks to formalize. |
 | "register this", "track this project", or "this is formal work now" | Registration | `project.md` and `memory.md` only | Use the registration helper. Prefer hub-only records unless repo marker files are explicitly wanted. Do not create `work/` or start implementation. |
+| "open a design studio", "enter design studio", or "continue the studio" | Explicit Design Studio | Useful files under `projects/<id>/work/design/` plus existing Piper continuity records only when needed | Create or reuse one studio for the initiative. Stay discussion-first and hub-owned; do not create groups or waves, edit project source, or infer git/external authority. |
 | "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Create only the durable records the work needs: long-horizon direction, active work continuity, durable task tracking, checkpoint history, or compact/resume continuity. State that source remains untouched. |
 | "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the real project repo when `local` profile coverage exists | Confirm the selected wave, group review, explicit slice, or queued task; diff boundary; risk; verification; writable repo access; and `local` profile coverage before editing. Route through `automation-policy` if coverage is absent. Execute the current boundary. |
 | "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/exceptional action | Finish or permission-gated action | Local/external actions only after the workflow reaches that action and the permission profile allows it; exceptional actions only after explicit one-off approval | Summarize state, verification, and risk first. Route through `automation-policy` before crossing the active profile boundary or requesting exceptional approval. |
@@ -142,8 +151,9 @@ decision needs a durable home. Supersede a reversed decision in place — mark i
 it.
 
 `work/` may contain `roadmap.md`, `active-work.md`, `build-log.md`,
-`context-pack.md`, optional `task-queue.md`, and optional per-initiative design
-notes under `work/design/<slug>.md`.
+`context-pack.md`, optional `task-queue.md`, lightweight design notes under
+`work/design/<topic>.md`, and optional full studios under
+`work/design/<studio-slug>/`.
 
 Registration must not create `work/`.
 
@@ -173,7 +183,8 @@ continuity, quality, or compact/resume.
 | `build-log.md` | The single interpretive checkpoint ledger: concise summaries of what happened, final contracts, the per-wave acceptance commit, review and verification results, risks, and next steps. Not a per-commit changelog or raw transcript — the commit list and diffs derive from git. | A meaningful planning, wave, review/fix, finish, compact, blocker, group, or milestone checkpoint occurs. |
 | `context-pack.md` | The full compact/resume packet, rewritten in full to reflect only the current boundary: goal, current boundary, next exact action, key files, what to inspect first, branch/HEAD/status (derived live), verification state, review state including group-level review state when relevant, cross-group transition state when between groups, drift, blockers, stop reason, and what to hand a human or fresh agent. | Active work may pause, compact, finish, hit a blocker, reach a milestone, switch projects, or hand off. |
 | `task-queue.md` | Optional durable Ralph execution queue: task ids with status, risk, acceptance criteria, verification, dependencies, expected diff boundary, and explicit group review gate items for multi-wave groups. Holds pending work only; completed items roll off at group closeout. | Native runtime task tracking is insufficient because waves, slices, or group gates must survive the current session or move across agents. |
-| `work/design/<slug>.md` | Optional per-initiative design home: the durable shape and rationale of one initiative (contracts, alternatives, open questions) that is too substantial to hold inline without bloating the active-work window. Topical, superseded in place, referenced from `active-work.md`. | An initiative's design is deep enough that keeping it in `active-work.md` would turn the window into an archive. |
+| `work/design/<topic>.md` | Lightweight topical design note for work that does not need a full studio. Topical, superseded in place, and preserved if later promoted. | A useful design note deserves durability but not a multi-file, multi-session studio. |
+| `work/design/<studio-slug>/` | Optional full Design Studio. Project and studio READMEs provide navigation; `design.md` owns the integrated design, integer revision, and explicit revision-specific acceptance; optional artifacts emerge with descriptive names. | The user explicitly enters Design Studio and the initiative needs deeper or multi-session design. Reuse the existing initiative folder and never destructively migrate a note or ad hoc folder. |
 
 ### Artifact Recording Economy
 
@@ -191,7 +202,10 @@ holds only what is intrinsic to its own purpose.
   boundary; a window that retains completed history has become a second-rate
   sink.
 - *Topical references* are durable but organized by subject, not time, and are
-  superseded in place — `decisions.md` and optional `work/design/<slug>.md`.
+  superseded in place — `decisions.md`, lightweight
+  `work/design/<topic>.md` notes, and a studio's canonical `design.md` plus
+  supporting artifacts. READMEs remain navigation rather than mutable state
+  ledgers.
 
 **Derive, do not duplicate.** Git in the registered project repo is the source of
 truth for the mechanical history axis: raw diffs, the commit list, and current
@@ -248,9 +262,15 @@ Per-artifact rules follow from the roles and ownership above:
   Completed items roll off at group closeout; keep only pending work. For
   multi-wave groups, list the group review gate as an explicit acceptance
   criterion before the acceptance task.
-- `work/design/<slug>.md`: optional per-initiative design home, superseded in
-  place and referenced from `active-work.md`. Create only when an initiative's
-  design is too substantial to hold inline without bloating the window.
+- `work/design/<topic>.md`: keep lightweight topical notes supported. If later
+  promoted, preserve the note, integrate useful content into a new or existing
+  studio through discussion, and add relationship or supersession links rather
+  than moving or deleting it.
+- `work/design/<studio-slug>/`: create or reuse only after explicit Design
+  Studio entry. Keep `work/design/README.md` as the project index, the studio
+  `README.md` as local navigation, and `design.md` as the sole owner of current
+  integrated design, revision, and acceptance. Optional ledgers and supporting
+  artifacts exist only when useful; do not force category directories.
 
 ### Artifact Persistence
 
@@ -314,13 +334,19 @@ switch, blocker, or finish.
 
 ## Mode Routing
 
-Route requests through `brainstorm` (the front door), `piper-workflow`
-(convergent execution), command shortcuts, and the smallest mode that fits:
+Route requests through `brainstorm` (the front door), optional `design-studio`,
+`piper-workflow` (convergent execution), command shortcuts, and the smallest
+mode that fits:
 
 - Brainstorm (front door): orient, frame the problem, weigh options,
   investigate, route explicit registration through the helper, and produce a
   decision-ready hand-off brief; stay read-only except for that deterministic
   registration path.
+- Design Studio (optional divergent path): after explicit user choice, create
+  or reuse durable hub-owned design artifacts, work discussion-first across
+  sessions, and either pause, conclude without implementation, or hand an
+  explicitly accepted revision to Piper Workflow. It does not create groups or
+  waves or edit project source.
 - Superpowers Mode: verify the handed-off direction, define the group or
   milestone structure (Structural Planning), then formalize the current wave
   (Wave Formalization) before substantial implementation.
@@ -439,6 +465,13 @@ A group moves through four stages, each driven by `piper-workflow`:
    later groups or a milestone. Re-planning stays within `piper-workflow`
    (Superpowers); hand back to `brainstorm` only when the change reopens a
    genuinely divergent question.
+
+When planning starts from a Design Studio handoff, Superpowers verifies the
+exact `design_artifact` and integer `accepted_revision` against the current
+`design.md` metadata and live source. Choices inside recorded implementation
+freedoms stay downstream. A stale revision or source evidence that invalidates
+a fixed contract or core premise returns to Design Studio rather than being
+silently redesigned in execution planning.
 
 Advancing through these stages follows normal mode routing: `piper-workflow`
 proceeds when the next stage is clear and authorized, and waits for go-ahead when

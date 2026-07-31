@@ -1,6 +1,6 @@
 ---
 name: piper-workflow
-description: "Codex convergent execution for Piper Station project work — use when executing rather than exploring. Trigger via $piper-workflow or by stating the intent once direction is set: formalize active work, update roadmap or build-log checkpoints, prepare an optional durable Ralph queue, execute the current Ralph wave, explicit slice, or queued task, operate the group lifecycle across entry, execution, closeout, and transition between groups, prepare compact-safe handoff, or route a permission-gated finish action. Routes to the matching procedure under references/."
+description: "Codex convergent execution for Piper Station project work — use when executing rather than exploring. Trigger via $piper-workflow once an ordinary brainstorm direction or exact accepted Design Studio revision is ready: verify the input, formalize active work, execute Ralph waves and group gates, prepare compact-safe handoff, or route permission-gated finish actions. Routes to the matching procedure under references/."
 ---
 
 # Piper Workflow (Codex)
@@ -11,16 +11,19 @@ preparation, Ralph execution, group entry, closeout, and transition, compaction
 handoff, and finish routing. It operates not only inside a single wave or group
 but across the full sequence of groups toward a milestone. It is entered from
 the `brainstorm` front door once a
-request has converged on a direction, or directly by invoking
-`$piper-workflow ...` or stating the intent.
+request has converged on a direction, from `design-studio` with an explicitly
+accepted revision, or directly by invoking `$piper-workflow ...` or stating the
+intent.
 
 Codex CLI does not surface `.codex/commands/` as slash commands; the detailed
 procedures live as reference files in this skill directory. The divergent phase
-— orientation, framing, exploration, and registration — belongs to `brainstorm`;
-if a request is actually still divergent, hand it back. Read `AGENTS.md` and
-`STATION.md` first, resolve the project in `projects/registry.json` to its
-`repo_path`, and read `projects/<project-id>/project.md`, `memory.md`, and
-optional `decisions.md` when it exists before executing.
+— orientation, framing, exploration, and registration — belongs to
+`brainstorm`; optional deeper divergent design and canonical revisions belong
+to `design-studio`. If a request is still divergent, hand it back to the
+appropriate upstream skill. Read `AGENTS.md` and `STATION.md` first, resolve the
+project in `projects/registry.json` to its `repo_path`, and read
+`projects/<project-id>/project.md`, `memory.md`, and optional `decisions.md`
+when it exists before executing.
 
 ## References
 
@@ -58,11 +61,12 @@ ambiguous.
 
 ## Superpowers Entry
 
-Superpowers begins where `brainstorm` ended. Its lead step is verification, not
-open exploration: take the direction from brainstorm's hand-off brief and
-confirm it against the real code — validate the brief's flagged assumptions,
-check the files and call sites the work will touch, and confirm acceptance
-criteria are testable — before locking durable active work.
+Superpowers begins where upstream divergence ended: either an ordinary
+brainstorm hand-off brief or an explicitly accepted Design Studio revision. Its
+lead step is verification, not open exploration: confirm the upstream direction
+against real code, validate flagged assumptions, check the files and call sites
+the work will touch, and confirm acceptance criteria are testable before
+locking durable active work.
 
 Superpowers runs as two named passes. Structural Planning verifies the
 direction and defines the group or milestone structure: every in-scope group
@@ -70,6 +74,38 @@ gets a boundary, an acceptance target, and revisit triggers, while later waves
 and groups may stay sketches. Wave Formalization details the current wave into
 Ralph-ready form; it also stands alone, run by Ralph at a wave boundary when
 the selected wave is still a sketch.
+
+## Design Studio Handoff
+
+An ordinary brainstorm hand-off brief remains valid input, and the absence of a
+studio is never a blocker. Lightweight `work/design/<topic>.md` notes also
+remain supported. Apply this additional contract only when upstream declares:
+
+```text
+design_artifact: projects/<project-id>/work/design/<studio-slug>/design.md
+accepted_revision: N
+```
+
+Before Structural Planning relies on that design:
+
+1. Resolve the artifact inside the registered project's hub records and read
+   its current metadata. The handed-off revision must be an integer.
+2. Require `status: accepted-for-planning`, integer `revision`, and integer
+   `accepted_revision`; both metadata revisions must equal the handed-off
+   `accepted_revision: N`. A missing, provisional, superseded, or mismatched
+   design is stale and returns to Design Studio.
+3. Read the canonical design and the significant supporting artifacts it links.
+   Follow evidence and rationale links; `design.md` remains the authority.
+4. Verify goals, assumptions, fixed contracts, and core premises against the
+   live registered source. Record the artifact path and exact accepted revision
+   in execution work records, but reference rather than copy the design.
+5. Choose only inside explicit implementation freedoms. If live source
+   invalidates a fixed contract or core premise, return upstream to Design
+   Studio instead of silently redesigning it in Superpowers.
+
+A material design edit after handoff increments the current revision and makes
+the prior pair stale. Do not proceed on the new revision until the user
+explicitly accepts it and Superpowers reverifies it against live source.
 
 ## Group Lifecycle
 
@@ -97,9 +133,10 @@ artifact obligations.
 
 ## Artifact Signal Policy
 
-This skill handles the convergent signals; `brainstorm` owns the front-door
+This skill handles the convergent signals. `brainstorm` owns the front-door
 band: read-only orientation and planning, plus explicit deterministic
-registration. When intent reaches these rows, durable writes are expected. The
+registration; `design-studio` owns optional deeper design and its hub artifacts.
+When intent reaches Piper Workflow, durable execution records are expected. The
 full intent-to-writes map lives in `STATION.md`.
 
 Formal planning or Ralph preparation may create useful
@@ -112,6 +149,10 @@ edit only the real project repo when `local` profile coverage exists. Finish,
 local git, worktree, PR, dependency, network, CI, external, or exceptional
 actions route through `automation-policy` when they cross the active permission
 profile boundary.
+
+When work starts from Design Studio, `active-work.md` records only the
+`design_artifact` and exact `accepted_revision` plus downstream execution state;
+it does not duplicate the canonical design.
 
 ## Artifact Persistence Checkpoints
 
@@ -222,6 +263,9 @@ Create `projects/<project-id>/work/` only when useful. Registration (in
   project registration only.
 - Orientation and registration belong to `brainstorm`; this skill assumes a
   registered, converged target.
+- Do not make Design Studio mandatory. Preserve direct brainstorm-to-Piper
+  planning, and do not silently reinterpret a stale or contradicted accepted
+  design during Superpowers.
 - Do not commit, push, merge, create or switch worktrees, install dependencies,
   or run external automation unless the selected workflow reached that action
   and the active permission profile allows it; see `automation-policy.md`.

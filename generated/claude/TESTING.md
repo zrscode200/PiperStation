@@ -8,4 +8,13 @@ When active work records are in use, record important evidence in
 `projects/<id>/work/build-log.md`: commands run, pass/fail result, known gaps,
 and re-verification after review-driven fixes.
 
+For Design Studio instruction changes, protect the contract across every
+generated runtime. Cover at least: lightweight brainstorm without a studio,
+suggested studio with explicit opt-in, direct studio invocation, emergent
+descriptively named artifacts, multi-session resume through existing Piper
+owners, conclusion without execution, exact accepted-revision handoff, and a
+post-handoff revision that must be explicitly accepted and reverified. These
+are static instruction-contract checks plus review, not claims of end-to-end
+model behavior.
+
 Do not claim tests or builds ran without fresh output.

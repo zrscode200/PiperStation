@@ -36,11 +36,33 @@ still route through `automation-policy`.
    in `projects/registry.json` to confirm registration and resolve `repo_path`,
    then read `projects/<project-id>/project.md`, `memory.md`, and optional
    `decisions.md` when it exists.
-3. Verify the direction handed off from `brainstorm` against the real code:
-   confirm the brief's flagged assumptions, inspect the specific files and call
-   sites the work will touch, and check that acceptance criteria are testable.
+   If upstream provides a Design Studio handoff, require the exact pair:
+
+   ```text
+   design_artifact: projects/<project-id>/work/design/<studio-slug>/design.md
+   accepted_revision: N
+   ```
+
+   Resolve and read that current artifact before continuing. Require
+   `status: accepted-for-planning`, integer `revision`, and integer
+   `accepted_revision`, with both metadata revisions equal to the handed-off
+   integer `N`. Read significant supporting artifacts linked by `design.md`.
+   Missing, provisional, superseded, non-integer, or mismatched metadata makes
+   the handoff stale: return to Design Studio for explicit acceptance of the
+   current revision. An ordinary brainstorm brief with no studio remains valid.
+   If `design.md` changes materially after handoff, treat the prior pair as
+   stale. Require explicit acceptance of the current revision, then repeat this
+   metadata and live-source verification before planning resumes.
+3. Verify the chosen upstream direction against the real code: confirm the
+   ordinary brief's or accepted design's flagged assumptions, inspect the
+   specific files and call sites the work will touch, and check that acceptance
+   criteria are testable.
    Open exploration belongs to `brainstorm`; this step grounds the chosen
-   direction, it does not re-open it.
+   direction, it does not re-open it. For an accepted studio revision, verify
+   its goals, assumptions, fixed contracts, and core premises against live
+   source. Make choices inside recorded implementation freedoms; if a fixed
+   contract or core premise fails, return upstream to Design Studio rather than
+   silently redesigning it here.
 4. Classify scope as `S0`, `S1`, `S2`, or `S3` for sizing only.
 5. Classify risk as `L0`, `L1`, `L2`, or `L3`.
 6. Ask only blocking clarification questions. If you cannot articulate what
@@ -78,7 +100,9 @@ wave is still a sketch.
     them reliable; this economy rule scopes artifact detail, not execution
     readiness — a sketched wave is formalized through this pass when its
     boundary arrives. Keep work artifacts in `projects/<project-id>/work/`
-    unless the user explicitly asks for a project-local copy.
+    unless the user explicitly asks for a project-local copy. When input is an
+    accepted studio revision, record its `design_artifact` and exact
+    `accepted_revision` but reference rather than copy the canonical design.
 13. Produce a Ralph-ready `task-queue.md` only when waves, slices, or group
     gates are clear, verifiable, and must survive the current session or move
     across agents. For a multi-wave group, list the group review gate as an
@@ -123,9 +147,11 @@ Create only under `projects/<project-id>/work/`, and only when useful:
 - `task-queue.md`: optional durable Ralph wave, slice, or group gate list with
   ids, status, risk, acceptance criteria, verification, and expected diff
   boundary.
-- `work/design/<slug>.md`: optional per-initiative design home for design too
-  large for the active-work window; topical, superseded in place, referenced
-  from `active-work.md`.
+- `work/design/<topic>.md`: optional lightweight topical design note,
+  superseded in place and preserved during any later promotion.
+- `work/design/<studio-slug>/`: optional full Design Studio after explicit
+  user choice; its two README layers navigate, `design.md` owns the integrated
+  design and revision, and optional artifacts emerge only when useful.
 
 Keep artifacts lean: `context-pack.md` is the only fully self-contained resume
 packet, rewritten in full when updated. Git is the source of truth for branch,
@@ -173,6 +199,9 @@ group review gate before the acceptance task.
 ## Guardrails
 
 - Do not implement while discovering or planning.
+- Do not require Design Studio for ordinary planning. For a studio handoff, do
+  not proceed on a revision mismatch, copy its canonical design into execution
+  records, or redesign a failed fixed contract inside Superpowers.
 - Mark assumptions separately from confirmed facts.
 - Keep plans concrete enough for a fresh Claude Code session to continue cold.
 - Do not store secrets or sensitive raw logs in hub records.

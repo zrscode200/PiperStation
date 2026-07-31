@@ -28,8 +28,9 @@ operating contract for project work in this hub.
 ## Codex Discovery Surfaces
 
 Codex CLI discovers Piper Station behavior through these surfaces. Codex does
-not auto-surface a `.codex/commands/` directory as slash commands; the
-`brainstorm` and `piper-workflow` skills are the entry points instead.
+not auto-surface a `.codex/commands/` directory as slash commands; `brainstorm`,
+optional `design-studio`, and `piper-workflow` are the skill entry points
+instead.
 
 - `AGENTS.md` (this file) — always loaded.
 - `.codex/skills/brainstorm/SKILL.md` — decision-quality front door for the
@@ -37,6 +38,10 @@ not auto-surface a `.codex/commands/` directory as slash commands; the
   `$brainstorm ...` or by stating the intent.
 - `.codex/skills/brainstorm/references/` — the registration procedure
   (`add-project`) cited by the front door; orientation is inline in the skill.
+- `.codex/skills/design-studio/SKILL.md` — optional, discussion-first deep
+  design inside the divergent movement. Trigger directly via
+  `$design-studio ...` or natural-language intent; brainstorm may suggest it
+  but entry requires the user's explicit choice.
 - `.codex/skills/piper-workflow/SKILL.md` — convergent execution entry (formal
   planning, Ralph, compaction). Trigger via `$piper-workflow ...` once direction
   is set.
@@ -99,7 +104,8 @@ projects/<project-id>/
   not silently reopen; supersede a reversed decision in place rather than
   deleting it.
 - `work/` stores optional active work continuity such as roadmap, active work,
-  build log, compact pack, and durable task queue records.
+  build log, compact pack, durable task queue records, lightweight design
+  notes, and explicitly entered Design Studio folders.
 
 Do not put routine progress logs, command output, temporary plans, secrets, or
 raw sensitive logs into durable hub records.
@@ -146,10 +152,12 @@ target visible in `active-work.md`.
 
 `brainstorm` owns the decision-quality front door for the divergent phase —
 orientation, framing, divergence, investigation, and routing — and stays
-read-only. `piper-workflow` owns convergent execution once a direction is set.
-State the intent (or invoke `$brainstorm ...` / `$piper-workflow ...`); a
-project-work request that is ambiguous or lacks an explicit execution signal
-enters through `brainstorm`.
+read-only. `design-studio` is an optional deeper path inside that divergent
+movement; it may be invoked directly or suggested by brainstorm, but it begins
+only after explicit user choice. `piper-workflow` owns convergent execution
+once a direction is set. State the intent (or invoke `$brainstorm ...`,
+`$design-studio ...`, or `$piper-workflow ...`); an ambiguous project-work
+request still enters through `brainstorm`.
 
 Route each request through the smallest mode that fits:
 
@@ -157,6 +165,11 @@ Route each request through the smallest mode that fits:
   investigate, route explicit registration through the helper, and produce a
   decision-ready hand-off brief. Read-only except for that deterministic
   registration path.
+- Design Studio (optional divergent path): create or reuse useful hub-owned
+  studio artifacts only after explicit user choice; work discussion-first and
+  either continue, pause, conclude without execution, or hand an explicitly
+  accepted revision to Piper Workflow. It does not edit project source or
+  create groups and waves.
 - Superpowers Mode: verify the handed-off direction, define the group or
   milestone structure (Structural Planning), then formalize the current wave
   (Wave Formalization) before substantial implementation.
@@ -169,12 +182,12 @@ Route each request through the smallest mode that fits:
 - Finish Mode: verify, summarize, and present commit or PR options without
   mutating git automatically.
 
-Use `brainstorm` as the broad natural-language front door and `piper-workflow`
-for convergent execution. Use the `review` skill for explicit review work or
-review gates, and `automation-policy` before crossing the active permission
-profile boundary. Prefer consequence language such as "I will keep this
-read-only" or "I will create Ralph-ready work records" over ceremonial mode
-announcements.
+Use `brainstorm` as the broad natural-language front door, `design-studio` only
+for explicit deeper design, and `piper-workflow` for convergent execution. Use
+the `review` skill for explicit review work or review gates, and
+`automation-policy` before crossing the active permission profile boundary.
+Prefer consequence language such as "I will keep this read-only" or "I will
+create Ralph-ready work records" over ceremonial mode announcements.
 
 Scope tiers are advisory sizing, not artifact rules:
 
