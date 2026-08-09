@@ -15,7 +15,10 @@ point for Codex and OpenCode work across registered project repositories.
 - Work on project source code only in the real repo path recorded in
   `projects/<project-id>/project.md`.
 - Use the active runtime's native behavior for planning, implementation,
-  review, testing, subagents, handoff, and git operations.
+  review, testing, subagents, handoff, and git operations
+  within the routed workflow; substantial registered-project development
+  enters through piper-workflow (Superpowers, then Ralph) rather than
+  starting directly from a design or brainstorm conversation.
 
 ## Required Reading
 

@@ -26,6 +26,8 @@ assert_design_studio_contract() {
   assert_contains "$studio_skill_dir/SKILL.md" "If the slug already belongs to different work"
   assert_contains "$studio_skill_dir/SKILL.md" "edits to the registered project's source repository"
   assert_contains "$studio_skill_dir/SKILL.md" "Design Studio is discussion-first"
+  assert_contains "$studio_skill_dir/SKILL.md" "not a studio exit into direct editing"
+  assert_contains "$studio_skill_dir/SKILL.md" "Source implementation never starts from the studio"
   assert_contains "$studio_skill_dir/references/artifact-contracts.md" "Each mutable fact has one owner"
   assert_contains "$studio_skill_dir/references/artifact-contracts.md" "work/design/<studio-slug>/"
   assert_contains "$studio_skill_dir/references/artifact-contracts.md" "accepted_revision: <current revision>"
@@ -92,6 +94,12 @@ assert_design_studio_journeys() {
   assert_contains "$journey_superpowers" "changes materially after handoff"
   assert_contains "$journey_superpowers" "metadata and live-source verification before planning resumes"
   assert_contains "$journey_testing" "post-handoff revision"
+
+  # 9. Post-design build request: development enters piper-workflow, never direct editing.
+  assert_contains "$journey_studio_dir/SKILL.md" "A request to build, implement, or code"
+  assert_contains "$journey_root" "within the routed workflow"
+  assert_contains "$journey_root" "enters through piper-workflow"
+  assert_contains "$journey_station" "Convergent entry, not direct editing"
 
   # Shared canon keeps the capability optional inside the divergent movement.
   assert_contains "$journey_station" "Ordinary brainstorm may still hand"

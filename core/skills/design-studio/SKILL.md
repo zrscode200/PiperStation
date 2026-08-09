@@ -125,7 +125,11 @@ Do not create progress logs or update every artifact after every exchange.
 - If a material change follows acceptance, increment the revision, return the
   status to `provisional`, and require explicit acceptance of the new revision.
 
-When the user asks to proceed to implementation planning, hand Piper Workflow:
+A request to build, implement, or code the design is a Piper Workflow entry
+signal, not a studio exit into direct editing. When the user asks to build the
+design or to proceed to implementation planning, first resolve acceptance: if
+the current revision is not explicitly accepted, ask for that decision. Then
+hand Piper Workflow:
 
 ```text
 design_artifact: projects/<project-id>/work/design/<studio-slug>/design.md
@@ -133,9 +137,10 @@ accepted_revision: N
 ```
 
 Do not copy the full design into execution artifacts. Piper Workflow verifies
-that exact revision against live source before planning. A failed fixed
-contract or core premise returns upstream to Design Studio; choices inside
-recorded implementation freedoms stay downstream.
+that exact revision against live source before planning.
+Source implementation never starts from the studio, regardless of permission
+profile. A failed fixed contract or core premise returns upstream to Design
+Studio; choices inside recorded implementation freedoms stay downstream.
 
 ## Exit Choices
 
@@ -144,7 +149,9 @@ A studio may:
 - continue with another design boundary;
 - pause with compact-safe continuity;
 - conclude as useful durable design without implementation;
-- hand an explicitly accepted revision to Piper Workflow.
+- hand an explicitly accepted revision to Piper Workflow;
+- treat a request to build, implement, or code as that same Piper Workflow
+  entry, never as authorization to edit project source directly.
 
 Do not manufacture an implementation handoff merely to make the studio appear
 complete.
@@ -162,3 +169,5 @@ complete.
 - Do not copy project source or executable prototypes into the hub.
 - Do not mark a design accepted without an explicit user signal.
 - Do not infer implementation or external authority from Design Studio entry.
+- Do not exit into direct source editing on a build or implement request; that
+  signal enters Piper Workflow.

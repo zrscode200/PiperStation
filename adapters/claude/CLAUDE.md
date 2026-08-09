@@ -12,7 +12,7 @@ Claude Code auto-loads this file. It is the always-on operating contract for wor
 - Do not copy project source code into the hub.
 - Register projects with `/add-project` or `./bin/add-project`.
 - Keep project records small: `project.md` (binding and policy, not a commit ledger), `memory.md` (durable facts, not a per-wave changelog), optional `decisions.md` (supersede in place), and optional lazy `work/`.
-- Use Claude Code-native behavior for planning, implementation, review, testing, subagents, handoff, and git operations.
+- Use Claude Code-native behavior for planning, implementation, review, testing, subagents, handoff, and git operations within the routed workflow; substantial registered-project development enters through piper-workflow (Superpowers, then Ralph) rather than starting directly from a design or brainstorm conversation.
 - Do not start work, create plans, checkpoint state, commit, push, install dependencies, or edit project source as a side effect of registration.
 - Do not store secrets, credentials, private keys, customer data, or raw sensitive logs in hub records.
 - Use `automation-policy.md` before crossing the active permission profile boundary for source edits, local git, pushes, pull requests, dependency installs, non-destructive worktree create or switch operations, network, CI, deployments, or external automation. Deleting worktrees and other exceptional actions always need explicit one-off approval.

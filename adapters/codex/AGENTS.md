@@ -23,7 +23,10 @@ operating contract for project work in this hub.
   access) before Ralph executes. Registration can record an outside path, but
   edits require writable access in the active session.
 - Use Codex-native behavior for planning, implementation, review, testing,
-  subagents, handoff, and git operations.
+  subagents, handoff, and git operations within the routed workflow;
+  substantial registered-project development
+  enters through piper-workflow (Superpowers, then Ralph) rather than
+  starting directly from a design or brainstorm conversation.
 
 ## Codex Discovery Surfaces
 
