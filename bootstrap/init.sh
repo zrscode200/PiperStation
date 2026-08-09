@@ -10,7 +10,7 @@ TARGET_INPUT=""
 usage() {
   cat <<'EOF'
 Usage:
-  bootstrap/init.sh --runtime codex|claude|opencode|codex,claude,opencode [--dry-run] [--git-init] /path/to/piper-station-hub
+  bootstrap/init.sh --runtime codex|claude|opencode|deepagent (comma-separate to combine) [--dry-run] [--git-init] /path/to/piper-station-hub
 
 Creates or updates a Piper Station hub directory from generated runtime templates.
 Unselected runtime surfaces are left alone. Shared project records under
@@ -50,7 +50,7 @@ normalize_runtimes() {
     runtime=$(printf "%s" "$runtime" | sed 's/^ *//; s/ *$//')
     if [ -n "$runtime" ]; then
       case "$runtime" in
-        codex|claude|opencode)
+        codex|claude|opencode|deepagent)
           case " $result " in *" $runtime "*) ;; *) result="${result}${result:+ }$runtime" ;; esac
           ;;
         *) echo "Error: unsupported runtime: $runtime" >&2; return 1 ;;
@@ -75,17 +75,52 @@ fi
 [ "$TARGET_DIR" != "$SOURCE_ROOT" ] || { echo "Error: refusing to initialize the bootstrap source as a hub: $SOURCE_ROOT" >&2; exit 1; }
 
 is_runtime_selected() { printf '%s\n' "$RUNTIMES" | grep -qx -- "$1"; }
-rel_runtime() { case "$1" in AGENTS.md|.codex/*|.piper/plugin/*) printf codex ;; CLAUDE.md|.claude/*) printf claude ;; opencode.json|.opencode/*) printf opencode ;; *) printf shared ;; esac; }
+rel_runtime() { case "$1" in AGENTS.md|.codex/*|.piper/plugin/*) printf codex ;; CLAUDE.md|.claude/*) printf claude ;; opencode.json|.opencode/*) printf opencode ;; .deepagents/*) printf deepagent ;; *) printf shared ;; esac; }
 is_managed() { case "$1" in projects/*) return 1 ;; *) return 0 ;; esac; }
 is_safe_manifest_rel() { case "$1" in ""|/*|../*|*/../*|projects/*) return 1 ;; *) return 0 ;; esac; }
 
 template_files() { for runtime in $RUNTIMES; do (cd "$GENERATED/$runtime" && find . -type f -print | sed 's#^\./##'); done | sort -u; }
 template_source() { rel="$1"; for runtime in $RUNTIMES; do [ -f "$GENERATED/$runtime/$rel" ] && { printf '%s\n' "$GENERATED/$runtime/$rel"; return 0; }; done; return 1; }
-is_executable_template() { rel="$1"; src=$(template_source "$rel") || return 1; case "$rel" in bin/*|.piper/lib/bootstrap/*.sh|.codex/hooks/*.sh|.claude/hooks/*.sh) return 0 ;; *) [ -x "$src" ] ;; esac; }
+is_executable_template() { rel="$1"; src=$(template_source "$rel") || return 1; case "$rel" in bin/*|.piper/lib/bootstrap/*.sh|.codex/hooks/*.sh|.claude/hooks/*.sh|.deepagents/hooks/*.sh) return 0 ;; *) [ -x "$src" ] ;; esac; }
 
 nearest_existing_dir() { dir="$1"; while [ ! -d "$dir" ]; do parent=$(dirname -- "$dir"); [ "$parent" != "$dir" ] || return 1; dir="$parent"; done; printf '%s\n' "$dir"; }
 is_path_in_git_worktree() { path="$1"; if [ -d "$path" ]; then git -C "$path" rev-parse --is-inside-work-tree >/dev/null 2>&1; return $?; fi; parent=$(nearest_existing_dir "$path") || return 1; git -C "$parent" rev-parse --is-inside-work-tree >/dev/null 2>&1; }
 initialize_git_repo() { [ "$GIT_INIT" = true ] || return 0; command -v git >/dev/null 2>&1 || { echo "Error: --git-init requires git on PATH" >&2; exit 1; }; if [ "$DRY_RUN" = true ]; then if is_path_in_git_worktree "$TARGET_DIR"; then echo "would preserve git worktree: $TARGET_DIR"; else echo "would initialize git repo: $TARGET_DIR"; fi; elif git -C "$TARGET_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then echo "preserve git worktree: $TARGET_DIR"; else git -C "$TARGET_DIR" init -q; echo "git init: $TARGET_DIR"; fi; }
+
+# Deep Agents resolves its project root through git metadata: a hub that is
+# not its own repository root loses every .deepagents/ surface silently, and
+# sibling-runtime files (root AGENTS.md, .claude/skills) bleed into deepagent
+# sessions in mixed hubs. Both checks warn on stderr and never block.
+warn_deepagent_git_root() {
+  is_runtime_selected deepagent || return 0
+  if [ ! -d "$TARGET_DIR" ]; then
+    if [ "$GIT_INIT" != true ]; then
+      echo "Warning: the deepagent runtime requires the hub to be a git repository root; without one, Deep Agents silently skips .deepagents/AGENTS.md, skills, and subagents. Re-run with --git-init or run git init in the new hub." >&2
+    elif is_path_in_git_worktree "$TARGET_DIR"; then
+      echo "Warning: the deepagent runtime requires the hub to be a git repository root; $TARGET_DIR would sit inside an existing repository, and --git-init preserves an enclosing worktree rather than creating a nested root. Deep Agents will silently skip .deepagents/AGENTS.md, skills, and subagents. Run git init in the hub after creation to give it its own repository root." >&2
+    fi
+    return 0
+  fi
+  if [ "$DRY_RUN" = true ] && [ "$GIT_INIT" = true ] && ! is_path_in_git_worktree "$TARGET_DIR"; then return 0; fi
+  target_real=$(CDPATH= cd -- "$TARGET_DIR" && pwd -P)
+  toplevel=$(git -C "$TARGET_DIR" rev-parse --show-toplevel 2>/dev/null || printf '')
+  if [ -n "$toplevel" ] && [ -d "$toplevel" ]; then toplevel=$(CDPATH= cd -- "$toplevel" && pwd -P); fi
+  if [ "$toplevel" != "$target_real" ]; then
+    echo "Warning: the deepagent runtime requires the hub to be a git repository root; $TARGET_DIR is not one (detected toplevel: ${toplevel:-none}). Deep Agents will silently skip .deepagents/AGENTS.md, skills, and subagents. Run git init in the hub to give it its own repository root (or re-run with --git-init when the hub is not nested inside another repository)." >&2
+  fi
+}
+hub_has_other_runtime_surface() { [ -d "$TARGET_DIR/.codex" ] || [ -d "$TARGET_DIR/.claude" ] || [ -d "$TARGET_DIR/.opencode" ] || [ -f "$TARGET_DIR/CLAUDE.md" ] || [ -f "$TARGET_DIR/opencode.json" ] || [ -f "$TARGET_DIR/AGENTS.md" ]; }
+other_runtime_selected() { printf '%s\n' "$RUNTIMES" | grep -qvx deepagent; }
+warn_deepagent_composition() {
+  mixed=false
+  if is_runtime_selected deepagent; then
+    if other_runtime_selected || hub_has_other_runtime_surface; then mixed=true; fi
+  elif [ -d "$TARGET_DIR/.deepagents" ]; then
+    mixed=true
+  fi
+  [ "$mixed" = true ] || return 0
+  echo "Note: composing the deepagent runtime with other runtime surfaces is unvalidated. Deep Agents sessions also read the hub root AGENTS.md and .claude/skills, so sibling-runtime content bleeds into deepagent sessions. Single-runtime deepagent hubs are the validated configuration." >&2
+}
 
 previous_managed_files() { manifest="$TARGET_DIR/.piper/hub-manifest.json"; [ -f "$manifest" ] || return 0; awk '/"managed_files"[[:space:]]*:/ { inside = 1; next } inside && /\]/ { exit } inside { line = $0; sub(/^[[:space:]]*"/, "", line); sub(/",[[:space:]]*$/, "", line); sub(/"[[:space:]]*$/, "", line); if (line != "") print line }' "$manifest"; }
 remove_empty_parent_dirs() { file="$1"; dir=$(dirname -- "$file"); while [ "$dir" != "$TARGET_DIR" ] && [ "$dir" != "/" ]; do rmdir "$dir" 2>/dev/null || break; dir=$(dirname -- "$dir"); done; }
@@ -97,7 +132,7 @@ copy_template_file() { rel="$1"; src=$(template_source "$rel") || { echo "Error:
 
 json_list_from_file() { file="$1"; first=true; while IFS= read -r rel; do [ -n "$rel" ] || continue; if [ "$first" = true ]; then first=false; else printf ',\n'; fi; printf '    "%s"' "$rel"; done < "$file"; }
 manifest_files() { current_file="$1"; cat "$current_file"; [ -f "$TARGET_DIR/.piper/hub-manifest.json" ] || return 0; previous_managed_files | while IFS= read -r rel; do [ -n "$rel" ] || continue; is_safe_manifest_rel "$rel" || continue; rel_rt=$(rel_runtime "$rel"); if [ "$rel_rt" != shared ] && ! is_runtime_selected "$rel_rt" && [ -e "$TARGET_DIR/$rel" ]; then printf '%s\n' "$rel"; fi; done; }
-runtime_file_from_manifest_files() { files="$1"; { if grep -q '^\.codex/\|^\.piper/plugin/' "$files"; then printf 'codex\n'; fi; if grep -q '^\.claude/' "$files"; then printf 'claude\n'; fi; if grep -q '^opencode.json$\|^\.opencode/' "$files"; then printf 'opencode\n'; fi; } | sort -u; }
+runtime_file_from_manifest_files() { files="$1"; { if grep -q '^\.codex/\|^\.piper/plugin/' "$files"; then printf 'codex\n'; fi; if grep -q '^\.claude/' "$files"; then printf 'claude\n'; fi; if grep -q '^opencode.json$\|^\.opencode/' "$files"; then printf 'opencode\n'; fi; if grep -q '^\.deepagents/' "$files"; then printf 'deepagent\n'; fi; } | sort -u; }
 write_manifest() { current_file="$1"; manifest="$TARGET_DIR/.piper/hub-manifest.json"; if [ "$DRY_RUN" = true ]; then [ -e "$manifest" ] && echo "would update managed hub file: .piper/hub-manifest.json" || echo "would write: .piper/hub-manifest.json"; return; fi; mkdir -p "$TARGET_DIR/.piper"; all="$TARGET_DIR/.piper/hub-manifest.files.$$"; managed="$TARGET_DIR/.piper/hub-manifest.managed.$$"; runtimes="$TARGET_DIR/.piper/hub-manifest.runtimes.$$"; tmp="$manifest.tmp.$$"; manifest_files "$current_file" | sort -u > "$all"; while IFS= read -r rel; do [ -n "$rel" ] && is_managed "$rel" && printf '%s\n' "$rel"; done < "$all" | sort -u > "$managed"; runtime_file_from_manifest_files "$all" > "$runtimes"; installed_at=$(date -u +"%Y-%m-%dT%H:%M:%SZ"); { printf '{\n'; printf '  "hub_version": "%s",\n' "$HUB_VERSION"; printf '  "installed_at": "%s",\n' "$installed_at"; printf '  "runtimes": [\n'; json_list_from_file "$runtimes"; printf '\n  ],\n'; printf '  "file_mode": "managed-outside-projects",\n'; printf '  "files": [\n'; json_list_from_file "$all"; printf '\n  ],\n'; printf '  "managed_files": [\n'; json_list_from_file "$managed"; printf '\n  ]\n'; printf '}\n'; } > "$tmp"; mv "$tmp" "$manifest"; chmod 644 "$manifest"; rm -f "$all" "$managed" "$runtimes"; echo "write managed: .piper/hub-manifest.json"; }
 
 if [ "$DRY_RUN" = true ]; then current_files_tmp="${TMPDIR:-/tmp}/piper-current-files.$$"; else mkdir -p "$TARGET_DIR/.piper"; current_files_tmp="$TARGET_DIR/.piper/current-files.$$"; fi
@@ -105,6 +140,8 @@ trap 'rm -f "$current_files_tmp"' EXIT HUP INT TERM
 template_files > "$current_files_tmp"
 echo "Initializing Piper Station hub at $TARGET_DIR for runtimes: $(printf '%s' "$RUNTIMES" | tr '\n' ',' | sed 's/,$//')"
 initialize_git_repo
+warn_deepagent_composition
+warn_deepagent_git_root
 cleanup_stale_managed_files "$current_files_tmp"
 template_files | while IFS= read -r rel; do [ -n "$rel" ] && copy_template_file "$rel"; done
 write_manifest "$current_files_tmp"
