@@ -8,8 +8,8 @@ shared Piper behavior core.
 
 - Treat this repo as the source distribution, not as a generated hub.
 - Put shared behavior and docs in `core/`.
-- Put harness mechanics in `adapters/codex/`, `adapters/claude/`, and
-  `adapters/opencode/`.
+- Put harness mechanics in `adapters/codex/`, `adapters/claude/`,
+  `adapters/opencode/`, and `adapters/deepagent/`.
 - Run `./scripts/render-templates.sh` after changing `core/` or adapters.
 - Do not edit `generated/` directly except to inspect output.
 - Preserve the hub ownership model: generated hub files outside `projects/` are

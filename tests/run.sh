@@ -122,7 +122,7 @@ sh -n "$BOOTSTRAP"
 sh -n "$ADD_PROJECT"
 sh -n "$ROOT/scripts/render-templates.sh"
 python3 "$ROOT/scripts/render_templates.py" --check >/dev/null
-for runtime in codex claude opencode; do
+for runtime in codex claude opencode deepagent; do
   helper="generated/$runtime/.piper/lib/bootstrap/add-project.sh"
   assert_file "$ROOT/$helper"
   if git -C "$ROOT" check-ignore -q "$helper"; then
@@ -676,7 +676,119 @@ assert_not_contains "$opencode_hub/.opencode/commands/superpowers.md" "Force Sup
 python3 -m json.tool "$opencode_hub/.piper/hub-manifest.json" >/dev/null
 python3 -m json.tool "$opencode_hub/opencode.json" >/dev/null
 
-for hub in "$codex_hub" "$claude_hub" "$opencode_hub"; do
+deepagent_hub="$TMP_ROOT/deepagent-hub"
+"$BOOTSTRAP" --runtime deepagent --git-init "$deepagent_hub" > "$TMP_ROOT/deepagent.log" 2> "$TMP_ROOT/deepagent-stderr.log"
+if [ -s "$TMP_ROOT/deepagent-stderr.log" ]; then cat "$TMP_ROOT/deepagent-stderr.log" >&2; fail "solo deepagent bootstrap must not warn"; fi
+assert_dir "$deepagent_hub/.git"
+assert_file "$deepagent_hub/.deepagents/AGENTS.md"
+assert_file "$deepagent_hub/STATION.md"
+assert_file "$deepagent_hub/.deepagents/hooks.json"
+assert_file "$deepagent_hub/.deepagents/hooks/session-context.sh"
+assert_executable "$deepagent_hub/.deepagents/hooks/session-context.sh"
+assert_file "$deepagent_hub/.piper/lib/bootstrap/add-project.sh"
+assert_executable "$deepagent_hub/bin/add-project"
+assert_file "$deepagent_hub/.deepagents/skills/brainstorm/SKILL.md"
+assert_file "$deepagent_hub/.deepagents/skills/piper-workflow/SKILL.md"
+assert_file "$deepagent_hub/.deepagents/skills/design-studio/SKILL.md"
+assert_file "$deepagent_hub/.deepagents/skills/brainstorm/references/add-project.md"
+assert_file "$deepagent_hub/.deepagents/skills/piper-workflow/references/superpowers.md"
+assert_file "$deepagent_hub/.deepagents/skills/piper-workflow/references/ralph.md"
+assert_file "$deepagent_hub/.deepagents/skills/piper-workflow/references/compact-handoff.md"
+assert_file_count "$deepagent_hub/.deepagents/skills" "SKILL.md" 5
+assert_file_count "$deepagent_hub/.deepagents/agents" "AGENTS.md" 7
+assert_file_count "$deepagent_hub/.deepagents/skills/piper-workflow/references" "*.md" 3
+assert_file_count "$deepagent_hub/.deepagents/skills/brainstorm/references" "*.md" 1
+assert_file_count "$deepagent_hub/.deepagents/skills/design-studio/references" "*.md" 2
+assert_not_exists "$deepagent_hub/AGENTS.md"
+assert_not_exists "$deepagent_hub/CLAUDE.md"
+assert_not_exists "$deepagent_hub/opencode.json"
+assert_not_exists "$deepagent_hub/.claude"
+assert_not_exists "$deepagent_hub/.codex"
+assert_not_exists "$deepagent_hub/.opencode"
+assert_not_exists "$deepagent_hub/.deepagents/commands"
+assert_not_exists "$deepagent_hub/.deepagents/agents/README.md"
+assert_not_exists "$deepagent_hub/.deepagents/agents/general-purpose"
+assert_contains "$deepagent_hub/.piper/hub-manifest.json" '"deepagent"'
+assert_not_contains "$deepagent_hub/.piper/hub-manifest.json" '"claude"'
+assert_not_contains "$deepagent_hub/.piper/hub-manifest.json" '"codex"'
+assert_not_contains "$deepagent_hub/.piper/hub-manifest.json" '"opencode"'
+python3 -m json.tool "$deepagent_hub/.piper/hub-manifest.json" >/dev/null
+python3 -m json.tool "$deepagent_hub/.deepagents/hooks.json" >/dev/null
+assert_contains "$deepagent_hub/.deepagents/hooks.json" '"SessionStart"'
+assert_contains "$deepagent_hub/.deepagents/hooks.json" '"PreCompact"'
+assert_contains "$deepagent_hub/.deepagents/hooks.json" '"startup|resume|clear|compact"'
+assert_contains "$deepagent_hub/.deepagents/hooks.json" '"manual|auto"'
+assert_not_contains "$deepagent_hub/.deepagents/hooks.json" '"async"'
+assert_not_contains "$deepagent_hub/.deepagents/hooks.json" '"PostCompact"'
+assert_contains "$deepagent_hub/.deepagents/AGENTS.md" "git repository root"
+assert_contains "$deepagent_hub/.deepagents/AGENTS.md" "absolute paths"
+assert_contains "$deepagent_hub/.deepagents/AGENTS.md" "approval mode on Manual"
+assert_contains "$deepagent_hub/.deepagents/AGENTS.md" "limit=1000"
+assert_contains "$deepagent_hub/.deepagents/AGENTS.md" "sibling runtimes"
+assert_contains "$deepagent_hub/.deepagents/AGENTS.md" "constrained by instruction, not by a"
+assert_contains "$deepagent_hub/.deepagents/AGENTS.md" "once per thread"
+assert_contains "$deepagent_hub/.deepagents/AGENTS.md" "/skill:brainstorm"
+assert_contains "$deepagent_hub/.deepagents/AGENTS.md" "Permission profiles gate action categories"
+assert_contains "$deepagent_hub/.deepagents/AGENTS.md" "covers \`local\` source edits"
+assert_contains "$deepagent_hub/.deepagents/AGENTS.md" "non-destructive worktree create or switch"
+assert_contains "$deepagent_hub/.deepagents/agents/reviewer/AGENTS.md" "read-only role"
+assert_contains "$deepagent_hub/.deepagents/agents/reviewer/AGENTS.md" "active-work.md"
+assert_contains "$deepagent_hub/.deepagents/agents/implementer/AGENTS.md" "confirmed \`local\` profile"
+assert_contains "$deepagent_hub/.deepagents/agents/tester/AGENTS.md" "test-layer"
+assert_contains "$deepagent_hub/.deepagents/agents/verifier/AGENTS.md" "read-only role"
+assert_contains "$deepagent_hub/.deepagents/agents/docs-researcher/AGENTS.md" "official docs"
+assert_contains "$deepagent_hub/.deepagents/agents/security-reviewer/AGENTS.md" "Authentication and authorization"
+assert_contains "$deepagent_hub/.deepagents/skills/brainstorm/SKILL.md" "Brainstorm (Deep Agents)"
+assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/SKILL.md" "Piper Workflow (Deep Agents)"
+assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/SKILL.md" "no custom slash-command surface"
+assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/superpowers.md" "Pass 1: Structural Planning"
+assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/superpowers.md" "Pass 2: Wave Formalization"
+assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/ralph.md" "Implementation Review Gate"
+assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/ralph.md" "group off the windows"
+assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/compact-handoff.md" "Required Compact Resume Packet"
+if grep -R -n -- '\$ARGUMENTS\|[-][-]add-dir\|\.codex/\|docs_researcher\|security_reviewer' "$deepagent_hub/.deepagents" > "$TMP_ROOT/deepagent-codexisms.log"; then cat "$TMP_ROOT/deepagent-codexisms.log" >&2; fail "deepagent surfaces must not carry codex-isms"; fi
+assert_design_studio_contract "$deepagent_hub/.deepagents/skills/design-studio"
+assert_design_studio_journeys \
+  "$deepagent_hub/.deepagents/AGENTS.md" \
+  "$deepagent_hub/.deepagents/skills/brainstorm/SKILL.md" \
+  "$deepagent_hub/.deepagents/skills/design-studio" \
+  "$deepagent_hub/.deepagents/skills/piper-workflow/SKILL.md" \
+  "$deepagent_hub/.deepagents/skills/piper-workflow/references/superpowers.md" \
+  "$deepagent_hub/STATION.md" \
+  "$deepagent_hub/TESTING.md" \
+  '`/skill:design-studio`'
+(cd "$deepagent_hub" && sh .deepagents/hooks/session-context.sh </dev/null) > "$TMP_ROOT/deepagent-session-start.log"
+assert_contains "$TMP_ROOT/deepagent-session-start.log" "hub-lite is active"
+assert_not_contains "$TMP_ROOT/deepagent-session-start.log" "WARNING"
+printf '{"hook_event_name":"SessionStart","source":"compact"}' | (cd "$deepagent_hub" && sh .deepagents/hooks/session-context.sh) > "$TMP_ROOT/deepagent-session-compact.log"
+assert_contains "$TMP_ROOT/deepagent-session-compact.log" "Resume guidance"
+(cd "$TMP_ROOT" && sh "$deepagent_hub/.deepagents/hooks/session-context.sh" </dev/null) > "$TMP_ROOT/deepagent-session-nogit.log"
+assert_contains "$TMP_ROOT/deepagent-session-nogit.log" "WARNING"
+precompact_cmd=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["hooks"]["PreCompact"][0]["hooks"][0]["command"])' "$deepagent_hub/.deepagents/hooks.json")
+sh -c "$precompact_cmd" </dev/null > "$TMP_ROOT/deepagent-precompact.log"
+python3 -m json.tool "$TMP_ROOT/deepagent-precompact.log" >/dev/null
+assert_contains "$TMP_ROOT/deepagent-precompact.log" "compact reminder"
+"$BOOTSTRAP" --runtime deepagent "$TMP_ROOT/deepagent-nogit-hub" > /dev/null 2> "$TMP_ROOT/deepagent-nogit.err"
+assert_contains "$TMP_ROOT/deepagent-nogit.err" "git repository root"
+"$BOOTSTRAP" --runtime deepagent,claude --git-init "$TMP_ROOT/deepagent-mix-hub" > /dev/null 2> "$TMP_ROOT/deepagent-mix.err"
+assert_contains "$TMP_ROOT/deepagent-mix.err" "unvalidated"
+assert_file "$TMP_ROOT/deepagent-mix-hub/CLAUDE.md"
+assert_file "$TMP_ROOT/deepagent-mix-hub/.deepagents/AGENTS.md"
+assert_contains "$TMP_ROOT/deepagent-mix-hub/.piper/hub-manifest.json" '"deepagent"'
+assert_contains "$TMP_ROOT/deepagent-mix-hub/.piper/hub-manifest.json" '"claude"'
+"$BOOTSTRAP" --runtime claude "$TMP_ROOT/deepagent-accrete-hub" > /dev/null 2> "$TMP_ROOT/deepagent-accrete0.err"
+if [ -s "$TMP_ROOT/deepagent-accrete0.err" ]; then cat "$TMP_ROOT/deepagent-accrete0.err" >&2; fail "claude-only bootstrap must not warn"; fi
+"$BOOTSTRAP" --runtime deepagent --git-init "$TMP_ROOT/deepagent-accrete-hub" > /dev/null 2> "$TMP_ROOT/deepagent-accrete1.err"
+assert_contains "$TMP_ROOT/deepagent-accrete1.err" "unvalidated"
+"$BOOTSTRAP" --runtime opencode "$TMP_ROOT/deepagent-mix-hub" > /dev/null 2> "$TMP_ROOT/deepagent-accrete2.err"
+assert_contains "$TMP_ROOT/deepagent-accrete2.err" "unvalidated"
+mkdir -p "$TMP_ROOT/deepagent-dryrun-dir"
+"$BOOTSTRAP" --runtime deepagent --dry-run --git-init "$TMP_ROOT/deepagent-dryrun-dir" > /dev/null 2> "$TMP_ROOT/deepagent-dry1.err"
+if [ -s "$TMP_ROOT/deepagent-dry1.err" ]; then cat "$TMP_ROOT/deepagent-dry1.err" >&2; fail "dry-run with --git-init on a plain dir must not warn"; fi
+"$BOOTSTRAP" --runtime deepagent --dry-run "$TMP_ROOT/deepagent-dryrun-dir" > /dev/null 2> "$TMP_ROOT/deepagent-dry2.err"
+assert_contains "$TMP_ROOT/deepagent-dry2.err" "git repository root"
+
+for hub in "$codex_hub" "$claude_hub" "$opencode_hub" "$deepagent_hub"; do
   assert_contains "$hub/STATION.md" "piper-workflow"
   assert_contains "$hub/STATION.md" "brainstorm"
   assert_contains "$hub/STATION.md" "owns convergent execution"
@@ -717,7 +829,7 @@ assert_contains "$claude_hub/CLAUDE.md" "owns convergent execution"
 assert_contains "$opencode_hub/AGENTS.md" "piper-workflow"
 assert_contains "$opencode_hub/AGENTS.md" "brainstorm"
 assert_contains "$opencode_hub/AGENTS.md" "owns convergent execution"
-for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$opencode_hub/.opencode/skills"; do
+for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$opencode_hub/.opencode/skills" "$deepagent_hub/.deepagents/skills"; do
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Divergent Toolkit"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Hand-Off Brief"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Register"
@@ -992,10 +1104,10 @@ assert_dir "$git_hub/.git"
 
 if "$BOOTSTRAP" --runtime codex "$ROOT" > "$TMP_ROOT/source-refuse.log" 2>&1; then fail "bootstrap should refuse source repo"; fi
 assert_contains "$TMP_ROOT/source-refuse.log" "refusing to initialize the bootstrap source"
-if grep -R -n '{{' "$ROOT/generated/codex" "$ROOT/generated/claude" "$ROOT/generated/opencode" > "$TMP_ROOT/placeholders.log"; then cat "$TMP_ROOT/placeholders.log" >&2; fail "unrendered template placeholder found"; fi
+if grep -R -n '{{' "$ROOT/generated/codex" "$ROOT/generated/claude" "$ROOT/generated/opencode" "$ROOT/generated/deepagent" > "$TMP_ROOT/placeholders.log"; then cat "$TMP_ROOT/placeholders.log" >&2; fail "unrendered template placeholder found"; fi
 if grep -R -n '^argument-hint: [^"]' "$ROOT/generated/claude/.claude/commands" "$ROOT/generated/opencode/.opencode/commands" > "$TMP_ROOT/frontmatter.log"; then cat "$TMP_ROOT/frontmatter.log" >&2; fail "unquoted argument-hint frontmatter found"; fi
-if grep -R -n '^argument-hint:\|^allowed-tools:\|^description:' "$ROOT/generated/codex/.codex/skills/piper-workflow/references" "$ROOT/generated/codex/.codex/skills/brainstorm/references" "$ROOT/generated/codex/.codex/skills/design-studio/references" > "$TMP_ROOT/codex-refs-frontmatter.log"; then cat "$TMP_ROOT/codex-refs-frontmatter.log" >&2; fail "Codex skill references must not carry slash-command frontmatter"; fi
-if grep -R -n '^description: [^"].*: ' "$ROOT/core/skills" "$ROOT/generated/codex/.codex/skills" "$ROOT/generated/claude/.claude/skills" "$ROOT/generated/opencode/.opencode/skills" > "$TMP_ROOT/skill-frontmatter.log"; then cat "$TMP_ROOT/skill-frontmatter.log" >&2; fail "unquoted skill description frontmatter with colon found"; fi
+if grep -R -n '^argument-hint:\|^allowed-tools:\|^description:' "$ROOT/generated/codex/.codex/skills/piper-workflow/references" "$ROOT/generated/codex/.codex/skills/brainstorm/references" "$ROOT/generated/codex/.codex/skills/design-studio/references" "$ROOT/generated/deepagent/.deepagents/skills/piper-workflow/references" "$ROOT/generated/deepagent/.deepagents/skills/brainstorm/references" "$ROOT/generated/deepagent/.deepagents/skills/design-studio/references" > "$TMP_ROOT/refs-frontmatter.log"; then cat "$TMP_ROOT/refs-frontmatter.log" >&2; fail "skill references must not carry slash-command frontmatter"; fi
+if grep -R -n '^description: [^"].*: ' "$ROOT/core/skills" "$ROOT/generated/codex/.codex/skills" "$ROOT/generated/claude/.claude/skills" "$ROOT/generated/opencode/.opencode/skills" "$ROOT/generated/deepagent/.deepagents/skills" > "$TMP_ROOT/skill-frontmatter.log"; then cat "$TMP_ROOT/skill-frontmatter.log" >&2; fail "unquoted skill description frontmatter with colon found"; fi
 if grep -R -n -E '`(handoff|progress)\.md`' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-work-artifacts.log"; then cat "$TMP_ROOT/stale-work-artifacts.log" >&2; fail "active instructions must not use stale handoff.md or progress.md artifacts"; fi
 if grep -R -n 'established docs location' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-project-local-artifacts.log"; then cat "$TMP_ROOT/stale-project-local-artifacts.log" >&2; fail "artifact persistence must keep Piper work artifacts hub-owned by default"; fi
 if grep -R -n 'When an artifact changes, make it self-contained' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-self-contained-artifacts.log"; then cat "$TMP_ROOT/stale-self-contained-artifacts.log" >&2; fail "only context-pack should be the fully self-contained resume packet"; fi
