@@ -787,6 +787,11 @@ mkdir -p "$TMP_ROOT/deepagent-dryrun-dir"
 if [ -s "$TMP_ROOT/deepagent-dry1.err" ]; then cat "$TMP_ROOT/deepagent-dry1.err" >&2; fail "dry-run with --git-init on a plain dir must not warn"; fi
 "$BOOTSTRAP" --runtime deepagent --dry-run "$TMP_ROOT/deepagent-dryrun-dir" > /dev/null 2> "$TMP_ROOT/deepagent-dry2.err"
 assert_contains "$TMP_ROOT/deepagent-dry2.err" "git repository root"
+git init -q "$TMP_ROOT/deepagent-outer"
+"$BOOTSTRAP" --runtime deepagent "$TMP_ROOT/deepagent-outer/nested-hub" > /dev/null 2> "$TMP_ROOT/deepagent-nested.err"
+assert_contains "$TMP_ROOT/deepagent-nested.err" "git repository root"
+"$BOOTSTRAP" --runtime deepagent "$deepagent_hub" > /dev/null 2> "$TMP_ROOT/deepagent-rerun.err"
+if [ -s "$TMP_ROOT/deepagent-rerun.err" ]; then cat "$TMP_ROOT/deepagent-rerun.err" >&2; fail "deepagent re-run over an existing solo hub must stay silent"; fi
 
 for hub in "$codex_hub" "$claude_hub" "$opencode_hub" "$deepagent_hub"; do
   assert_contains "$hub/STATION.md" "piper-workflow"
