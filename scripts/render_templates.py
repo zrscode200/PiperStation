@@ -10,7 +10,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNTIMES = ("codex", "claude", "opencode")
+RUNTIMES = ("codex", "claude", "opencode", "deepagent")
 COMMANDS = ("add-project.md", "superpowers.md", "ralph.md", "compact-handoff.md")
 SKILLS = (
     "brainstorm",
@@ -19,11 +19,13 @@ SKILLS = (
     "review",
     "automation-policy",
 )
-# In Codex, slash commands are surfaced as reference files under their owning
-# skill. add-project belongs to the brainstorm front door; the planning and
-# execution commands belong to piper-workflow. Other runtimes render every
-# command into a single flat command_dir.
-CODEX_COMMAND_SKILL = {
+# Runtimes without a native slash-command surface (Codex, Deep Agents) render
+# commands as reference files under their owning skill: add-project belongs to
+# the brainstorm front door; the planning and execution commands belong to
+# piper-workflow. Runtimes with a command surface render every command into a
+# single flat command_dir instead. A runtime opts into reference routing by
+# setting "command_skill" in its RUNTIME_CONFIG entry.
+COMMAND_OWNING_SKILL = {
     "add-project.md": "brainstorm",
     "superpowers.md": "piper-workflow",
     "ralph.md": "piper-workflow",
@@ -33,9 +35,9 @@ RUNTIME_CONFIG = {
     "codex": {
         "runtime_name": "Codex",
         "instruction_doc": "AGENTS.md",
-        # Codex resolves command output per-command via CODEX_COMMAND_SKILL
-        # (commands render as references under their owning skill), so no single
+        # Commands render as references under their owning skill, so no single
         # command_dir applies here.
+        "command_skill": COMMAND_OWNING_SKILL,
         "skill_dir": ".codex/skills",
         "frontmatter": {
             "add-project.md": "",
@@ -83,6 +85,25 @@ RUNTIME_CONFIG = {
         "registration_entrypoints": "`./bin/add-project`",
         "review_helper": "read-only reviewer subagent",
     },
+    "deepagent": {
+        "runtime_name": "Deep Agents",
+        "instruction_doc": ".deepagents/AGENTS.md",
+        # Deep Agents Code has no custom slash-command surface; commands render
+        # as references under their owning skill, same routing as Codex.
+        "command_skill": COMMAND_OWNING_SKILL,
+        "skill_dir": ".deepagents/skills",
+        "frontmatter": {
+            "add-project.md": "",
+            "superpowers.md": "",
+            "ralph.md": "",
+            "compact-handoff.md": "",
+        },
+        "runtime_native": "Deep Agents-native",
+        "runtime_session": "Deep Agents session",
+        "workspace_access": "The agent works in the hub directory it was launched from, and the hub must be a git repository root for hub surfaces to load. Use absolute paths when reading or editing files in registered project repos; relative paths do not resolve against the working directory.",
+        "registration_entrypoints": "`./bin/add-project`",
+        "review_helper": "read-only reviewer subagent",
+    },
 }
 
 
@@ -120,9 +141,11 @@ def render_text(text: str, runtime: str, frontmatter: str = "") -> str:
 
 
 def command_dir_for(runtime: str, command: str) -> str:
-    if runtime == "codex":
-        return f".codex/skills/{CODEX_COMMAND_SKILL[command]}/references"
-    return RUNTIME_CONFIG[runtime]["command_dir"]
+    cfg = RUNTIME_CONFIG[runtime]
+    command_skill = cfg.get("command_skill")
+    if command_skill is not None:
+        return f"{cfg['skill_dir']}/{command_skill[command]}/references"
+    return cfg["command_dir"]
 
 
 def render_skill_tree(runtime: str, out: Path, skill: str) -> None:
@@ -141,8 +164,9 @@ def render_behavior(runtime: str, out: Path) -> None:
     cfg = RUNTIME_CONFIG[runtime]
     for skill in SKILLS:
         render_skill_tree(runtime, out, skill)
-    # Commands render after skill trees so Codex's command-owned references win
-    # if a core skill ever contains a file with the same relative path.
+    # Commands render after skill trees so command-owned references win for
+    # command_skill runtimes if a core skill ever contains a file with the same
+    # relative path.
     for command in COMMANDS:
         src = ROOT / "core/commands" / command
         text = render_text(src.read_text(encoding="utf-8"), runtime, cfg["frontmatter"][command])
