@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "hook=.deepagents/hooks/session-context.sh; [ -f \"$hook\" ] && sh \"$hook\" || true",
+            "timeout": 10,
+            "statusMessage": "Loading Piper Station hub context"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "manual|auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "printf %s '{\"systemMessage\": \"Piper Station compact reminder: durable state must already live in the project work records. If active work is in flight, ensure projects/<id>/work/context-pack.md was rewritten in full to the current boundary (next exact action, scope boundary, files to inspect first, verification state, review state, drift result, blockers, risks, git state) before relying on summarized context. This hook reminds; it does not block compaction.\"}'",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
