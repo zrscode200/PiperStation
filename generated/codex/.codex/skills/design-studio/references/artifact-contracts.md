@@ -32,9 +32,47 @@ projects/<project-id>/work/
 
 Do not create optional files or directories until they have a clear role.
 
+## Where Material Goes
+
+While an initiative has a non-superseded studio, its durable design content
+belongs inside that studio folder — do not create sibling lightweight notes
+for the same initiative.
+
+| Material | Destination |
+| --- | --- |
+| New durable design content for an initiative with a studio | Inside that studio folder, never a sibling lightweight note |
+| Session narrative or log | Not durable — git history plus `build-log.md` checkpoints |
+| Raw subagent reports and research dumps | Not persisted — distill findings into `design.md` or a named supporting artifact |
+| Post-compact resume guidance | `context-pack.md`, never a studio file |
+| Scratch and tmp work | Session scratch space outside the hub — no `tmp/` inside a studio |
+| Decision rationale | `design.md`, or `working-decisions.md` when split |
+| Longer direction and revisit triggers | `roadmap.md` |
+
+### Worked Example
+
+A realistic mid-life studio, with the optional files it deliberately does not
+have:
+
+```text
+projects/acme-webapp/work/design/
+  README.md                    # index — exists because a note and a studio coexist
+  2026-03-02-caching-note.md   # earlier lightweight note; links to the studio
+  checkout-redesign/
+    README.md                  # navigation: start here, artifact map
+    design.md                  # canonical design; revision 6, accepted_revision 5
+    working-decisions.md       # split out once rationale outgrew design.md
+    payment-flow-states.md     # supporting artifact, linked from design.md
+```
+
+No `open-questions.md` (still a section inside `design.md`), no `archive/`
+(nothing materially superseded), no session log, and no `tmp/` anywhere.
+
 ## Project Design Index
 
-`work/design/README.md` answers what design work exists and where to begin. Its
+`work/design/README.md` answers what design work exists and where to begin. It
+is required once the design tree has two or more entries — a second studio, or
+a studio coexisting with lightweight notes. A sole studio in an otherwise
+empty tree may defer it; creating the second entry creates the index. Its
 minimum headings are:
 
 ```text
@@ -108,15 +146,14 @@ Minimum headings:
 ## Current Design
 ## Fixed Contracts
 ## Implementation Freedoms
-## Alternatives And Rationale
 ## Open Questions
-## Supporting Artifacts
-## Handoff Readiness
 ```
 
-The content may add problem-appropriate sections for actors, scenarios, flows,
-responsibilities, interfaces, state, data, failure, recovery, authority,
-security, operations, and evolution.
+Add `## Alternatives And Rationale`, `## Supporting Artifacts`, and
+`## Handoff Readiness` when they earn their place; smaller studios fold that
+content into the core sections. The content may add problem-appropriate
+sections for actors, scenarios, flows, responsibilities, interfaces, state,
+data, failure, recovery, authority, security, operations, and evolution.
 
 ## Conditional Ledgers
 
@@ -145,9 +182,9 @@ api-sketch/
 ```
 
 Do not force artifacts into `topics/`, `aspects/`, `research/`, `probes/`, or
-`prototypes/`. Link each significant artifact from `design.md` or the studio
-README and explain its role. Supporting material never silently becomes current
-design authority.
+`prototypes/`. Link every artifact outside `archive/` from `design.md` or the
+studio README at creation and explain its role. Supporting material never
+silently becomes current design authority.
 
 Executable prototypes belong in an authorized registered or scratch repository,
 not the hub. The studio may record a locator, findings, limits, and design
@@ -192,6 +229,8 @@ and `build-log.md` for checkpoint history. READMEs remain navigation.
 - If the slug matches the same initiative, reuse it.
 - If it belongs to different work, choose a concise distinguishing suffix.
 - Never overwrite or merge unrelated studios merely to avoid a new folder.
+- While an initiative's studio exists and is not superseded, keep its new
+  durable content inside that studio folder rather than as sibling notes.
 
 For an existing lightweight note or ad hoc folder, preserve original content.
 Promotion is discussion-led and non-destructive: create or reuse the compliant
@@ -252,6 +291,11 @@ accepted_revision: N
 The exact integer revision must be explicitly accepted. The design should make
 goals, non-goals, fixed contracts, implementation freedoms, assumptions,
 evidence gaps, and deliberately delegated unknowns visible.
+
+If the user wants to build but declines to accept the current revision, the
+studio pauses or concludes without a handoff pair. Piper Workflow may still
+proceed from ordinary brainstorm direction — a studio is never a blocker.
+The unaccepted design remains reference material, not a verified input.
 
 Piper Workflow reads linked supporting artifacts, verifies the accepted
 revision against live source, and references rather than copies the design.

@@ -25,7 +25,7 @@ piper-station-hub/
   bin/add-project
   projects/
     <project-id>/work/design/
-      README.md          # project design index, when design work exists
+      README.md          # project design index, once two entries exist
       <topic>.md         # optional lightweight design note
       <studio-slug>/     # optional full Design Studio
         README.md        # studio navigation

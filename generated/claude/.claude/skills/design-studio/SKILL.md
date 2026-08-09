@@ -69,7 +69,11 @@ runtime session.
 - For a new initiative, derive a stable lower-kebab-case slug from its name.
 - If the slug already belongs to different work, choose a concise
   distinguishing suffix. Never overwrite an unrelated studio.
-- Create or update `work/design/README.md` as the project design index.
+- Create `work/design/README.md` as the project design index
+  once the design tree has two or more entries; a sole studio in an
+  otherwise empty tree defers the index until a second studio or
+  lightweight note appears. Keep any existing index current when indexed
+  design work changes.
 - Create `<studio-slug>/README.md` and `<studio-slug>/design.md`.
 - Create `working-decisions.md`, `open-questions.md`, supporting artifacts, or
   `archive/` only when each does a clear job.

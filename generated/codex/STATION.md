@@ -268,10 +268,11 @@ Per-artifact rules follow from the roles and ownership above:
   studio through discussion, and add relationship or supersession links rather
   than moving or deleting it.
 - `work/design/<studio-slug>/`: create or reuse only after explicit Design
-  Studio entry. Keep `work/design/README.md` as the project index, the studio
-  `README.md` as local navigation, and `design.md` as the sole owner of current
-  integrated design, revision, and acceptance. Optional ledgers and supporting
-  artifacts exist only when useful; do not force category directories.
+  Studio entry. Keep `work/design/README.md` as the project index when present,
+  the studio `README.md` as local navigation, and `design.md` as the sole owner
+  of current integrated design, revision, and acceptance. Optional ledgers and
+  supporting artifacts exist only when useful; do not force category
+  directories.
 
 ### Artifact Persistence
 
