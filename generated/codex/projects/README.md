@@ -4,7 +4,8 @@ Each subdirectory is a registered project ledger. Registration must create only
 `project.md` and `memory.md`.
 
 Registration must not create `work/`. Runtime sessions may create
-`projects/<id>/work/` only when active continuity is useful.
+`projects/<id>/work/` only when active continuity is useful, and one lane
+folder per group under `projects/<id>/work/groups/<gid>/` only at group Entry.
 
 ## Registry Index
 

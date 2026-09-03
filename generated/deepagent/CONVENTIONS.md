@@ -22,7 +22,9 @@ discussion-led and non-destructive.
 
 The default unit of work is one ungrouped wave with a light boundary. Groups
 bundle related waves under a shared acceptance target and one integrating
-review gate and are entered by an explicit planning decision; `STATION.md`
+review gate and are entered by an explicit planning decision. Each group is
+its own lane under `work/groups/<gid>/`, with its own windows, ledger, branch,
+and checkout; hub artifact commits are path-scoped to the lane. `STATION.md`
 (Project Records, Group Lifecycle) owns the rules.
 
 Use Ralph review gates for substantial waves, high-impact slices, and queued

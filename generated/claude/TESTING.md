@@ -4,9 +4,10 @@ For hub source changes, run the source repo test suite and render freshness
 check. For project work, run the narrowest meaningful verification first and
 broaden only when changes touch shared, risky, or cross-cutting behavior.
 
-When active work records are in use, record important evidence in
-`projects/<id>/work/build-log.md`: commands run, pass/fail result, known gaps,
-and re-verification after review-driven fixes.
+When active work records are in use, record important evidence in the lane's
+`build-log.md` (`projects/<id>/work/build-log.md` for the flat lane,
+`projects/<id>/work/groups/<gid>/build-log.md` for a group lane): commands run,
+pass/fail result, known gaps, and re-verification after review-driven fixes.
 
 For Design Studio instruction changes, protect the contract across every
 generated runtime. Cover at least: lightweight brainstorm without a studio,

@@ -47,7 +47,10 @@ the needed session-level change and wait for the runtime or user to apply it.
 Piper artifact updates under `projects/<project-id>/work/` are local
 assistance while work is active. Committing those artifact updates in the Piper
 Station hub is a `local` permission action and stays separate from any
-registered project source commit.
+registered project source commit. Hub artifact commits are path-scoped: the
+hub checkout is shared by every session, so stage only the lane's paths plus
+the project-level files touched — never `git add -A` or `commit -a` in the
+hub.
 
-Non-destructive worktree creation or switching is `local`; deleting worktrees
-is `exceptional`.
+Non-destructive worktree creation or switching is `local`, including creating
+a group lane's worktree at group Entry; deleting worktrees is `exceptional`.

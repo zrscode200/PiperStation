@@ -17,7 +17,8 @@ stay shared under `projects/`.
 - Do not start work, create plans, checkpoint state, commit, push, install
   dependencies, or edit project source as a side effect of registration.
 - Work on project source code only in the real repo path recorded in
-  `projects/<project-id>/project.md`.
+  `projects/<project-id>/project.md`, or in a lane's recorded git worktree of
+  that repo.
 - Keep behavior feedback in shared records when it applies to Piper Station;
   use runtime-specific notes only for harness mechanics.
 - Do not store secrets, credentials, private keys, customer data, or raw
@@ -29,8 +30,10 @@ stay shared under `projects/`.
 - Claude Code: `CLAUDE.md` and `.claude/`.
 - OpenCode: `opencode.json` and `.opencode/`.
 
-A hub may have multiple runtime surfaces installed. Use one harness actively on
-a project at a time unless the user explicitly coordinates parallel work.
+A hub may have multiple runtime surfaces installed. Concurrency is per lane:
+one active session per lane, regardless of harness. Concurrent lanes on one
+project are supported through group folders and worktrees (see Project Records
+and Group Lifecycle); two sessions on one lane are not.
 
 ## Instruction Precedence
 
@@ -141,6 +144,7 @@ projects/<project-id>/
   project.md
   memory.md
   work/              # optional, created only when useful during active work
+    groups/<gid>/    # one lane folder per group, created at group Entry
 ```
 
 `project.md` stores repo binding, overview, and project policy preferences such
@@ -156,8 +160,31 @@ it.
 
 `work/` may contain `roadmap.md`, `active-work.md`, `build-log.md`,
 `context-pack.md`, optional `task-queue.md`, lightweight design notes under
-`work/design/<topic>.md`, and optional full studios under
-`work/design/<studio-slug>/`.
+`work/design/<topic>.md`, optional full studios under
+`work/design/<studio-slug>/`, and one lane folder per group under
+`work/groups/<gid>/`.
+
+**Lanes.** A lane is the unit that owns a set of window artifacts and one
+checkout. The **flat lane** is the project-level `active-work.md`,
+`context-pack.md`, and optional `task-queue.md`; it serves ungrouped waves and
+the Design Studio boundary. Each group is its own **group lane**:
+`work/groups/<gid>/{active-work,context-pack,build-log,task-queue}.md`, where
+`<gid>` is the group's lower-kebab id fixed at Structural Planning (for example
+`g1-deepagent-adapter`) and the folder name is that id. Every group uses its
+folder, created at group Entry and never by registration. Windows live where
+their boundary lives: one active session works a lane at a time, and several
+lanes of one project may be active in parallel sessions.
+
+**One checkout per lane.** The registered `repo_path` is held by at most one
+lane at a time, recorded in that lane's `active-work.md` header as
+`checkout:`; the flat lane holds it by default. Every other active lane works
+in its own git worktree of the project repo (`git worktree add`, a `local`
+action; default path `<repo-parent>/<repo-basename>-worktrees/<gid>`),
+recorded as its `checkout:`. The lane's checkout must be writable in the
+active session — a worktree outside `repo_path` needs its own workspace access
+grant — and every git-derived fact for the lane is read in that checkout.
+While a group holds `repo_path`, an ungrouped request is surfaced rather than
+started: run it inside that group, wait, or give it a worktree.
 
 Registration must not create `work/`.
 
@@ -180,22 +207,25 @@ integrating review gate. Entering a group is an explicit planning decision
 (Superpowers Structural Planning), never a default: use a group when multiple
 waves must land before the larger boundary is accepted, when cross-wave
 interaction risk matters, or when the work will run alongside other work on
-the same project. A group has its own boundary in `active-work.md`, its own
-checkpoint in `build-log.md`, and its own review gate over the integrated
-cross-wave diff before acceptance. Its operating stages are defined under
-Group Lifecycle.
+the same project. A group has its own lane folder: its boundary in that
+folder's `active-work.md`, its ledger in that folder's `build-log.md`, and its
+own review gate over the integrated cross-wave diff before acceptance. Its
+operating stages are defined under Group Lifecycle.
 
 ### Work Artifact Reference
 
 Create these only under `projects/<project-id>/work/`, never in the registered
 project repo. Use each artifact only when it does a clear job for autonomy,
-continuity, quality, or compact/resume.
+continuity, quality, or compact/resume. The windows and the ledger exist per
+lane: at the project level for the flat lane, and inside `work/groups/<gid>/`
+for each group lane.
 
 | Artifact | Purpose | Create or update when |
 | --- | --- | --- |
 | `roadmap.md` | Longer-horizon direction: groups, milestones, their durable order and acceptance status, deferred work, risks, and revisit triggers. | Project direction, group order, milestone sequence, acceptance status, deferred scope, or revisit triggers change. |
-| `active-work.md` | Live group and wave workbench: current goal, group boundary, current wave details, reliable later-wave sketches, slice breakdown, required gates, group review state, acceptance criteria, risks, verification strategy, and open questions. | Current group or wave needs durable continuity before implementation, review, compact, or delayed execution. |
-| `build-log.md` | The single interpretive checkpoint ledger: concise summaries of what happened, final contracts, the per-wave acceptance commit, review and verification results, risks, and next steps. Not a per-commit changelog or raw transcript — the commit list and diffs derive from git. | A meaningful planning, wave, review/fix, finish, compact, blocker, group, or milestone checkpoint occurs. |
+| `active-work.md` | Live group and wave workbench: current goal, group boundary, current wave details, reliable later-wave sketches, slice breakdown, required gates, group review state, acceptance criteria, risks, verification strategy, and open questions. In a group lane its header also binds the lane: `branch:`, `checkout:`, `boundary:` (owned paths or areas), and `status:`. | Current group or wave needs durable continuity before implementation, review, compact, or delayed execution. |
+| `build-log.md` | The single interpretive checkpoint ledger for its lane: concise summaries of what happened, final contracts, the per-wave acceptance commit, review and verification results, risks, and next steps. Not a per-commit changelog or raw transcript — the commit list and diffs derive from git. The project ledger is the seam between lanes (ungrouped-wave entries, planning entries that define groups, group closeout entries, transition entries, milestones); a group ledger holds that group's Entry, wave, review/fix, blocker, compact, and base-sync entries. | A meaningful planning, wave, review/fix, finish, compact, blocker, group, or milestone checkpoint occurs. |
+| `work/groups/<gid>/` | A group lane: the group's own `active-work.md`, `context-pack.md`, `build-log.md`, and optional `task-queue.md`, with the lane binding in the `active-work.md` header. After closeout the windows are rewritten to a short `closed` pointer and the folder remains as the group's archive. | Group Entry; the folder name is the gid fixed at Structural Planning. Never at registration or planning. |
 | `context-pack.md` | The resume packet: the non-derivable state of the current boundary, rewritten in full. Its fields are defined once under Compaction; anything git or the ledger can answer is derived at resume, not stored here. | A resume trigger fires (see Boundary triggers under Artifact Persistence): active work may pause, compact, finish, hit a blocker, reach a milestone, switch projects, or hand off. |
 | `task-queue.md` | Optional durable Ralph execution queue: task ids with status, risk, acceptance criteria, verification, dependencies, expected diff boundary, and explicit group review gate items for multi-wave groups. Holds pending work only; completed items roll off at group closeout. | Native runtime task tracking is insufficient because waves, slices, or group gates must survive the current session or move across agents. |
 | `work/design/<topic>.md` | Lightweight topical design note for work that does not need a full studio. Topical, superseded in place, and preserved if later promoted. | A useful design note deserves durability but not a multi-file, multi-session studio. |
@@ -224,7 +254,8 @@ holds only what is intrinsic to its own purpose.
 
 **Derive, do not duplicate.** Git in the registered project repo is the source of
 truth for the mechanical history axis: raw diffs, the commit list, and current
-branch/HEAD/status. Read these live at each checkpoint and resume rather than
+branch/HEAD/status, each read in the lane's checkout. Read these live at each
+checkpoint and resume rather than
 trusting a stored value; record an observed commit only in the artifact that
 owns it — `build-log.md`'s per-wave acceptance commit — and do not repeat it
 across the other records (`context-pack.md`, `roadmap.md`, `active-work.md`,
@@ -243,10 +274,11 @@ not restate it:
 
 | Fact | Single home |
 | --- | --- |
-| Raw diff, commit list, current branch/HEAD/status | git (project repo), read live |
-| Per-wave acceptance commit, review verdict, contracts, next step | `build-log.md`, recorded once at the boundary |
-| Current boundary pointer and the non-derivable resume packet | `context-pack.md` |
-| Current wave detail, slice breakdown, acceptance criteria, current scope and non-goals | `active-work.md` |
+| Raw diff, commit list, current branch/HEAD/status | git (project repo), read live in the lane's checkout |
+| Per-wave acceptance commit, review verdict, contracts, next step | the lane's `build-log.md`, recorded once at the boundary |
+| Current boundary pointer and the non-derivable resume packet | the lane's `context-pack.md` |
+| Current wave detail, slice breakdown, acceptance criteria, current scope and non-goals | the lane's `active-work.md` |
+| Group lane binding: branch, checkout, owned boundary, lane status | the group's `active-work.md` header, set at Entry |
 | Long-horizon direction, group/milestone order and acceptance status, milestone labels, durable non-goals | `roadmap.md` |
 | Substantial decision rationale | `decisions.md` (supersede in place) |
 | Repo binding and project policy preferences | `project.md` |
@@ -259,16 +291,24 @@ Per-artifact rules follow from the roles and ownership above:
   acceptance status (pending to accepted); the fine-grained current tracker is
   `active-work.md` and the checkpoint ledger is `build-log.md`.
 - `active-work.md`: the current group and wave window only. Keep the current wave
-  actionable; sketch later waves only when reliable. When a group exists, make
-  the group header, wave list, required gates, group review state, and acceptance
-  target explicit. Do not duplicate the resume packet or chronological log. At
-  group closeout, its completed-wave detail rolls off into the build-log closeout
-  entry, leaving a one-line pointer.
-- `build-log.md`: the single interpretive ledger. Record concise checkpoint
-  summaries, final contracts, the per-wave acceptance commit, and review and
-  verification results once at each boundary. It is not a per-commit changelog or
-  a raw verification transcript — the commit list and diffs derive from git. Give
-  group closeout its own entry.
+  actionable; sketch later waves only when reliable. In a group lane, make the
+  group header, wave list, required gates, group review state, and acceptance
+  target explicit, and bind the lane in the header — `branch:`, `checkout:`,
+  `boundary:` (owned paths or areas), `status:` (`active` or `closed`) — as
+  bindings set at Entry, not derived state. Do not duplicate the resume packet
+  or chronological log. At group closeout, its completed-wave detail rolls off
+  into the project build-log closeout entry, and the lane's windows are
+  rewritten to a short `closed` pointer (never deleted).
+- `build-log.md`: the single interpretive ledger for its lane. Record concise
+  checkpoint summaries, final contracts, the per-wave acceptance commit, and
+  review and verification results once at each boundary. It is not a per-commit
+  changelog or a raw verification transcript — the commit list and diffs derive
+  from git. A group ledger (`work/groups/<gid>/build-log.md`) holds the group's
+  Entry, per-wave acceptance, review/fix, blocker, compact, and base-sync
+  entries. The project ledger is the seam between lanes: ungrouped-wave
+  entries, planning entries that define groups, group closeout entries,
+  transition entries, and milestones. Give group closeout its own entry in the
+  project ledger; it condenses the group ledger and points back to it.
 - `context-pack.md`: the resume packet of non-derivable state, rewritten in
   full to reflect only the current boundary (fields under Compaction). Derive
   git state live; reference `build-log.md` for history rather than replaying it.
@@ -317,17 +357,24 @@ active-work change, pause, compact, project switch, blocker, or finish.
 
 **Checkpoint invariant.** Every checkpoint must leave two things true:
 
-1. The windows and the ledger agree on where work is, any divergence is
+1. The lane's windows and ledger agree on where work is, any divergence is
    explained rather than silently carried, and a fresh session could resume
-   from the hub records plus live git alone. At an accepted boundary the live
-   HEAD is the latest `build-log.md` acceptance commit; mid-wave it may be
-   ahead of the last acceptance, with uncommitted files noted; and
-   `active-work.md`'s current wave matches `context-pack.md`'s current
-   boundary when both exist.
+   from the hub records plus live git alone. Concretely: the lane's
+   `active-work.md` current wave matches its `context-pack.md` boundary when
+   both exist; the live HEAD of the lane's checkout equals (at an accepted
+   boundary) or descends from (mid-wave, with uncommitted files noted) the
+   latest acceptance commit in the lane's `build-log.md`, on the lane's
+   recorded branch; the checkout is on that branch; and every roadmap group
+   marked accepted has a closeout entry in the project ledger, and vice versa.
 2. Changed Piper artifacts are disclosed separately from registered project
    source changes, with their hub commit state stated. An artifact commit,
    when the checkpoint chooses one, is a `local` permission action under
-   `automation-policy.md`, kept separate from any project source commit.
+   `automation-policy.md`, kept separate from any project source commit, and
+   path-scoped: the hub checkout is shared by every session, so stage and
+   commit only your lane's paths plus the project-level files you touched —
+   never `git add -A` or `commit -a` in the hub — and mention, never stage,
+   other lanes' uncommitted files. On an `index.lock` collision, retry; never
+   delete the lock.
 
 How much writing that takes depends on the boundary: a light boundary satisfies
 the invariant with one build-log entry and live git; a group closeout needs the
@@ -446,40 +493,71 @@ lifecycle as convergent execution above the wave and operates each stage through
 its existing modes. Within-group execution — waves, slices, and per-wave review
 gates — is covered under Mode Routing and the Ralph Review Gate.
 
+**Lane selection.** Every entry into Ralph, Superpowers, or compact handoff
+selects one lane first, by one rule: a token that names an existing
+`work/groups/<gid>` folder selects that group lane, and any other token is a
+boundary inside the selected lane; with no token, exactly one candidate lane —
+one group whose header status is `active` while the flat lane is idle, or the
+flat lane alone — is selected; with more than one candidate, ask, never guess;
+with none, the flat lane. A group is active when its folder exists and its
+header `status:` is not `closed`.
+
 A group moves through four stages, each driven by `piper-workflow`:
 
 1. **Entry.** Before the group's first wave, `piper-workflow` re-verifies the
    group's structural sketch — boundary, acceptance target, and revisit triggers
    — against the current code, which may have moved since the roadmap was drawn
-   or since a prior group landed. It runs Superpowers Structural Planning scoped
-   to this group when the sketch needs repair, then Wave Formalization for the
-   first wave. Repair drift that only reshapes this group here; escalate drift
-   that invalidates the group's premise or changes other groups (see Transition).
+   or since a prior group landed. It creates the group lane folder
+   `work/groups/<gid>/`, binds the lane in the `active-work.md` header
+   (`branch:`, `checkout:`, `boundary:`, `status: active`) — taking a worktree
+   when another lane already holds `repo_path` — and reads the other active
+   lanes' headers to surface any overlap between their `boundary:` and this
+   one, for the user to decide; overlap is never a block. It runs Superpowers
+   Structural Planning scoped to this group when the sketch needs repair, then
+   Wave Formalization for the first wave. Repair drift that only reshapes this
+   group here; escalate drift that invalidates the group's premise or changes
+   other groups (see Transition).
 2. **Execution.** `piper-workflow` implements the group's waves through Ralph
-   Mode, with verification, drift checks, and per-wave review gates. A wave that
-   is implemented, verified, drift-checked, and reviewed when its gate applies
-   is a natural commit point for the project source (see commit cadence below).
-3. **Closeout.** After the final wave lands, `piper-workflow` runs the group
-   review gate over the integrated cross-wave diff, resolves findings, writes the
-   group-closeout entry in `build-log.md`, marks the acceptance target met and
-   ticks the group's status in `roadmap.md`, records in that closeout entry the
-   contracts or learnings later groups depend on, and commits any remaining group
-   source not already committed per wave. It then **rolls the group off the
-   windows**: the completed-wave detail is condensed into the build-log closeout
-   entry (summarized, not relocated verbatim, so build-log keeps concise entries),
-   and `active-work.md` and `task-queue.md` drop that group's now-superseded
-   detail and keep a one-line pointer to the build-log entry, so the windows hold
-   only the current group and pending work. A group is complete only when its
+   Mode in the lane's checkout on the lane's branch, with verification, drift
+   checks, and per-wave review gates; wave entries go to the group ledger. A
+   wave that is implemented, verified, drift-checked, and reviewed when its
+   gate applies is a natural commit point for the project source (see commit
+   cadence below).
+3. **Closeout.** After the final wave lands, `piper-workflow` closes the group
+   in this order: sync the group branch with the project's base branch;
+   verify; run the group review gate over the integrated cross-wave diff
+   (`base..group`, in the lane's checkout) and resolve findings; commit any
+   remaining group source not already committed per wave; integrate the group
+   branch into base — a merge that preserves the group's commits by default;
+   if the user chooses a rebase, record old tip → new tip in the closeout
+   entry; where policy forbids a local merge, record `integrated: pending-pr`
+   — then write the group-closeout entry in the **project** `build-log.md`,
+   mark the acceptance target met, and tick the group's status in
+   `roadmap.md`. The closeout entry condenses the group ledger and points back
+   to it: acceptance target and verdict; the wave list with one-line outcomes;
+   the group-gate result, finding verdicts, and any accepted review debt; the
+   contracts or learnings later groups depend on; the group branch, its final
+   acceptance commit, and the integration commit (or `pending-pr`); deferred
+   scope; and the worktree path, which remains (deleting a worktree is
+   `exceptional`). It then **rolls the group off the windows**: the
+   completed-wave detail is condensed into that closeout entry (summarized,
+   not relocated verbatim, so the ledger keeps concise entries), and the
+   lane's `active-work.md`, `context-pack.md`, and `task-queue.md` are
+   rewritten to a short `closed` pointer to it — never deleted — so the folder
+   remains as the group's archive. A group is complete only when its
    acceptance target is met and the integrating review gate has passed.
 4. **Transition.** Between closeout and the next group's Entry, `piper-workflow`
    checks whether this group's actual outcome changes the sketches, ordering, or
    premises of later groups, and carries the captured contracts and learnings
    forward, recording any reshaped later-group scope or roadmap drift in
-   `roadmap.md`. It proceeds to the next group's Entry when the outcome holds the
-   roadmap, and surfaces the change for re-planning when it materially reshapes
-   later groups or a milestone. Re-planning stays within `piper-workflow`
-   (Superpowers); hand back to `brainstorm` only when the change reopens a
-   genuinely divergent question.
+   `roadmap.md`. Lanes still active in parallel sync their branch with base
+   before their next wave — whether a lane is behind is derived
+   (`git log <group>..<base>`), never recorded — and treat merge-conflict edits
+   as expected expansion in their drift check. It proceeds to the next group's
+   Entry when the outcome holds the roadmap, and surfaces the change for
+   re-planning when it materially reshapes later groups or a milestone.
+   Re-planning stays within `piper-workflow` (Superpowers); hand back to
+   `brainstorm` only when the change reopens a genuinely divergent question.
 
 When planning starts from a Design Studio handoff, Superpowers verifies the
 exact `design_artifact` and integer `accepted_revision` against the current
@@ -493,8 +571,8 @@ proceeds when the next stage is clear and authorized, and waits for go-ahead whe
 confirmation is required or the next group's direction is unsettled.
 
 Commit cadence rides on these boundaries: per-wave source commits during
-Execution and a group source commit at Closeout, each a `local` action under
-`automation-policy`. Under `local` coverage, commit and report each completed
+Execution and a group source commit at Closeout, each on the lane's branch in
+the lane's checkout and each a `local` action under `automation-policy`. Under `local` coverage, commit and report each completed
 wave without a per-wave ask; surface for approval when the profile is below
 `local`. Keep source commits separate from Piper artifact commits, at wave and
 group boundaries, not mid-slice. These are commits only — push and pull requests
@@ -511,17 +589,27 @@ group review gate and build-log closeout entry at Closeout — adding only the
 cross-group steps: entry re-verification, the roadmap acceptance tick,
 carry-forward, and the transition check.
 
+**Legacy layout.** A group whose windows still live in the flat lane moves into
+`work/groups/<gid>/` once, at its next wave or pause boundary: only if the
+folder does not already exist (if it does, reconcile, never overwrite); the
+flat `build-log.md` is a sink and is not split — the new group ledger opens
+with a pointer to the earlier entries; only queue items tagged with the group
+move; the header bindings are added in the same path-scoped hub commit; and a
+legacy group already at Closeout closes out in place.
+
 ## Compaction
 
 At the resume triggers (see Boundary triggers under Artifact Persistence),
-prepare compact-safe state in `projects/<id>/work/context-pack.md`. That file
+prepare compact-safe state in the selected lane's `context-pack.md`:
+`projects/<id>/work/context-pack.md` for the flat lane,
+`projects/<id>/work/groups/<gid>/context-pack.md` for a group lane. That file
 also carries the handoff fields when pausing or transferring work.
 
 The packet holds only non-derivable state. Its required fields, defined here
 and nowhere else:
 
 1. **Goal** of the current boundary, one line.
-2. **Boundary**: the wave or group and its status — `idle`, `mid-wave`,
+2. **Boundary**: the lane (`flat` or `<gid>`), the wave, and its status — `idle`, `mid-wave`,
    `accepted`, `group-review`, `closeout`, `between-groups`, or `blocked`.
    Add the scope boundary when no `active-work.md` carries it, and the branch
    when it is not the repo's default branch.
@@ -561,10 +649,11 @@ compact-ready when context is low, a milestone just finished, or the next wave
 needs a clean context. Do not claim `/compact` ran unless the user or runtime
 actually ran it.
 
-After compact, start from the designed resume anchors: `context-pack.md`,
-`active-work.md`, `build-log.md`, optional `task-queue.md`, project
-`project.md`, `memory.md`, and live branch/HEAD/status; derive the fields
-listed above before acting on the packet. Read `roadmap.md` when
+After compact, start from the designed resume anchors in the selected lane:
+its `context-pack.md`, `active-work.md`, `build-log.md`, optional
+`task-queue.md`, project `project.md`, `memory.md`, and live branch/HEAD/status
+in the lane's checkout; derive the fields listed above before acting on the
+packet. Read `roadmap.md` when
 longer-horizon direction matters, and read optional `decisions.md` only when it
 exists. Then rebuild enough of the active boundary neighborhood to work safely.
 Expand beyond that for concrete triggers such as a stale resume packet, missing

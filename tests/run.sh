@@ -849,6 +849,17 @@ for hub in "$codex_hub" "$claude_hub" "$opencode_hub" "$deepagent_hub"; do
   assert_contains "$hub/STATION.md" "non-derivable"
   assert_contains "$hub/STATION.md" "Derived at resume, never authored"
   assert_contains "$hub/STATION.md" "still-relevant non-derivable field"
+  assert_contains "$hub/STATION.md" "work/groups/<gid>/"
+  assert_contains "$hub/STATION.md" "one active session per lane"
+  assert_contains "$hub/STATION.md" "One checkout per lane"
+  assert_contains "$hub/STATION.md" "Lane selection"
+  assert_contains "$hub/STATION.md" "ask, never guess"
+  assert_contains "$hub/STATION.md" "never \`git add -A\`"
+  assert_contains "$hub/STATION.md" "\`checkout:\`"
+  assert_contains "$hub/STATION.md" "\`closed\` pointer"
+  assert_contains "$hub/STATION.md" "base..group"
+  assert_contains "$hub/STATION.md" "Legacy layout"
+  assert_contains "$hub/STATION.md" "single interpretive checkpoint ledger for its lane"
   assert_contains "$hub/STATION.md" "execute in waves"
   assert_contains "$hub/STATION.md" "checkpoint at boundaries"
   assert_contains "$hub/STATION.md" "Groups bundle related waves"
@@ -868,6 +879,8 @@ for hub in "$codex_hub" "$claude_hub" "$opencode_hub" "$deepagent_hub"; do
   assert_contains "$hub/automation-policy.md" "Ralph implementation edits are \`local\` permission actions"
   assert_contains "$hub/automation-policy.md" "Non-destructive worktree creation or switching is"
   assert_contains "$hub/automation-policy.md" "deleting worktrees"
+  assert_contains "$hub/automation-policy.md" "path-scoped"
+  assert_contains "$hub/automation-policy.md" "worktree at group Entry"
   assert_contains "$hub/automation-policy.md" "do not edit bootstrap-managed runtime config files"
   assert_contains "$hub/automation-policy.md" "add hooks as the profile gate"
 done
@@ -1171,6 +1184,7 @@ if grep -R -n -E 'For `S2/S3`, or for `S1`|do not commit unless the user approve
 if grep -R -n 'piper-workflow router\|piper workflow handles lookup, registration, orientation' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-router.log"; then cat "$TMP_ROOT/stale-router.log" >&2; fail "active instructions must not describe piper-workflow as the broad router"; fi
 if grep -R -n -E 'At every checkpoint:|the complete required field list|Compact-safe state must include' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-checkpoint-script.log"; then cat "$TMP_ROOT/stale-checkpoint-script.log" >&2; fail "STATION.md must state the checkpoint invariant and one compact field list, not the old checkpoint script"; fi
 if grep -R -n -E 'Include last completed boundary, current boundary|Git state: repo path, branch, HEAD|Group-level review state when a group exists|Piper artifact state:|context-pack.s resume snapshot|The compact state must include|Compact summary priorities' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-compact-field-lists.log"; then cat "$TMP_ROOT/stale-compact-field-lists.log" >&2; fail "commands and skills must point at the STATION compact field list instead of restating it"; fi
+if grep -R -n 'Use one harness actively on a project at a time' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-one-harness.log"; then cat "$TMP_ROOT/stale-one-harness.log" >&2; fail "concurrency is per lane: one active session per lane, not one harness per project"; fi
 if grep -R -n 'openaiDeveloperDocs_\*: allow\|"openaiDeveloperDocs_\\\*": "allow"' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-openai-docs-permission.log"; then cat "$TMP_ROOT/stale-openai-docs-permission.log" >&2; fail "OpenCode docs-researcher must ask before OpenAI docs MCP use"; fi
 if grep -R -n 'read-only band\|creates no hub records' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-brainstorm-readonly.log"; then cat "$TMP_ROOT/stale-brainstorm-readonly.log" >&2; fail "brainstorm registration wording must acknowledge the deterministic write exception"; fi
 if grep -R -n -E 'automation approval\. Route those through|automation approval.*piper-workflow' "$ROOT/core/skills/review/SKILL.md" "$ROOT/generated/codex/.codex/skills/review/SKILL.md" "$ROOT/generated/claude/.claude/skills/review/SKILL.md" "$ROOT/generated/opencode/.opencode/skills/review/SKILL.md" > "$TMP_ROOT/stale-review-automation-routing.log"; then cat "$TMP_ROOT/stale-review-automation-routing.log" >&2; fail "review skill must route automation approval directly to automation-policy"; fi

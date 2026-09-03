@@ -30,6 +30,7 @@ piper-station-hub/
       <studio-slug>/     # optional full Design Studio
         README.md        # studio navigation
         design.md        # canonical design and accepted revision
+    <project-id>/work/groups/<gid>/   # one lane per group: its own windows and ledger
 ```
 
 ## Ownership
@@ -49,8 +50,9 @@ active runtime.
 Optional active artifacts may be created under `projects/<id>/work/` only when
 useful: `roadmap.md`, `active-work.md`, `build-log.md`, `context-pack.md`,
 optional `task-queue.md`, lightweight design notes under
-`work/design/<topic>.md`, and full studios under
-`work/design/<studio-slug>/`. A full studio reuses those existing Piper work
+`work/design/<topic>.md`, full studios under `work/design/<studio-slug>/`, and
+one lane folder per group under `work/groups/<gid>/` holding that group's own
+windows and ledger. A full studio reuses those existing Piper work
 owners rather than creating a parallel lifecycle: `design.md` owns only the
 integrated design and revision, while the two README layers are navigation.
 See `STATION.md` for temporal roles (accumulative sinks vs current windows vs
