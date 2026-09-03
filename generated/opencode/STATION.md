@@ -49,11 +49,14 @@ Use this order when instructions overlap:
 6. Hooks and agents stay narrow: hooks surface lifecycle reminders, and agents
    perform delegated helper roles without owning policy.
 
-Some repetition is intentional. Root docs repeat high-signal rules because they
-are always loaded; command/reference files repeat procedure details so they can
-be used directly; hooks repeat compact fields because they are runtime output;
-agents repeat role boundaries because they are delegated prompts. Policy tables
-and global ownership rules belong in the canonical docs above.
+Some repetition is intentional, but contracts are defined once. Root docs
+repeat high-signal rules because they are always loaded; command/reference
+files repeat procedure so they can be used directly; hooks repeat the short
+compact field labels because they are runtime output; agents repeat role
+boundaries because they are delegated prompts. Policy tables, ownership rules,
+field lists, and checkpoint contracts are defined once in the canonical docs
+above; every other surface points to the owning section by name instead of
+restating it, so a rule change lands in one place.
 
 ## Dispatch Contract
 
@@ -164,12 +167,23 @@ decomposition units; waves are implementation and checkpoint units. Detail the
 current wave enough to execute safely. Sketch later waves only when the current
 code, context, and prior results make them reliable.
 
+The default unit of work is one ungrouped wave. Its **light boundary** costs
+one `build-log.md` entry at acceptance; `active-work.md` only when the wave
+needs continuity before it lands; no `roadmap.md` and no `task-queue.md`; and
+`context-pack.md` only when there is something to resume (pause, compact,
+blocker). A finished ungrouped wave with no open state writes no packet; if one
+exists, it is rewritten to `idle`. Ceremony scales with the boundary, not with
+the project: a small wave inside a large project pays the light boundary.
+
 Groups bundle related waves under a shared acceptance target and one
-integrating review gate. Use a group when multiple waves land before the larger
-boundary is accepted, or when cross-wave interaction risk matters. A group has
-its own boundary in `active-work.md`, its own checkpoint in `build-log.md`, and
-its own review gate over the integrated cross-wave diff before acceptance. Its
-operating stages are defined under Group Lifecycle.
+integrating review gate. Entering a group is an explicit planning decision
+(Superpowers Structural Planning), never a default: use a group when multiple
+waves must land before the larger boundary is accepted, when cross-wave
+interaction risk matters, or when the work will run alongside other work on
+the same project. A group has its own boundary in `active-work.md`, its own
+checkpoint in `build-log.md`, and its own review gate over the integrated
+cross-wave diff before acceptance. Its operating stages are defined under
+Group Lifecycle.
 
 ### Work Artifact Reference
 
@@ -182,7 +196,7 @@ continuity, quality, or compact/resume.
 | `roadmap.md` | Longer-horizon direction: groups, milestones, their durable order and acceptance status, deferred work, risks, and revisit triggers. | Project direction, group order, milestone sequence, acceptance status, deferred scope, or revisit triggers change. |
 | `active-work.md` | Live group and wave workbench: current goal, group boundary, current wave details, reliable later-wave sketches, slice breakdown, required gates, group review state, acceptance criteria, risks, verification strategy, and open questions. | Current group or wave needs durable continuity before implementation, review, compact, or delayed execution. |
 | `build-log.md` | The single interpretive checkpoint ledger: concise summaries of what happened, final contracts, the per-wave acceptance commit, review and verification results, risks, and next steps. Not a per-commit changelog or raw transcript — the commit list and diffs derive from git. | A meaningful planning, wave, review/fix, finish, compact, blocker, group, or milestone checkpoint occurs. |
-| `context-pack.md` | The full compact/resume packet, rewritten in full to reflect only the current boundary: goal, current boundary, next exact action, key files, what to inspect first, branch/HEAD/status (derived live), verification state, review state including group-level review state when relevant, cross-group transition state when between groups, drift, blockers, stop reason, and what to hand a human or fresh agent. | Active work may pause, compact, finish, hit a blocker, reach a milestone, switch projects, or hand off. |
+| `context-pack.md` | The resume packet: the non-derivable state of the current boundary, rewritten in full. Its fields are defined once under Compaction; anything git or the ledger can answer is derived at resume, not stored here. | A resume trigger fires (see Boundary triggers under Artifact Persistence): active work may pause, compact, finish, hit a blocker, reach a milestone, switch projects, or hand off. |
 | `task-queue.md` | Optional durable Ralph execution queue: task ids with status, risk, acceptance criteria, verification, dependencies, expected diff boundary, and explicit group review gate items for multi-wave groups. Holds pending work only; completed items roll off at group closeout. | Native runtime task tracking is insufficient because waves, slices, or group gates must survive the current session or move across agents. |
 | `work/design/<topic>.md` | Lightweight topical design note for work that does not need a full studio. Topical, superseded in place, and preserved if later promoted. | A useful design note deserves durability but not a multi-file, multi-session studio. |
 | `work/design/<studio-slug>/` | Optional full Design Studio. Project and studio READMEs provide navigation; `design.md` owns the integrated design, integer revision, and explicit revision-specific acceptance; optional artifacts emerge with descriptive names. | The user explicitly enters Design Studio and the initiative needs deeper or multi-session design. Reuse the existing initiative folder and never destructively migrate a note or ad hoc folder. |
@@ -211,10 +225,10 @@ holds only what is intrinsic to its own purpose.
 **Derive, do not duplicate.** Git in the registered project repo is the source of
 truth for the mechanical history axis: raw diffs, the commit list, and current
 branch/HEAD/status. Read these live at each checkpoint and resume rather than
-trusting a stored value; record an observed commit or HEAD only in the artifact
-that owns it — `context-pack.md`'s resume snapshot and `build-log.md`'s per-wave
-acceptance commit — and do not repeat it across the other records (`roadmap.md`,
-`active-work.md`, `task-queue.md`, `project.md`, `memory.md`). Re-recording the
+trusting a stored value; record an observed commit only in the artifact that
+owns it — `build-log.md`'s per-wave acceptance commit — and do not repeat it
+across the other records (`context-pack.md`, `roadmap.md`, `active-work.md`,
+`task-queue.md`, `project.md`, `memory.md`). Re-recording the
 same commit hash or HEAD across several artifacts is the main cause of
 cross-artifact drift, because each copy ages on its own. Read the cheap
 current-position facts first — `git rev-parse HEAD`, `git status --short`, and
@@ -231,7 +245,7 @@ not restate it:
 | --- | --- |
 | Raw diff, commit list, current branch/HEAD/status | git (project repo), read live |
 | Per-wave acceptance commit, review verdict, contracts, next step | `build-log.md`, recorded once at the boundary |
-| Current boundary pointer and the full resume packet | `context-pack.md` |
+| Current boundary pointer and the non-derivable resume packet | `context-pack.md` |
 | Current wave detail, slice breakdown, acceptance criteria, current scope and non-goals | `active-work.md` |
 | Long-horizon direction, group/milestone order and acceptance status, milestone labels, durable non-goals | `roadmap.md` |
 | Substantial decision rationale | `decisions.md` (supersede in place) |
@@ -255,9 +269,9 @@ Per-artifact rules follow from the roles and ownership above:
   verification results once at each boundary. It is not a per-commit changelog or
   a raw verification transcript — the commit list and diffs derive from git. Give
   group closeout its own entry.
-- `context-pack.md`: the full resume packet, rewritten in full to reflect only
-  the current boundary (see Compaction). Derive git state live; reference
-  `build-log.md` for history rather than replaying it.
+- `context-pack.md`: the resume packet of non-derivable state, rewritten in
+  full to reflect only the current boundary (fields under Compaction). Derive
+  git state live; reference `build-log.md` for history rather than replaying it.
 - `task-queue.md`: durable queued waves, slices, or group gate items only.
   Native runtime task tracking is the default for short-lived in-session steps.
   Completed items roll off at group closeout; keep only pending work. For
@@ -280,59 +294,51 @@ Piper work artifacts are hub-owned project state. Keep them in
 `projects/<project-id>/work/` by default; do not move them into the registered
 project repo unless the user explicitly asks for a project-local copy.
 
-When `context-pack.md` changes, rewrite it in full so it is self-contained enough
-for a fresh session to resume without transcript archaeology: include the target
-repo path, branch, HEAD or relevant source commit, active scope, verification and
-review state, changed source areas, next exact action, blockers, and whether
-related source or hub changes are committed.
+When `context-pack.md` changes, rewrite it in full so a fresh session can resume
+without transcript archaeology. Its fields are defined once under Compaction;
+do not restate them here or elsewhere.
 
 Artifact updates are normal local assistance while work is active. Permission
 profiles gate whether a commit action can proceed; they do not make artifact
 commits automatic or change checkpoint timing. Do not ask after every artifact
-edit. Instead, disclose changed Piper artifacts at natural checkpoints and ask
-about a Piper artifact commit only when the stopping point or future continuity
-warrants it. Checkpoints include the end of formal planning, a milestone
-boundary, compact preparation, finish mode, before switching projects, or when
-the user says to pause, save, compact, finish, or commit.
+edit. Instead, disclose changed Piper artifacts at checkpoints and ask about a
+Piper artifact commit only when the stopping point or future continuity
+warrants it.
 
-At every checkpoint:
+**Boundary triggers.** One list, referenced everywhere else. A checkpoint is
+any of: a wave accepted; a group review, closeout, or milestone; the end of
+formal planning; a material change to active work; a blocker; pause, compact
+preparation, context low, project switch, or hand-off; finish; or the user
+saying pause, save, compact, finish, or commit. During Ralph execution a
+checkpoint appends `build-log.md`, and updates `task-queue.md` only when a
+durable queue is in use. `context-pack.md` is rewritten, and an artifact commit
+considered, only at the resume triggers: group closeout, milestone, material
+active-work change, pause, compact, project switch, blocker, or finish.
 
-1. Report changed Piper artifacts separately from registered project source
-   changes.
-2. Inspect git state for both the registered project repo and the Piper
-   Station hub when artifacts changed.
-3. State whether artifact changes are uncommitted in the hub.
-4. If the workflow checkpoint chooses an artifact commit, treat it as a
-   `local` permission action under `automation-policy.md` and keep it separate
-   from any registered project source commit.
-5. Reconcile before continuing: the windows and the ledger must agree on where
-   work is, with any divergence explained rather than silently carried. At an
-   accepted boundary, `context-pack.md`'s HEAD is the latest `build-log.md`
-   acceptance commit; mid-wave it is the current HEAD, which may be ahead of the
-   last acceptance, with uncommitted files noted; and `active-work.md`'s current
-   wave matches `context-pack.md`'s current boundary. Resolve unexplained
-   mismatches.
+**Checkpoint invariant.** Every checkpoint must leave two things true:
 
-Scope informs how strongly artifact persistence is surfaced; artifact creation
-is driven by durable need:
+1. The windows and the ledger agree on where work is, any divergence is
+   explained rather than silently carried, and a fresh session could resume
+   from the hub records plus live git alone. At an accepted boundary the live
+   HEAD is the latest `build-log.md` acceptance commit; mid-wave it may be
+   ahead of the last acceptance, with uncommitted files noted; and
+   `active-work.md`'s current wave matches `context-pack.md`'s current
+   boundary when both exist.
+2. Changed Piper artifacts are disclosed separately from registered project
+   source changes, with their hub commit state stated. An artifact commit,
+   when the checkpoint chooses one, is a `local` permission action under
+   `automation-policy.md`, kept separate from any project source commit.
 
-- `S0`: stay in chat unless the user asks to record something or a durable
-  project fact, policy preference, checkpoint, or verification result appears.
-- `S1`: prefer chat or `active-work.md` only when the current work needs
-  continuity.
-- `S2`: likely benefits from a clear current wave in `active-work.md` and
-  checkpoint entries in `build-log.md`; create `task-queue.md` only when
-  durable queued execution is needed.
-- `S3`: likely needs `roadmap.md` for group or milestone direction,
-  `active-work.md` for the current group and wave, and checkpoint entries in
-  `build-log.md`.
+How much writing that takes depends on the boundary: a light boundary satisfies
+the invariant with one build-log entry and live git; a group closeout needs the
+full roll-off. Record what the invariant requires, not a fixed set of files.
 
-During Ralph execution, append `build-log.md` at wave, group, review/fix,
-blocker, milestone, finish, or other meaningful boundaries. Update
-`task-queue.md` only when a durable queue is in use. Do not update
-`context-pack.md` or ask to commit artifacts unless the boundary is also a
-group closeout, milestone, material active-work change, pause, compact, context
-switch, blocker, or finish.
+**Reference method** (one way to satisfy the invariant, not a required
+script): report changed Piper artifacts separately from project source
+changes; inspect git state in the project repo and, when artifacts changed, in
+the hub; state whether artifact changes are uncommitted in the hub; decide
+whether this checkpoint warrants an artifact commit; then reconcile the windows
+against the ledger and resolve unexplained mismatches before continuing.
 
 ## Mode Routing
 
@@ -362,14 +368,21 @@ mode that fits:
 - Finish Mode: report verification, residual risk, changed files, and commit or
   pull request options without mutating git automatically.
 
-Scope tiers are advisory sizing, not artifact rules:
+Scope tiers are advisory sizing, not artifact rules; artifact creation is
+driven by durable need, and scope only informs how strongly persistence is
+surfaced:
 
-- `S0`: direct small task; stay in chat unless a durable need appears.
-- `S1`: modest work; use `active-work.md` only when continuity matters.
-- `S2`: substantial work; current-wave continuity, durable checkpoints, or
-  durable queued execution may help before execution.
-- `S3`: broad or long-running work; track group or milestone direction in
-  roadmap when that keeps execution clear.
+- `S0`: direct small task; stay in chat unless the user asks to record
+  something or a durable project fact, policy preference, checkpoint, or
+  verification result appears.
+- `S1`: modest work; use `active-work.md` only when the current work needs
+  continuity.
+- `S2`: substantial work; a clear current wave in `active-work.md` and
+  checkpoint entries in `build-log.md` likely help; create `task-queue.md`
+  only when durable queued execution is needed.
+- `S3`: broad or long-running work; `roadmap.md` for group or milestone
+  direction, `active-work.md` for the current group and wave, and checkpoint
+  entries in `build-log.md`.
 
 Risk tiers:
 
@@ -500,15 +513,36 @@ carry-forward, and the transition check.
 
 ## Compaction
 
-At pause, compact, handoff, blocker, milestone, finish, or project-switch
-boundaries, prepare compact-safe state in `projects/<id>/work/context-pack.md`.
-That file also carries the handoff fields when pausing or transferring work.
+At the resume triggers (see Boundary triggers under Artifact Persistence),
+prepare compact-safe state in `projects/<id>/work/context-pack.md`. That file
+also carries the handoff fields when pausing or transferring work.
 
-Compact-safe state must include goal, last completed boundary, current boundary
-status, next exact action, scope boundary, files to inspect first after compact,
-known reference paths, verification status, review state, group-level review
-state when a group exists, drift result, blockers and risks, git state,
-broad-search triggers, and stop reason.
+The packet holds only non-derivable state. Its required fields, defined here
+and nowhere else:
+
+1. **Goal** of the current boundary, one line.
+2. **Boundary**: the wave or group and its status — `idle`, `mid-wave`,
+   `accepted`, `group-review`, `closeout`, `between-groups`, or `blocked`.
+   Add the scope boundary when no `active-work.md` carries it, and the branch
+   when it is not the repo's default branch.
+3. **Next exact action**, naming the first file to open.
+4. **Verification and review state not yet recorded in `build-log.md`**:
+   unverified claims, open findings with their verdicts, and drift when it is
+   not none.
+5. **Blockers, risks, and open questions.**
+6. **Stop reason.**
+7. Optional: **broad-search triggers**, and a short **resume note** for a human
+   or fresh agent. Transient reference paths go here; durable ones belong in
+   `memory.md`.
+
+Derived at resume, never authored into the packet: the repo path
+(`project.md` and the registry); branch, HEAD, and status (live git); files
+changed and commits since the last acceptance commit in `build-log.md` (live
+git); what to inspect first (the changed files, `active-work.md`, and the
+build-log tail); hub artifact commit state (live git in the hub); and group or
+transition state (`roadmap.md` plus the closeout entries). If git or the ledger
+can answer a field, the packet references it rather than copying it. An `idle`
+packet — nothing active, next action "pick the next boundary" — is a few lines.
 
 Regenerate, do not append. Rewrite `context-pack.md` in full so it reflects only
 the current boundary; never section-edit or append, which is what lets stale
@@ -517,9 +551,9 @@ header. Superseded verification and review history stays in `build-log.md` and i
 referenced, not replayed; git state is derived live rather than copied from a HEAD
 that can age.
 
-Cold-resume guard: a full rewrite must first read the existing packet, preserve
-the complete required field list above, and reconcile against that prior packet
-and live git before replacing it. Never regenerate purely from freshly compacted,
+Cold-resume guard: a full rewrite must first read the existing packet, carry
+forward every still-relevant non-derivable field from it, and reconcile against
+live git before replacing it. Never regenerate purely from freshly compacted,
 lossy working memory — that can drop a still-relevant field.
 
 `/compact` is human-triggered. Ralph may pause and say the state is
@@ -529,7 +563,8 @@ actually ran it.
 
 After compact, start from the designed resume anchors: `context-pack.md`,
 `active-work.md`, `build-log.md`, optional `task-queue.md`, project
-`project.md`, `memory.md`, and live branch/HEAD/status. Read `roadmap.md` when
+`project.md`, `memory.md`, and live branch/HEAD/status; derive the fields
+listed above before acting on the packet. Read `roadmap.md` when
 longer-horizon direction matters, and read optional `decisions.md` only when it
 exists. Then rebuild enough of the active boundary neighborhood to work safely.
 Expand beyond that for concrete triggers such as a stale resume packet, missing

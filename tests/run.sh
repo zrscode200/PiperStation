@@ -803,6 +803,18 @@ for hub in "$codex_hub" "$claude_hub" "$opencode_hub" "$deepagent_hub"; do
   assert_contains "$hub/STATION.md" "Scope tiers are advisory sizing, not artifact rules"
   assert_contains "$hub/STATION.md" "artifact creation"
   assert_contains "$hub/STATION.md" "driven by durable need"
+  assert_contains "$hub/STATION.md" "defined once"
+  assert_contains "$hub/STATION.md" "Derive, do not duplicate"
+  assert_contains "$hub/STATION.md" "Temporal roles"
+  assert_contains "$hub/STATION.md" "Fact ownership"
+  assert_contains "$hub/STATION.md" "Boundary triggers"
+  assert_contains "$hub/STATION.md" "Checkpoint invariant"
+  assert_contains "$hub/STATION.md" "Reference method"
+  assert_contains "$hub/STATION.md" "light boundary"
+  assert_contains "$hub/STATION.md" "ungrouped wave"
+  assert_contains "$hub/STATION.md" "non-derivable"
+  assert_contains "$hub/STATION.md" "Derived at resume, never authored"
+  assert_contains "$hub/STATION.md" "still-relevant non-derivable field"
   assert_contains "$hub/STATION.md" "execute in waves"
   assert_contains "$hub/STATION.md" "checkpoint at boundaries"
   assert_contains "$hub/STATION.md" "Groups bundle related waves"
@@ -1123,6 +1135,7 @@ if grep -R -n -E 'one scoped task at a time|one scoped implementation slice|For 
 if grep -R -n -E "no artifact needed|short active plan in|written spec and plan required before implementation|For \`S1\`, prefer only \`active-plan.md\`|For \`S2\+\`, write|scope controls artifact|artifact weight|scope-appropriate checkpoints|active-spec\.md|active-plan\.md|verification\.md|specs/|plans/|runs/|plan, spec, task queue, build logs|implementer.s report" "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-scope-artifact-rules.log"; then cat "$TMP_ROOT/stale-scope-artifact-rules.log" >&2; fail "scope tiers and active prompts must use the compact artifact model"; fi
 if grep -R -n -E 'For `S2/S3`, or for `S1`|do not commit unless the user approves through `automation-policy`|Piper Station compact protection|Ralph may spawn the|security_reviewer`, `verifier`, `security_reviewer|Bash\(git branch:\*\)|Bash\(git -C \* branch:\*\)|Bash\(git symbolic-ref:\*\)|Bash\(git -C \* symbolic-ref:\*\)' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-runtime-review-fixes.log"; then cat "$TMP_ROOT/stale-runtime-review-fixes.log" >&2; fail "runtime review fixes must not regress to stale compact, helper, or permission wording"; fi
 if grep -R -n 'piper-workflow router\|piper workflow handles lookup, registration, orientation' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-router.log"; then cat "$TMP_ROOT/stale-router.log" >&2; fail "active instructions must not describe piper-workflow as the broad router"; fi
+if grep -R -n -E 'At every checkpoint:|the complete required field list|Compact-safe state must include' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-checkpoint-script.log"; then cat "$TMP_ROOT/stale-checkpoint-script.log" >&2; fail "STATION.md must state the checkpoint invariant and one compact field list, not the old checkpoint script"; fi
 if grep -R -n 'openaiDeveloperDocs_\*: allow\|"openaiDeveloperDocs_\\\*": "allow"' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-openai-docs-permission.log"; then cat "$TMP_ROOT/stale-openai-docs-permission.log" >&2; fail "OpenCode docs-researcher must ask before OpenAI docs MCP use"; fi
 if grep -R -n 'read-only band\|creates no hub records' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-brainstorm-readonly.log"; then cat "$TMP_ROOT/stale-brainstorm-readonly.log" >&2; fail "brainstorm registration wording must acknowledge the deterministic write exception"; fi
 if grep -R -n -E 'automation approval\. Route those through|automation approval.*piper-workflow' "$ROOT/core/skills/review/SKILL.md" "$ROOT/generated/codex/.codex/skills/review/SKILL.md" "$ROOT/generated/claude/.claude/skills/review/SKILL.md" "$ROOT/generated/opencode/.opencode/skills/review/SKILL.md" > "$TMP_ROOT/stale-review-automation-routing.log"; then cat "$TMP_ROOT/stale-review-automation-routing.log" >&2; fail "review skill must route automation approval directly to automation-policy"; fi

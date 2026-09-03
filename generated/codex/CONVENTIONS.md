@@ -20,11 +20,10 @@ only when useful; do not impose topic, aspect, research, probe, or prototype
 directories. Promotion from an existing note or ad hoc folder is
 discussion-led and non-destructive.
 
-Groups bundle related waves under a shared acceptance target and one
-integrating review gate. Use a group when multiple waves land before the larger
-boundary is accepted, or when cross-wave interaction risk matters. A group has
-its own boundary in `active-work.md`, its own checkpoint in `build-log.md`, and
-its own review gate over the integrated cross-wave diff before acceptance.
+The default unit of work is one ungrouped wave with a light boundary. Groups
+bundle related waves under a shared acceptance target and one integrating
+review gate and are entered by an explicit planning decision; `STATION.md`
+(Project Records, Group Lifecycle) owns the rules.
 
 Use Ralph review gates for substantial waves, high-impact slices, and queued
 foundational work. Risk tier controls Ralph implementation caution; permission
