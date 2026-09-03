@@ -7,25 +7,22 @@ state.
 Prioritize:
 
 - the user's latest goal and requested project
-- project id, repo path, branch, and current boundary
+- project id and the current boundary: the wave or group and its status
 - important facts from `projects/<id>/memory.md`
 - project policy preferences from `projects/<id>/project.md`
 - substantial decision logs from optional `projects/<id>/decisions.md`
-- active Superpowers or Ralph state from `projects/<id>/work/context-pack.md`
-  when present
+- the non-derivable resume fields from `projects/<id>/work/context-pack.md`
+  when present (defined once in `STATION.md` → Compaction): goal, boundary and
+  status, next exact action, verification and review state not yet in
+  `build-log.md`, blockers, risks, open questions, stop reason, and any
+  broad-search triggers or resume note
 - active work, build-log checkpoints, optional durable queue, and roadmap
   direction when relevant
-- Ralph boundary status, last completed boundary, next exact action, stop reason,
-  blockers, risks, verification status, and drift result when present
-- files changed in the real project repo and why
-- scope boundary, including files or areas in scope and out of scope
-- files to inspect first after compaction and known reference paths
-- commands run, verification results, and remaining test gaps
-- review state, blockers, risks, required approvals, and git state
+- files changed in the real project repo and why, and commands run with their
+  results, as a summary only — branch, HEAD, status, and the diff are derived
+  live from git on resume and never trusted from the summary
+- required approvals and permission decisions still pending
 - what to hand a human or fresh agent when pausing or transferring work
-- broad-search triggers, such as a stale resume packet, missing acceptance criteria,
-  failing verification, unclear generated parity, security/permissions behavior,
-  or review scope
 
 Reload on resume:
 
@@ -49,7 +46,9 @@ Rules:
 - Treat `projects/<id>/work/` as optional active work continuity, not as a
   registration artifact.
 - Treat built-in memories as supplemental recall only.
-- On resume after compaction, reload the listed records when present.
+- On resume after compaction, reload the listed records when present, and
+  derive branch, HEAD, git status, and changed files live from the real project
+  repo; treat any such values in the summary as hints to verify.
 - Preserve where to start after compact: designed anchors, exact next action,
   active boundary neighborhood, and when broader exploration is justified.
 - Do not invent completed work, approvals, test results, commits, branches, or

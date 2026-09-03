@@ -123,33 +123,39 @@ not move roadmap, active work, build log, queues, or context packs into the
 registered project repo unless the user explicitly asks for a project-local
 copy.
 
-When active work artifacts change, report them at natural checkpoints
-separately from registered project source changes. Check git state for both
-the real project repo and the Piper Station hub before finish or compact when
-artifacts changed. Updating artifacts is allowed local assistance; committing
-Piper artifact changes is a `local` permission action handled through
+At each boundary trigger, satisfy the checkpoint invariant defined once in
+`STATION.md` → Artifact Persistence: windows and ledger agree, a fresh session
+can resume from hub records plus live git, and changed Piper artifacts are
+reported separately from registered project source changes with their hub
+commit state. Updating artifacts is allowed local assistance; committing Piper
+artifact changes is a `local` permission action handled through
 `automation-policy.md` when the active profile does not already cover local
-git. Do not ask to commit after every artifact edit; ask only at continuity
-checkpoints defined in `STATION.md`.
+git. Do not ask to commit after every artifact edit; ask only at the resume
+triggers in that same list.
 
 Record artifacts economically: `context-pack.md` is the only fully
-self-contained resume packet, rewritten in full when updated. Git is the source
-of truth for branch/HEAD/commit/diff history — derive it live and let the owning
-artifact record what it needs (context-pack's resume snapshot, build-log's
-acceptance commit) rather than repeating it across roadmap, active-work, project,
-or queue records; superseded detail rolls off into a sink at group closeout. See
+self-contained resume packet, rewritten in full when updated and holding only
+the non-derivable fields defined once in `STATION.md` → Compaction. Git is the
+source of truth for branch/HEAD/commit/diff history — derive it live and let
+`build-log.md` record the acceptance commit rather than repeating it across
+other records; superseded detail rolls off into a sink at group closeout. See
 `STATION.md` for temporal roles and fact ownership.
 
 Plan in slices, execute in waves, and checkpoint at boundaries. Slices are
 decomposition units; waves are implementation and checkpoint units. Detail the
 current wave enough to execute safely, and sketch later waves only when the
-current code, context, and prior results make them reliable.
+current code, context, and prior results make them reliable. The default unit
+is one ungrouped wave with a light boundary; ceremony scales with the boundary,
+not the project.
 
 Groups bundle related waves under a shared acceptance target and one
-integrating review gate. Use a group when multiple waves land before the larger
-boundary is accepted, or when cross-wave interaction risk matters. Make the
+integrating review gate, entered by an explicit planning decision. Make the
 group boundary, wave list, required gates, group review state, and acceptance
 target visible in `active-work.md`.
+
+Native task tracking is the in-session default for short-lived steps;
+`task-queue.md` exists only when queued work must survive the session or move
+across agents.
 
 ## Mode Routing
 
@@ -321,15 +327,16 @@ records, commit, push, or invoke `/compact`.
 
 During Ralph Mode, rewrite `context-pack.md` in full — regenerate it to the
 current boundary, not section-edit, reconciling against the prior packet and live
-git first — when pausing, preparing for compact, finishing, blocked, crossing a
-milestone, context is low, switching projects, or materially changing active
-work. Internal slice progress should stay inside
-the current wave unless risk, verification, or drift requires a stop. Append
-`build-log.md` at wave, group, review/fix, blocker, milestone, finish, or other
-meaningful boundaries, and update optional `task-queue.md` only when a durable
-queue is in use, including explicit group review gate status for multi-wave
-groups. If context is low or the next wave needs a clean context, pause and
-tell the user the state is compact-ready and they may run `/compact`.
+git first — at the resume triggers defined once in `STATION.md` → Artifact
+Persistence → Boundary triggers. The packet holds only the non-derivable fields
+defined under `STATION.md` → Compaction; branch, HEAD, status, changed files,
+and what to inspect first are derived live at resume. Internal slice progress
+should stay inside the current wave unless risk, verification, or drift
+requires a stop. Append `build-log.md` at each boundary trigger, and update
+optional `task-queue.md` only when a durable queue is in use, including
+explicit group review gate status for multi-wave groups. If context is low or
+the next wave needs a clean context, pause and tell the user the state is
+compact-ready and they may run `/compact`.
 
 Do not claim `/compact` was run unless the user or Codex actually ran it.
 

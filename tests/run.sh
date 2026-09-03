@@ -299,6 +299,9 @@ assert_contains "$codex_hub/STATION.md" "Review code, an implemented wave, group
 assert_contains "$codex_hub/STATION.md" "current active-work wave, group review"
 assert_contains "$codex_hub/AGENTS.md" "Artifact Persistence"
 assert_contains "$codex_hub/AGENTS.md" "Record artifacts economically"
+assert_contains "$codex_hub/AGENTS.md" "checkpoint invariant"
+assert_contains "$codex_hub/AGENTS.md" "light boundary"
+assert_contains "$codex_hub/AGENTS.md" "non-derivable"
 assert_contains "$codex_hub/AGENTS.md" "current wave enough"
 assert_contains "$codex_hub/AGENTS.md" "Groups bundle related waves"
 assert_contains "$codex_hub/AGENTS.md" "group review state"
@@ -369,6 +372,8 @@ python3 -m json.tool "$TMP_ROOT/codex-session-compact.log" >/dev/null
 (cd "$codex_hub" && sh .codex/hooks/pre-compact-protection.sh) > "$TMP_ROOT/codex-pre-compact.log"
 assert_contains "$TMP_ROOT/codex-pre-compact.log" '"systemMessage"'
 assert_contains "$TMP_ROOT/codex-pre-compact.log" "compact reminder"
+assert_contains "$TMP_ROOT/codex-pre-compact.log" "stop reason"
+assert_contains "$TMP_ROOT/codex-pre-compact.log" "derived live at resume"
 assert_contains "$TMP_ROOT/codex-pre-compact.log" "does not block compaction"
 python3 -m json.tool "$TMP_ROOT/codex-pre-compact.log" >/dev/null
 (cd "$codex_hub" && sh .codex/hooks/post-compact-resume.sh) > "$TMP_ROOT/codex-post-compact.log"
@@ -489,6 +494,9 @@ assert_contains "$claude_hub/.claude/skills/piper-workflow/SKILL.md" "gate befor
 assert_contains "$claude_hub/.claude/skills/brainstorm/SKILL.md" "rather than execute"
 assert_contains "$claude_hub/CLAUDE.md" "Artifact Persistence"
 assert_contains "$claude_hub/CLAUDE.md" "Record artifacts economically"
+assert_contains "$claude_hub/CLAUDE.md" "checkpoint invariant"
+assert_contains "$claude_hub/CLAUDE.md" "light boundary"
+assert_contains "$claude_hub/CLAUDE.md" "non-derivable"
 assert_contains "$claude_hub/CLAUDE.md" "current wave enough"
 assert_contains "$claude_hub/CLAUDE.md" "Groups bundle related waves"
 assert_contains "$claude_hub/CLAUDE.md" "group review state"
@@ -532,6 +540,8 @@ assert_contains "$TMP_ROOT/claude-session-compact.log" "Resume guidance"
 (cd "$claude_hub" && sh .claude/hooks/pre-compact-protection.sh) > "$TMP_ROOT/claude-pre-compact.log"
 assert_contains "$TMP_ROOT/claude-pre-compact.log" '"systemMessage"'
 assert_contains "$TMP_ROOT/claude-pre-compact.log" "compact reminder"
+assert_contains "$TMP_ROOT/claude-pre-compact.log" "stop reason"
+assert_contains "$TMP_ROOT/claude-pre-compact.log" "derived live at resume"
 assert_contains "$TMP_ROOT/claude-pre-compact.log" "does not block compaction"
 python3 -m json.tool "$TMP_ROOT/claude-pre-compact.log" >/dev/null
 
@@ -639,6 +649,9 @@ assert_contains "$opencode_hub/.opencode/skills/piper-workflow/SKILL.md" "list t
 assert_contains "$opencode_hub/.opencode/skills/piper-workflow/SKILL.md" "gate before the acceptance task"
 assert_contains "$opencode_hub/AGENTS.md" "Artifact Persistence"
 assert_contains "$opencode_hub/AGENTS.md" "Record artifacts economically"
+assert_contains "$opencode_hub/AGENTS.md" "checkpoint invariant"
+assert_contains "$opencode_hub/AGENTS.md" "light boundary"
+assert_contains "$opencode_hub/AGENTS.md" "non-derivable"
 assert_contains "$opencode_hub/AGENTS.md" "current wave enough"
 assert_contains "$opencode_hub/AGENTS.md" "Groups bundle related waves"
 assert_contains "$opencode_hub/AGENTS.md" "group review state"
@@ -784,6 +797,11 @@ precompact_cmd=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))
 sh -c "$precompact_cmd" </dev/null > "$TMP_ROOT/deepagent-precompact.log"
 python3 -m json.tool "$TMP_ROOT/deepagent-precompact.log" >/dev/null
 assert_contains "$TMP_ROOT/deepagent-precompact.log" "compact reminder"
+assert_contains "$TMP_ROOT/deepagent-precompact.log" "stop reason"
+assert_contains "$TMP_ROOT/deepagent-precompact.log" "derived live at resume"
+assert_contains "$deepagent_hub/.deepagents/AGENTS.md" "checkpoint invariant"
+assert_contains "$deepagent_hub/.deepagents/AGENTS.md" "light boundary"
+assert_contains "$deepagent_hub/.deepagents/AGENTS.md" "non-derivable"
 "$BOOTSTRAP" --runtime deepagent "$TMP_ROOT/deepagent-nogit-hub" > /dev/null 2> "$TMP_ROOT/deepagent-nogit.err"
 assert_contains "$TMP_ROOT/deepagent-nogit.err" "git repository root"
 "$BOOTSTRAP" --runtime deepagent,claude --git-init "$TMP_ROOT/deepagent-mix-hub" > /dev/null 2> "$TMP_ROOT/deepagent-mix.err"
@@ -1152,7 +1170,7 @@ if grep -R -n -E "no artifact needed|short active plan in|written spec and plan 
 if grep -R -n -E 'For `S2/S3`, or for `S1`|do not commit unless the user approves through `automation-policy`|Piper Station compact protection|Ralph may spawn the|security_reviewer`, `verifier`, `security_reviewer|Bash\(git branch:\*\)|Bash\(git -C \* branch:\*\)|Bash\(git symbolic-ref:\*\)|Bash\(git -C \* symbolic-ref:\*\)' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-runtime-review-fixes.log"; then cat "$TMP_ROOT/stale-runtime-review-fixes.log" >&2; fail "runtime review fixes must not regress to stale compact, helper, or permission wording"; fi
 if grep -R -n 'piper-workflow router\|piper workflow handles lookup, registration, orientation' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-router.log"; then cat "$TMP_ROOT/stale-router.log" >&2; fail "active instructions must not describe piper-workflow as the broad router"; fi
 if grep -R -n -E 'At every checkpoint:|the complete required field list|Compact-safe state must include' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-checkpoint-script.log"; then cat "$TMP_ROOT/stale-checkpoint-script.log" >&2; fail "STATION.md must state the checkpoint invariant and one compact field list, not the old checkpoint script"; fi
-if grep -R -n -E 'Include last completed boundary, current boundary|Git state: repo path, branch, HEAD|Group-level review state when a group exists|Piper artifact state:' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-compact-field-lists.log"; then cat "$TMP_ROOT/stale-compact-field-lists.log" >&2; fail "commands and skills must point at the STATION compact field list instead of restating it"; fi
+if grep -R -n -E 'Include last completed boundary, current boundary|Git state: repo path, branch, HEAD|Group-level review state when a group exists|Piper artifact state:|context-pack.s resume snapshot|The compact state must include|Compact summary priorities' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-compact-field-lists.log"; then cat "$TMP_ROOT/stale-compact-field-lists.log" >&2; fail "commands and skills must point at the STATION compact field list instead of restating it"; fi
 if grep -R -n 'openaiDeveloperDocs_\*: allow\|"openaiDeveloperDocs_\\\*": "allow"' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-openai-docs-permission.log"; then cat "$TMP_ROOT/stale-openai-docs-permission.log" >&2; fail "OpenCode docs-researcher must ask before OpenAI docs MCP use"; fi
 if grep -R -n 'read-only band\|creates no hub records' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-brainstorm-readonly.log"; then cat "$TMP_ROOT/stale-brainstorm-readonly.log" >&2; fail "brainstorm registration wording must acknowledge the deterministic write exception"; fi
 if grep -R -n -E 'automation approval\. Route those through|automation approval.*piper-workflow' "$ROOT/core/skills/review/SKILL.md" "$ROOT/generated/codex/.codex/skills/review/SKILL.md" "$ROOT/generated/claude/.claude/skills/review/SKILL.md" "$ROOT/generated/opencode/.opencode/skills/review/SKILL.md" > "$TMP_ROOT/stale-review-automation-routing.log"; then cat "$TMP_ROOT/stale-review-automation-routing.log" >&2; fail "review skill must route automation approval directly to automation-policy"; fi

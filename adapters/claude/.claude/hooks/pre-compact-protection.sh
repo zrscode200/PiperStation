@@ -3,6 +3,6 @@ set -eu
 
 cat <<'EOF'
 {
-  "systemMessage": "Piper Station compact reminder: before compaction, preserve the active project id, repo path, branch/HEAD/status, selected task, next exact action, scope boundary, files changed, files to inspect first, verification state, review state, drift result, blockers, risks, broad-search triggers, and what to hand a human or fresh agent. This hook reminds; it does not block compaction. If project work records are stale or missing, state that uncertainty in the compact summary. Rewrite context-pack.md in full to the current boundary rather than section-editing it."
+  "systemMessage": "Piper Station compact reminder: before compaction, rewrite projects/<id>/work/context-pack.md in full to the current boundary with only the non-derivable fields: goal, boundary and status, next exact action, verification and review state not yet in build-log.md, blockers and risks and open questions, stop reason, and optional broad-search triggers or a resume note. Branch, HEAD, status, changed files, and what to inspect first are derived live at resume; do not copy them into the packet. Regenerate the whole packet and reconcile against the prior packet and live git rather than section-editing. This hook reminds; it does not block compaction. If project work records are stale or missing, state that uncertainty in the compact summary."
 }
 EOF
