@@ -44,7 +44,7 @@ group_lanes=""
 if [ -d "$hub_dir/projects" ]; then
   group_lanes=$(
     find "$hub_dir/projects" -mindepth 4 -maxdepth 4 -path '*/work/groups/*' -type d 2>/dev/null |
-      sed "s#^$hub_dir/projects/##" |
+      sed "s|^$hub_dir/projects/||" |
       sort |
       tr '\n' ' '
   )

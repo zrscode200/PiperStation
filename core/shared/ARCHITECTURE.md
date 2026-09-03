@@ -24,13 +24,14 @@ piper-station-hub/
   .piper/lib/            # shared deterministic helpers
   bin/add-project
   projects/
-    <project-id>/work/design/
-      README.md          # project design index, once two entries exist
-      <topic>.md         # optional lightweight design note
-      <studio-slug>/     # optional full Design Studio
-        README.md        # studio navigation
-        design.md        # canonical design and accepted revision
-    <project-id>/work/groups/<gid>/   # one lane per group: its own windows and ledger
+    <project-id>/work/
+      design/
+        README.md        # project design index, once two entries exist
+        <topic>.md       # optional lightweight design note
+        <studio-slug>/   # optional full Design Studio
+          README.md      # studio navigation
+          design.md      # canonical design and accepted revision
+      groups/<gid>/      # one lane per group: its own windows and ledger
 ```
 
 ## Ownership

@@ -149,7 +149,7 @@ that lane when they do a clear job: preserve long-horizon direction in
 durable queued execution in optional `task-queue.md`, record checkpoint
 history in `build-log.md`, or prepare compact/resume continuity in
 `context-pack.md`. Ralph execution may update those records and
-edit only the real project repo when `local` profile coverage exists. Finish,
+edit only the lane's checkout when `local` profile coverage exists. Finish,
 local git, worktree, PR, dependency, network, CI, external, or exceptional
 actions route through `automation-policy` when they cross the active permission
 profile boundary.
@@ -228,8 +228,8 @@ Routine progress, command output, and transient notes should stay in the
 conversation unless substantial active work needs continuity under
 `projects/<project-id>/work/`.
 
-Before Ralph execution, verify the real project repo is writable in the active
-session. {{WORKSPACE_ACCESS}}
+Before Ralph execution, verify the lane's checkout (`repo_path` or its recorded
+worktree) is writable in the active session. {{WORKSPACE_ACCESS}}
 
 ## Guardrails
 

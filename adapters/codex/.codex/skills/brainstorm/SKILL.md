@@ -68,7 +68,8 @@ Ground the conversation in the actual project before reasoning about it:
    `projects/<project-id>/work/groups/` exists, the status line of every
    active group lane's `context-pack.md`, so orientation sees each lane in
    flight.
-5. Inspect the real repo path with `git status`, current branch, current HEAD,
+5. Inspect `repo_path` — which may be checked out on a group lane's branch —
+   with `git status`, current branch, current HEAD,
    and the files relevant to the request.
 6. If the project repo is outside the current Codex sandbox, note that Codex
    must be started with `--add-dir <project-repo>` before any later editing.

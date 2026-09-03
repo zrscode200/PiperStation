@@ -166,11 +166,11 @@ Before editing a registered project:
 3. Read `projects/<project-id>/project.md`, `memory.md`, and optional `decisions.md` when present.
 4. Select the lane (`STATION.md` → Lane selection; ask when more than one is active), then read its `context-pack.md`, `active-work.md`, `build-log.md`, and optional `task-queue.md` — under `projects/<project-id>/work/` for the flat lane or `work/groups/<gid>/` for a group lane — plus `roadmap.md` when present and relevant.
 5. Inspect the lane's checkout (`repo_path` or its recorded worktree) with `git status`, current branch, current HEAD, and the files relevant to the user request.
-6. If the repo is outside the hub, ensure Claude Code has workspace access through `/add-dir <repo-path>` or by launching with `claude --add-dir <repo-path>` before editing.
+6. If the lane's checkout is outside the hub, ensure Claude Code has workspace access through `/add-dir <checkout-path>` or by launching with `claude --add-dir <checkout-path>` before editing.
 7. State any uncommitted or recent user changes that affect the task.
 8. Make a short task-specific plan unless the user has asked only for review or explanation.
-9. Before Ralph execution or source edits, verify the real project repo is writable in the active session and confirm the active permission profile covers `local` source edits; if writable access or `local` coverage is absent, state what is required and route profile coverage through `automation-policy.md` before editing.
-10. Implement in the real project repo, using the repo's own conventions and verification commands.
+9. Before Ralph execution or source edits, verify the lane's checkout (`repo_path` or its recorded worktree; if an active group header binds `repo_path`, the flat lane has none) is writable in the active session and confirm the active permission profile covers `local` source edits; if writable access or `local` coverage is absent, state what is required and route profile coverage through `automation-policy.md` before editing.
+10. Implement in the lane's checkout, using the repo's own conventions and verification commands.
 11. Update `projects/<project-id>/work/` only when active continuity is useful.
 12. Update hub `memory.md`, `project.md` policy notes, or optional `decisions.md` only when durable context changed.
 

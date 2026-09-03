@@ -17,7 +17,8 @@ operating contract for project work in this hub.
   It must not start implementation work, create plans, checkpoint state,
   commit, push, install dependencies, or edit project source files.
 - Work on project source code only in the real repo path recorded in
-  `projects/<project-id>/project.md`.
+  `projects/<project-id>/project.md`, or in a lane's recorded git worktree of
+  that repo.
 - When a registered project repo is outside the current Codex sandbox, start
   Codex with `--add-dir <project-repo>` (or otherwise grant writable workspace
   access) before Ralph executes. Registration can record an outside path, but
@@ -266,13 +267,15 @@ Before editing a registered project:
 6. State any uncommitted or recent user changes that affect the task.
 7. Make a short task-specific plan unless the user has asked only for review or
    explanation.
-8. Before Ralph execution or source edits, verify the real project repo is
-   writable in the active session and confirm the active permission profile
+8. Before Ralph execution or source edits, verify the lane's checkout
+   (`repo_path` or its recorded worktree; if an active group header binds
+   `repo_path`, the flat lane has none) is writable in the active session and
+   confirm the active permission profile
    covers `local` source edits. If the repo is outside the current Codex
    sandbox, ensure Codex was started with `--add-dir <project-repo>` or that
    the sandbox otherwise grants writable access. If `local` profile coverage
    is absent, route through `automation-policy.md` before editing.
-9. Implement in the real project repo, using the repo's own conventions and
+9. Implement in the lane's checkout, using the repo's own conventions and
    verification commands.
 10. Update `projects/<project-id>/work/` only when active continuity is useful.
 11. Update hub `memory.md`, `project.md` policy notes, or optional

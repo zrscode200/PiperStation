@@ -56,7 +56,9 @@ profile boundary still route through the `automation-policy` skill.
    current wave is a formalization input, not a stop, and later waves being
    sketches is never a reason to down-scope the selected work.
 5. Verify the lane's checkout — `repo_path` or the lane's recorded worktree —
-   is writable in the active session. Registered repos and their worktrees
+   is writable in the active session; if an active group header binds
+   `repo_path`, the flat lane has no checkout of its own (surface per
+   `STATION.md` → One checkout per lane). Registered repos and their worktrees
    live outside this hub: reach them by absolute path, keep the approval
    mode on Manual so gated writes surface for decision, and state what is
    missing instead of declaring the task Ralph-ready when access is absent.
@@ -70,7 +72,7 @@ profile boundary still route through the `automation-policy` skill.
    Formalization, is `L3`, is outside the approved active work,
    lacks `local` profile coverage for source edits, or is `L2` without
    explicit user confirmation.
-9. Implement only the selected boundary in the real project repo. Within a
+9. Implement only the selected boundary in the lane's checkout. Within a
    wave, use slices to organize the work; do not turn each internal slice into a
    mandatory stop unless risk, verification, or drift requires it.
 10. Run the narrowest meaningful initial verification.
@@ -79,7 +81,8 @@ profile boundary still route through the `automation-policy` skill.
    foundational work, expected for meaningful behavior-changing `S1`, optional
    for `S0/L0`, docs-only, or trivial work. Risk tier controls Ralph
    implementation confirmation before editing, not review selection or
-   permission profile. After the final wave in a group lands, run a
+   permission profile. After the final wave in a group lands, sync the group
+   branch with base and re-verify, then run a
    group-level review gate over the integrated diff before the slice, group, or
    acceptance task is marked complete, even if every per-wave gate already
    passed. Per-wave gates inspect one wave; the group gate inspects cross-wave
@@ -211,9 +214,9 @@ When active work records are in use:
    and next step.
 2. Update `task-queue.md` with the current boundary status only when a durable
    queue exists.
-3. Rewrite `context-pack.md` in full only when pausing, preparing for compact,
-   finishing, blocked, crossing a milestone, context is low, switching projects,
-   or materially changing active work — regenerate the whole packet to reflect
+3. Rewrite `context-pack.md` in full only when a resume trigger fires
+   (`STATION.md` → Artifact Persistence → Boundary triggers) — regenerate the
+   whole packet to reflect
    only the current boundary rather than section-editing it, but first read the
    existing packet and reconcile against it and live git so the rewrite drops
    nothing still relevant. The packet holds only the non-derivable fields
@@ -221,9 +224,8 @@ When active work records are in use:
    changed files, and what to inspect first from live git and the build-log at
    resume rather than writing them into the packet.
 4. Report artifact files updated in the Piper Station hub and whether they are
-   committed. If the stop is a milestone boundary, compact preparation, finish
-   mode, project switch, or material active-work change, ask once whether to
-   commit the Piper artifact updates; route through `automation-policy` if the
+   committed. If the stop is a resume trigger, ask once whether to commit the
+   Piper artifact updates (path-scoped to the lane); route through `automation-policy` if the
    active profile does not cover local git.
 
 If the next boundary is safe and context is not a concern, continue normally.

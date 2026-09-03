@@ -30,7 +30,9 @@ still route through `automation-policy`.
 2. Identify the project id or repo path from `$ARGUMENTS`. Look up the project
    in `projects/registry.json` to confirm registration and resolve `repo_path`,
    then read `projects/<project-id>/project.md`, `memory.md`, and optional
-   `decisions.md` when it exists.
+   `decisions.md` when it exists. Then select the lane (`STATION.md` →
+   Group Lifecycle → Lane selection; ask, never guess) — an explicit `<gid>`
+   names a group lane.
    If upstream provides a Design Studio handoff, require the exact pair:
 
    ```text
@@ -48,7 +50,8 @@ still route through `automation-policy`.
    If `design.md` changes materially after handoff, treat the prior pair as
    stale. Require explicit acceptance of the current revision, then repeat this
    metadata and live-source verification before planning resumes.
-3. Verify the chosen upstream direction against the real code: confirm the
+3. Verify the chosen upstream direction against the real code in the lane's
+   checkout: confirm the
    ordinary brief's or accepted design's flagged assumptions, inspect the
    specific files and call sites the work will touch, and check that acceptance
    criteria are testable.
@@ -121,8 +124,8 @@ wave is still a sketch.
 16. At the planning checkpoint, satisfy the checkpoint invariant (`STATION.md`
     → Artifact Persistence): report changed Piper artifacts separately from
     source changes and state whether they are uncommitted in the hub.
-17. Offer one Piper artifact commit at planning finish only when the changed
-    artifacts matter for future continuity. Do not commit unless the checkpoint
+17. Offer one Piper artifact commit (path-scoped to the lane) at planning
+    finish only when the changed artifacts matter for future continuity. Do not commit unless the checkpoint
     decision is made and the active permission profile covers local git actions;
     otherwise route through `automation-policy`.
 18. Stop before implementation unless the user explicitly asks to proceed.

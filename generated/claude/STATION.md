@@ -176,15 +176,21 @@ their boundary lives: one active session works a lane at a time, and several
 lanes of one project may be active in parallel sessions.
 
 **One checkout per lane.** The registered `repo_path` is held by at most one
-lane at a time, recorded in that lane's `active-work.md` header as
-`checkout:`; the flat lane holds it by default. Every other active lane works
-in its own git worktree of the project repo (`git worktree add`, a `local`
-action; default path `<repo-parent>/<repo-basename>-worktrees/<gid>`),
-recorded as its `checkout:`. The lane's checkout must be writable in the
-active session — a worktree outside `repo_path` needs its own workspace access
-grant — and every git-derived fact for the lane is read in that checkout.
-While a group holds `repo_path`, an ungrouped request is surfaced rather than
-started: run it inside that group, wait, or give it a worktree.
+lane at a time. A lane holds it when its `active-work.md` header records
+`checkout:` equal to `repo_path`; the flat lane holds it by default, only while
+no active group header does. Every other active lane works in its own git
+worktree of the project repo (`git worktree add`, a `local` action; default
+path `<repo-parent>/<repo-basename>-worktrees/<gid>`), recorded as its
+`checkout:`. A flat lane that takes a worktree records `checkout:` and
+`branch:` in its own `active-work.md` header, so that file is then required.
+Before editing, a session reads the active group headers: if one binds
+`repo_path`, the flat lane has no checkout of its own. The lane's checkout
+must be writable in the active session — a worktree outside `repo_path` needs
+its own workspace access grant — and every git-derived fact for the lane is
+read in that checkout. While a group holds `repo_path`, an ungrouped request
+is surfaced rather than started: run it inside that group (its single
+build-log entry then lands in that group's ledger), wait, or give it a
+worktree.
 
 Registration must not create `work/`.
 
@@ -276,7 +282,7 @@ not restate it:
 | --- | --- |
 | Raw diff, commit list, current branch/HEAD/status | git (project repo), read live in the lane's checkout |
 | Per-wave acceptance commit, review verdict, contracts, next step | the lane's `build-log.md`, recorded once at the boundary |
-| Current boundary pointer and the non-derivable resume packet | the lane's `context-pack.md` |
+| Current boundary pointer and the resume packet | the lane's `context-pack.md` |
 | Current wave detail, slice breakdown, acceptance criteria, current scope and non-goals | the lane's `active-work.md` |
 | Group lane binding: branch, checkout, owned boundary, lane status | the group's `active-work.md` header, set at Entry |
 | Long-horizon direction, group/milestone order and acceptance status, milestone labels, durable non-goals | `roadmap.md` |
@@ -353,7 +359,8 @@ saying pause, save, compact, finish, or commit. During Ralph execution a
 checkpoint appends `build-log.md`, and updates `task-queue.md` only when a
 durable queue is in use. `context-pack.md` is rewritten, and an artifact commit
 considered, only at the resume triggers: group closeout, milestone, material
-active-work change, pause, compact, project switch, blocker, or finish.
+active-work change, pause, compact preparation, context low, project switch,
+hand-off, blocker, or finish.
 
 **Checkpoint invariant.** Every checkpoint must leave two things true:
 
@@ -452,11 +459,11 @@ one-off approval.
 
 ## Ralph Review Gate
 
-Before Ralph edits project source, verify the real project repo is writable in
-the active session and confirm the active permission profile covers `local`
-source edits. If the repo is outside the current workspace or sandbox, state
-that writable access is required before execution instead of declaring the task
-Ralph-ready. If `local` profile coverage is absent, route through
+Before Ralph edits project source, verify the lane's checkout (`repo_path` or
+its recorded worktree) is writable in the active session and confirm the
+active permission profile covers `local` source edits. If the checkout is
+outside the current workspace or sandbox, state that writable access is
+required before execution instead of declaring the task Ralph-ready. If `local` profile coverage is absent, route through
 `automation-policy` before editing.
 
 During Ralph Mode, run a read-only implementation review after substantial
@@ -497,8 +504,9 @@ gates — is covered under Mode Routing and the Ralph Review Gate.
 selects one lane first, by one rule: a token that names an existing
 `work/groups/<gid>` folder selects that group lane, and any other token is a
 boundary inside the selected lane; with no token, exactly one candidate lane —
-one group whose header status is `active` while the flat lane is idle, or the
-flat lane alone — is selected; with more than one candidate, ask, never guess;
+one group whose header status is `active` while the flat lane has no open
+boundary (no packet, or a packet whose status is `idle`), or the flat lane
+alone — is selected; with more than one candidate, ask, never guess;
 with none, the flat lane. A group is active when its folder exists and its
 header `status:` is not `closed`.
 
@@ -610,7 +618,8 @@ and nowhere else:
 
 1. **Goal** of the current boundary, one line.
 2. **Boundary**: the lane (`flat` or `<gid>`), the wave, and its status — `idle`, `mid-wave`,
-   `accepted`, `group-review`, `closeout`, `between-groups`, or `blocked`.
+   `accepted`, `group-review`, `closeout`, `between-groups`, `blocked`, or
+   `closed` (a group lane after closeout).
    Add the scope boundary when no `active-work.md` carries it, and the branch
    when it is not the repo's default branch.
 3. **Next exact action**, naming the first file to open.

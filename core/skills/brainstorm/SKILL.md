@@ -61,7 +61,8 @@ Ground the conversation in the actual project before reasoning about it:
    `projects/<project-id>/work/groups/` exists, also read the status line of
    every active group lane's `context-pack.md`, so orientation sees each lane
    in flight.
-6. Inspect the real repo path with `git status`, current branch, current HEAD,
+6. Inspect `repo_path` — which may be checked out on a group lane's branch —
+   with `git status`, current branch, current HEAD,
    and the files relevant to the request.
 7. {{WORKSPACE_ACCESS}}
 8. Treat uncommitted changes as user-owned unless the user says otherwise.

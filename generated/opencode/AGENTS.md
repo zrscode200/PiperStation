@@ -13,7 +13,8 @@ point for Codex and OpenCode work across registered project repositories.
   It must not start implementation work, create plans, checkpoint state,
   commit, push, install dependencies, or edit project source files.
 - Work on project source code only in the real repo path recorded in
-  `projects/<project-id>/project.md`.
+  `projects/<project-id>/project.md`, or in a lane's recorded git worktree of
+  that repo.
 - Use the active runtime's native behavior for planning, implementation,
   review, testing, subagents, handoff, and git operations
   within the routed workflow; substantial registered-project development
@@ -226,12 +227,14 @@ Before editing a registered project:
 6. State any uncommitted or recent user changes that affect the task.
 7. Make a short task-specific plan unless the user has asked only for review or
    explanation.
-8. Before Ralph execution or source edits, verify the real project repo is
-   writable in the active session and confirm the active permission profile
+8. Before Ralph execution or source edits, verify the lane's checkout
+   (`repo_path` or its recorded worktree; if an active group header binds
+   `repo_path`, the flat lane has none) is writable in the active session and
+   confirm the active permission profile
    covers `local` source edits. If writable access or `local` profile coverage
    is absent, state what is required and route profile coverage through
    `automation-policy.md` before editing.
-9. Implement in the real project repo, using the repo's own conventions and
+9. Implement in the lane's checkout, using the repo's own conventions and
    verification commands.
 10. Update `projects/<project-id>/work/` only when active continuity is useful.
 11. Update hub `memory.md`, `project.md` policy notes, or optional

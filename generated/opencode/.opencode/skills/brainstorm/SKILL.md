@@ -61,9 +61,10 @@ Ground the conversation in the actual project before reasoning about it:
    `projects/<project-id>/work/groups/` exists, also read the status line of
    every active group lane's `context-pack.md`, so orientation sees each lane
    in flight.
-6. Inspect the real repo path with `git status`, current branch, current HEAD,
+6. Inspect `repo_path` — which may be checked out on a group lane's branch —
+   with `git status`, current branch, current HEAD,
    and the files relevant to the request.
-7. If the project repo is outside the current working directory, open OpenCode from the project directory or adjust workspace access before editing.
+7. If the lane's checkout (`repo_path` or its recorded worktree) is outside the current working directory, open OpenCode from that directory or adjust workspace access before editing.
 8. Treat uncommitted changes as user-owned unless the user says otherwise.
 
 ## Divergent Toolkit

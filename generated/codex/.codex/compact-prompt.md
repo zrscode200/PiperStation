@@ -12,14 +12,14 @@ Prioritize:
 - important facts from `projects/<id>/memory.md`
 - project policy preferences from `projects/<id>/project.md`
 - substantial decision logs from optional `projects/<id>/decisions.md`
-- the non-derivable resume fields from `projects/<id>/work/context-pack.md`
+- the non-derivable resume fields from the selected lane's `context-pack.md`
   when present (defined once in `STATION.md` → Compaction): goal, boundary and
   status, next exact action, verification and review state not yet in
   `build-log.md`, blockers, risks, open questions, stop reason, and any
   broad-search triggers or resume note
 - active work, build-log checkpoints, optional durable queue, and roadmap
   direction when relevant
-- files changed in the real project repo and why, and commands run with their
+- files changed in the lane's checkout and why, and commands run with their
   results, as a summary only — branch, HEAD, status, and the diff are derived
   live from git on resume and never trusted from the summary
 - required approvals and permission decisions still pending
@@ -38,7 +38,7 @@ Reload on resume:
   `projects/<project-id>/work/` for the flat lane or
   `projects/<project-id>/work/groups/<gid>/` for a group lane
 - `projects/<project-id>/work/roadmap.md` when relevant
-- relevant active-boundary-neighborhood files in the real project repo
+- relevant active-boundary-neighborhood files in the lane's checkout
 
 Rules:
 

@@ -20,7 +20,7 @@ if [ -d "$ROOT/projects" ]; then
   if [ "$projects_count" -gt 0 ]; then
     projects_list=$(find "$ROOT/projects" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sed 's#.*/##' | sort | sed 's/^/- /')
   fi
-  lanes_list=$(find "$ROOT/projects" -mindepth 4 -maxdepth 4 -path '*/work/groups/*' -type d 2>/dev/null | sed "s#^$ROOT/projects/##" | sort | sed 's/^/- /')
+  lanes_list=$(find "$ROOT/projects" -mindepth 4 -maxdepth 4 -path '*/work/groups/*' -type d 2>/dev/null | sed "s|^$ROOT/projects/||" | sort | sed 's/^/- /')
 fi
 
 base_context="Piper Station hub-lite is active.

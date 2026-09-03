@@ -67,7 +67,8 @@ Ground the conversation in the actual project before reasoning about it:
    `projects/<project-id>/work/groups/` exists, the status line of every
    active group lane's `context-pack.md`, so orientation sees each lane in
    flight.
-5. Inspect the real repo path with `git status`, current branch, current HEAD,
+5. Inspect `repo_path` — which may be checked out on a group lane's branch —
+   with `git status`, current branch, current HEAD,
    and the files relevant to the request — always by absolute path; relative
    paths do not resolve against the working directory in this runtime.
 6. Registered repos live outside this hub; later editing happens at their

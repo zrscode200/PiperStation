@@ -155,7 +155,7 @@ that lane when they do a clear job: preserve long-horizon direction in
 durable queued execution in optional `task-queue.md`, record checkpoint
 history in `build-log.md`, or prepare compact/resume continuity in
 `context-pack.md`. Ralph execution may update those records and
-edit only the real project repo when `local` profile coverage exists. Finish,
+edit only the lane's checkout when `local` profile coverage exists. Finish,
 local git, worktree, PR, dependency, network, CI, external, or exceptional
 actions route through `automation-policy` when they cross the active permission
 profile boundary.
@@ -217,8 +217,9 @@ caution. Permission profiles control action boundaries separately.
 
 ## Workspace Access
 
-Before Ralph execution, verify writable repo access for the real project repo.
-Registered repos live outside this hub: reach them by absolute path, expect
+Before Ralph execution, verify writable repo access for the lane's checkout
+(`repo_path` or its recorded worktree). Registered repos and their worktrees
+live outside this hub: reach them by absolute path, expect
 each gated write to surface an approval, and keep the approval mode on Manual
 so those approvals actually appear. Confirm the active permission profile
 covers `local` source edits before editing — do not declare the task
