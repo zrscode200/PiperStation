@@ -98,6 +98,7 @@ projects/<project-id>/
   project.md
   memory.md
   work/              # optional, created by the active runtime only when useful
+    groups/<gid>/    # one lane folder per group, created at group Entry
 ```
 
 - `project.md` binds the project id to the real repo path and stores a small
@@ -110,7 +111,9 @@ projects/<project-id>/
   deleting it.
 - `work/` stores optional active work continuity such as roadmap, active work,
   build log, compact pack, durable task queue records, lightweight design
-  notes, and explicitly entered Design Studio folders.
+  notes, and explicitly entered Design Studio folders. Each group is its own
+  lane under `work/groups/<gid>/` with its own active work, compact pack,
+  build log, and optional queue; the project-level files serve the flat lane.
 
 Do not put routine progress logs, command output, temporary plans, secrets, or
 raw sensitive logs into durable hub records.
@@ -124,6 +127,14 @@ Piper work artifacts stay under `projects/<project-id>/work/` by default. Do
 not move roadmap, active work, build log, queues, or context packs into the
 registered project repo unless the user explicitly asks for a project-local
 copy.
+
+Concurrency is per lane: one active session per lane, regardless of harness.
+A group lane binds its `branch:` and `checkout:` in its `active-work.md`
+header; `repo_path` is held by at most one lane and every other active lane
+works in its own git worktree. Hub artifact commits are path-scoped — stage
+only the lane's paths plus touched project-level files, never `git add -A` in
+the shared hub checkout. See `STATION.md` → Project Records and Group
+Lifecycle for lane selection, Entry, Closeout, and the legacy-layout move.
 
 At each boundary trigger, satisfy the checkpoint invariant defined once in
 `STATION.md` → Artifact Persistence: windows and ledger agree, a fresh session
@@ -259,10 +270,13 @@ Before editing a registered project:
    to use.
 3. Read `projects/<project-id>/project.md`, `memory.md`, and optional
    `decisions.md` when present.
-4. Read `projects/<project-id>/work/context-pack.md`, `active-work.md`,
-   `build-log.md`, optional `task-queue.md`, and `roadmap.md` when present and
-   relevant.
-5. Inspect the real repo path with git status, current branch, current HEAD,
+4. Select the lane (`STATION.md` → Lane selection; ask when more than one is
+   active), then read its `context-pack.md`, `active-work.md`, `build-log.md`,
+   and optional `task-queue.md` — under `projects/<project-id>/work/` for the
+   flat lane or `work/groups/<gid>/` for a group lane — plus `roadmap.md` when
+   present and relevant.
+5. Inspect the lane's checkout (`repo_path` or its recorded worktree) with
+   git status, current branch, current HEAD,
    and the files relevant to the user request — using absolute paths.
 6. State any uncommitted or recent user changes that affect the task.
 7. Make a short task-specific plan unless the user has asked only for review or
@@ -356,7 +370,8 @@ the state is compact-ready.
 
 Do not claim a compaction ran unless the runtime actually performed it.
 
-After compact or resume, start from the designed resume anchors:
+After compact or resume, start from the selected lane's designed resume
+anchors (`work/` or `work/groups/<gid>/`):
 `context-pack.md`, `active-work.md`, `build-log.md`, optional
 `task-queue.md`, project `project.md`, `memory.md`, optional `decisions.md`,
 and live branch/HEAD/status. Read `roadmap.md` when longer-horizon direction

@@ -7,7 +7,8 @@ state.
 Prioritize:
 
 - the user's latest goal and requested project
-- project id and the current boundary: the wave or group and its status
+- project id, the selected lane (flat or `<gid>`), and the current boundary:
+  the wave or group and its status
 - important facts from `projects/<id>/memory.md`
 - project policy preferences from `projects/<id>/project.md`
 - substantial decision logs from optional `projects/<id>/decisions.md`
@@ -32,10 +33,10 @@ Reload on resume:
 - `projects/<project-id>/project.md`
 - `projects/<project-id>/memory.md`
 - optional `projects/<project-id>/decisions.md` when present
-- `projects/<project-id>/work/context-pack.md` when present
-- `projects/<project-id>/work/active-work.md` when present
-- `projects/<project-id>/work/build-log.md` when present
-- optional `projects/<project-id>/work/task-queue.md` when present
+- the selected lane's `context-pack.md`, `active-work.md`, `build-log.md`,
+  and optional `task-queue.md` when present — under
+  `projects/<project-id>/work/` for the flat lane or
+  `projects/<project-id>/work/groups/<gid>/` for a group lane
 - `projects/<project-id>/work/roadmap.md` when relevant
 - relevant active-boundary-neighborhood files in the real project repo
 

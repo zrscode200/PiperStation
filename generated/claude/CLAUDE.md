@@ -42,9 +42,9 @@ delegated roles.
 Slash commands are the user entry points. Run them from this hub directory.
 
 - `/add-project <repo-path> [project-id]` - register a project repo with this hub.
-- `/superpowers <project-id> [request]` - enter Superpowers Mode: direction verification, group/milestone structure (Structural Planning), and current-wave detail (Wave Formalization).
-- `/ralph <project-id> [boundary]` - enter Ralph Mode: execute the current wave, an explicit slice, or a queued task with verification, Implementation Review Gate, and compact-safe updates.
-- `/compact-handoff [project-id]` - prepare a project's work records so the user can safely run `/compact`.
+- `/superpowers <project-id> [<gid>] [request]` - enter Superpowers Mode: direction verification, group/milestone structure (Structural Planning), and current-wave detail (Wave Formalization).
+- `/ralph <project-id> [<gid> | boundary]` - enter Ralph Mode: execute the current wave, an explicit slice, or a queued task with verification, Implementation Review Gate, and compact-safe updates. A `<gid>` names a group lane under `work/groups/`; with more than one active lane and no `<gid>`, Ralph asks.
+- `/compact-handoff [project-id] [<gid>]` - prepare a lane's work records so the user can safely run `/compact`.
 
 The deterministic shell equivalent for registration is:
 
@@ -129,12 +129,13 @@ projects/<project-id>/
   project.md
   memory.md
   work/              # optional, created by Claude Code only when useful
+    groups/<gid>/    # one lane folder per group, created at group Entry
 ```
 
 - `project.md` binds the project id to the real repo path and stores a small project overview plus project policy preferences.
 - `memory.md` stores durable facts, preferences, stable conventions, and reusable context.
 - Optional `decisions.md` stores substantial decision logs future work should not silently reopen.
-- `work/` stores optional active continuity such as roadmap, active work, build log, compact pack, durable task queue records, lightweight design notes, and explicitly entered Design Studio folders.
+- `work/` stores optional active continuity such as roadmap, active work, build log, compact pack, durable task queue records, lightweight design notes, and explicitly entered Design Studio folders. Each group is its own lane under `work/groups/<gid>/` with its own active work, compact pack, build log, and optional queue; the project-level files serve the flat lane.
 
 Do not put routine progress logs, command output, temporary plans, secrets, or raw sensitive logs into durable hub records.
 
@@ -143,6 +144,8 @@ Registration must not create `work/`. Claude Code may create it during active wo
 ## Artifact Persistence
 
 Piper work artifacts stay under `projects/<project-id>/work/` by default. Do not move roadmap, active work, build log, queues, or context packs into the registered project repo unless the user explicitly asks for a project-local copy.
+
+Concurrency is per lane: one active session per lane, regardless of harness. A group lane binds its `branch:` and `checkout:` in its `active-work.md` header; `repo_path` is held by at most one lane and every other active lane works in its own git worktree. Hub artifact commits are path-scoped — stage only the lane's paths plus touched project-level files, never `git add -A` in the shared hub checkout. See `STATION.md` → Project Records and Group Lifecycle for lane selection, Entry, Closeout, and the legacy-layout move.
 
 At each boundary trigger, satisfy the checkpoint invariant defined once in `STATION.md` → Artifact Persistence: windows and ledger agree, a fresh session can resume from hub records plus live git, and changed Piper artifacts are reported separately from registered project source changes with their hub commit state. Updating artifacts is allowed local assistance; committing Piper artifact changes is a `local` permission action handled through `automation-policy.md` when the active profile does not already cover local git. Do not ask to commit after every artifact edit; ask only at the resume triggers in that same list.
 
@@ -161,8 +164,8 @@ Before editing a registered project:
 1. Read this file and `STATION.md`.
 2. Look up the project in `projects/registry.json` to confirm registration and resolve `repo_path`. If the user's id is ambiguous, list the registered `project_id` entries (with `description` where present) and ask which one to use.
 3. Read `projects/<project-id>/project.md`, `memory.md`, and optional `decisions.md` when present.
-4. Read `projects/<project-id>/work/context-pack.md`, `active-work.md`, `build-log.md`, optional `task-queue.md`, and `roadmap.md` when present and relevant.
-5. Inspect the real repo path with `git status`, current branch, current HEAD, and the files relevant to the user request.
+4. Select the lane (`STATION.md` → Lane selection; ask when more than one is active), then read its `context-pack.md`, `active-work.md`, `build-log.md`, and optional `task-queue.md` — under `projects/<project-id>/work/` for the flat lane or `work/groups/<gid>/` for a group lane — plus `roadmap.md` when present and relevant.
+5. Inspect the lane's checkout (`repo_path` or its recorded worktree) with `git status`, current branch, current HEAD, and the files relevant to the user request.
 6. If the repo is outside the hub, ensure Claude Code has workspace access through `/add-dir <repo-path>` or by launching with `claude --add-dir <repo-path>` before editing.
 7. State any uncommitted or recent user changes that affect the task.
 8. Make a short task-specific plan unless the user has asked only for review or explanation.
@@ -211,7 +214,7 @@ require a reliable active-project/session-state source and explicit ownership
 rules for hook-written records. Keep this as future design work, not current
 hub-lite behavior.
 
-After compact, start from the designed resume anchors: `context-pack.md`, `active-work.md`, `build-log.md`, optional `task-queue.md`, project `project.md`, `memory.md`, optional `decisions.md`, and live branch/HEAD/status. Read `roadmap.md` when longer-horizon direction matters. Then rebuild enough of the active boundary neighborhood to work safely. Expand beyond that for concrete triggers such as a stale resume packet, missing acceptance criteria, failing verification, generated parity, security or permissions behavior, or review scope.
+After compact, start from the selected lane's designed resume anchors (`work/` or `work/groups/<gid>/`): `context-pack.md`, `active-work.md`, `build-log.md`, optional `task-queue.md`, project `project.md`, `memory.md`, optional `decisions.md`, and live branch/HEAD/status. Read `roadmap.md` when longer-horizon direction matters. Then rebuild enough of the active boundary neighborhood to work safely. Expand beyond that for concrete triggers such as a stale resume packet, missing acceptance criteria, failing verification, generated parity, security or permissions behavior, or review scope.
 
 ## Project Repos
 
