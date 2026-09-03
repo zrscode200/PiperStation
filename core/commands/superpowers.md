@@ -70,9 +70,12 @@ still route through `automation-policy`.
    boundary, an acceptance target, and risks or revisit triggers. Update
    `roadmap.md` only when long-term direction, milestones, deferred work,
    risks, or revisit triggers change.
-9. When multiple waves share one acceptance target or cross-wave interaction
-   risk matters, write the group header in `active-work.md` with the goal,
-   wave list, required gates, group review state, and acceptance target.
+9. Decide explicitly whether the work needs a group: only when multiple waves
+   share one acceptance target, cross-wave interaction risk matters, or the
+   work will run alongside other work on the project. Otherwise keep it one
+   ungrouped wave with a light boundary (`STATION.md` → Project Records). When
+   a group is entered, write the group header in `active-work.md` with the
+   goal, wave list, required gates, group review state, and acceptance target.
 10. Check structural readiness: the structure is complete when every in-scope
     group has a boundary, an acceptance target, and revisit triggers.
     Wave-level detail is not part of this bar; later waves and groups may stay
@@ -107,11 +110,12 @@ wave is still a sketch.
 
 14. Append `build-log.md` at formal planning completion when the plan
     materially changes future execution.
-15. Defer `context-pack.md` unless planning is stopping, pausing, preparing
-    for compact, handing off, blocked, or crossing a milestone boundary.
-16. At the planning checkpoint, report changed Piper artifacts separately from
-    source changes, inspect the Piper Station hub git state when artifacts
-    changed, and state whether those artifact changes are uncommitted.
+15. Defer `context-pack.md` unless a resume trigger applies (`STATION.md` →
+    Artifact Persistence → Boundary triggers); when written, it holds only the
+    non-derivable fields defined under Compaction.
+16. At the planning checkpoint, satisfy the checkpoint invariant (`STATION.md`
+    → Artifact Persistence): report changed Piper artifacts separately from
+    source changes and state whether they are uncommitted in the hub.
 17. Offer one Piper artifact commit at planning finish only when the changed
     artifacts matter for future continuity. Do not commit unless the checkpoint
     decision is made and the active permission profile covers local git actions;
@@ -135,10 +139,9 @@ Create only under `projects/<project-id>/work/`, and only when useful:
 - `build-log.md`: primary durable checkpoint ledger for planning outcomes,
   implemented contracts, implementation summaries, review and verification
   results, risks, next steps, and commits.
-- `context-pack.md`: compact/resume and handoff anchor with the current
-  boundary, next exact action, files to inspect first, git state,
-  verification, review state, group-level review state when relevant, drift,
-  blockers, stop reason, and what to hand a human or fresh agent.
+- `context-pack.md`: compact/resume and handoff anchor holding only the
+  non-derivable fields defined once in `STATION.md` → Compaction; git state
+  and files to inspect first are derived at resume.
 - `task-queue.md`: optional durable Ralph wave, slice, or group gate list with
   ids, status, risk, acceptance criteria, verification, and expected diff
   boundary.
@@ -151,8 +154,8 @@ Create only under `projects/<project-id>/work/`, and only when useful:
 Keep artifacts lean: `context-pack.md` is the only fully self-contained resume
 packet, rewritten in full when updated. Git is the source of truth for branch,
 HEAD, commit, and diff history — derive it live and let the owning artifact record
-what it needs (context-pack's resume snapshot, build-log's acceptance commit)
-rather than repeating it across roadmap, active-work, queue, or project records.
+what it needs (build-log's acceptance commit) rather than repeating it across
+context-pack, roadmap, active-work, queue, or project records.
 See `STATION.md` for the temporal roles (sinks vs windows vs topical references)
 and fact ownership.
 

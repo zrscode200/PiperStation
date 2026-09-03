@@ -160,45 +160,42 @@ them during active work is allowed local assistance; committing those updates
 is a `local` permission action and must go through `automation-policy` when the
 active permission profile does not cover local git.
 Record artifacts economically: `context-pack.md` is the only fully
-self-contained resume packet, rewritten in full when updated; roadmap,
+self-contained resume packet, rewritten in full when updated and holding only
+the non-derivable fields defined once in `STATION.md` → Compaction; roadmap,
 active-work, queue, and build-log records stay purpose-specific. Git is the
 source of truth for branch/HEAD/commit/diff history — derive it live and let the
-owning artifact record what it needs (context-pack's resume snapshot, build-log's
-acceptance commit) rather than repeating it elsewhere. See `STATION.md` for the
-temporal roles (accumulative sinks vs
-current windows vs topical references), fact ownership, and the group-closeout
-roll-off that keeps windows from becoming sinks.
+owning artifact record what it needs (build-log's acceptance commit) rather
+than repeating it elsewhere. See `STATION.md` for the temporal roles
+(accumulative sinks vs current windows vs topical references), fact ownership,
+and the group-closeout roll-off that keeps windows from becoming sinks.
 
 Plan in slices, execute in waves, and checkpoint at boundaries. Detail the
 current wave enough to execute safely. Sketch later waves only when the current
-code, context, and prior results make them reliable.
+code, context, and prior results make them reliable. The default unit is one
+ungrouped wave with a light boundary (`STATION.md` → Project Records).
 
 Groups bundle related waves under a shared acceptance target and one
-integrating review gate. Use a group when multiple waves land before the larger
-boundary is accepted, or when cross-wave interaction risk matters. Make the
-group boundary, wave list, required gates, group review state, and acceptance
-target visible in `active-work.md`; for durable queues, list the group review
-gate before the acceptance task.
+integrating review gate. Entering a group is an explicit planning decision: use
+one when multiple waves must land before the larger boundary is accepted, when
+cross-wave interaction risk matters, or when the work will run alongside other
+work on the project. Make the group boundary, wave list, required gates, group
+review state, and acceptance target visible in `active-work.md`; for durable
+queues, list the group review gate before the acceptance task.
 
-Do not ask to commit after every artifact edit. At natural checkpoints, report
-changed artifacts separately from registered project source changes, inspect
-git state for both the real project repo and the Piper Station hub, and say
-whether Piper artifact changes are uncommitted. Ask once about committing
-Piper artifacts only when the stopping point or future continuity warrants it:
-
-- `S0`: stay in chat unless a durable need appears.
-- `S1`: use `active-work.md` only when continuity matters.
-- `S2`: create only the records needed for current-wave active work,
-  checkpoint history, compact/resume, or durable queued execution.
-- `S3`: use `roadmap.md` when groups, milestones, deferred work, or revisit
-  triggers need durable direction.
+Do not ask to commit after every artifact edit. At each boundary trigger,
+satisfy the checkpoint invariant defined once in `STATION.md` → Artifact
+Persistence — windows and ledger agree, a fresh session can resume from hub
+records plus live git, and changed Piper artifacts are reported separately from
+registered project source changes with their hub commit state — and nothing
+more. Ask once about committing Piper artifacts only when the stopping point or
+future continuity warrants it. Scope tiers (`STATION.md` → Mode Routing) inform
+how strongly persistence is surfaced; they do not create artifacts.
 
 During Ralph execution, append `build-log.md` at wave, group, review/fix,
-blocker, milestone, finish, or other meaningful boundaries. Update
-`task-queue.md` only when a durable queue is in use. Avoid `context-pack.md`
-updates and commit prompts unless the boundary is also a group closeout,
-milestone, active-work change, pause, compact, project switch, blocker, or
-finish.
+blocker, milestone, finish, or other meaningful boundaries — the boundary
+triggers defined once in `STATION.md` → Artifact Persistence. Update
+`task-queue.md` only when a durable queue is in use. Rewrite `context-pack.md`
+and consider an artifact commit only at the resume triggers in that same list.
 
 ## Scope And Risk
 

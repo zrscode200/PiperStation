@@ -111,8 +111,8 @@ At a meaningful design boundary:
 - use `active-work.md` for the current Design Studio boundary when durable
   continuity is useful, without inventing a Ralph wave;
 - append `build-log.md` only for meaningful design checkpoints;
-- rewrite `context-pack.md` only at Piper's existing pause, compact, handoff,
-  blocker, milestone, finish, or project-switch boundaries;
+- rewrite `context-pack.md` only at Piper's resume triggers (`STATION.md` →
+  Artifact Persistence → Boundary triggers);
 - use `task-queue.md` only when the user deliberately needs durable queued
   research, validation, prototype, review, or later execution work.
 

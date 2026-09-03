@@ -103,18 +103,19 @@ profile boundary still route through the `automation-policy` skill.
     Update `active-work.md` only when the group boundary, current wave, slice
     breakdown, requirements, approach, verification strategy, or group review
     state materially changed.
-15. Report changed Piper artifacts separately from registered project source
-    changes. During internal slice progress, do not ask to commit artifact
-    updates or update `context-pack.md`. At wave, group, milestone, blocker,
-    pause, compact, project switch, or finish boundaries, update only the
-    artifacts needed for continuity.
+15. Satisfy the checkpoint invariant (`STATION.md` → Artifact Persistence) at
+    each boundary trigger and nothing more: report changed Piper artifacts
+    separately from registered project source changes with their hub commit
+    state. During internal slice progress, do not ask to commit artifact
+    updates or update `context-pack.md`. An ungrouped wave pays the
+    light boundary only.
 16. Record project policy preferences in `project.md`, and use optional
     `decisions.md` only for substantial decision logs.
 17. If a required or expected review gate was skipped, record review debt and do
     not continue to a dependent task until it is resolved or explicitly
     accepted by the user.
-18. Prepare compact-safe state at pause, compact, handoff, blocker, milestone,
-    finish, or project-switch boundaries.
+18. Prepare compact-safe state at the resume triggers (`STATION.md` →
+    Artifact Persistence → Boundary triggers).
 19. Continue only if the next boundary is safe and the user asked for
     continuation.
 
@@ -184,8 +185,8 @@ unless the user explicitly accepts the review debt.
 
 ## Compaction Discipline
 
-At each natural stopping point, prepare compact-safe state before continuing or
-pausing. Natural stopping points include a completed wave, group closeout,
+At each boundary trigger (`STATION.md` → Artifact Persistence), prepare
+compact-safe state before continuing or pausing. Natural stopping points include a completed wave, group closeout,
 queued task, milestone boundary, failed verification stop, blocked task, or
 transition to a larger next boundary. In Deep Agents, compaction fires
 automatically as context fills — the records must already be current when it
@@ -203,12 +204,10 @@ When active work records are in use:
    or materially changing active work — regenerate the whole packet to reflect
    only the current boundary rather than section-editing it, but first read the
    existing packet and reconcile against it and live git so the rewrite drops
-   nothing still relevant. Include last completed boundary, current boundary
-   status, next exact action, scope boundary, files changed, files to inspect
-   first after compact, known reference paths, branch, HEAD, and
-   `git status --short` (derived live), verification status, review state,
-   group-level review state when relevant, drift result, blockers, risks, broad
-   search triggers, stop reason, and what to hand a human or fresh agent.
+   nothing still relevant. The packet holds only the non-derivable fields
+   defined once in `STATION.md` → Compaction; derive branch, HEAD, status,
+   changed files, and what to inspect first from live git and the build-log at
+   resume rather than writing them into the packet.
 4. Report artifact files updated in the Piper Station hub and whether they are
    committed. If the stop is a milestone boundary, compact preparation, finish
    mode, project switch, or material active-work change, ask once whether to

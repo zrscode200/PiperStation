@@ -22,12 +22,13 @@ boundary, not after.
 4. Inspect the Piper Station hub git state when `projects/<project-id>/work/`
    exists or will be updated, so the packet can distinguish hub artifact
    changes from registered project source changes.
-5. Rewrite `projects/<project-id>/work/context-pack.md` in full from the required
-   compact resume packet below — regenerate the whole packet to reflect only the
-   current boundary; do not section-edit or append. It also carries the handoff
-   fields when pausing or transferring work.
-6. Report changed Piper artifacts separately from registered project source
-   changes. State whether artifact changes are uncommitted in the hub.
+5. Rewrite `projects/<project-id>/work/context-pack.md` in full with the
+   required fields defined once in `STATION.md` → Compaction — regenerate the
+   whole packet to reflect only the current boundary; do not section-edit or
+   append. It also carries the handoff fields when pausing or transferring work.
+6. Satisfy the checkpoint invariant (`STATION.md` → Artifact Persistence):
+   report changed Piper artifacts separately from registered project source
+   changes and state whether they are uncommitted in the hub.
 7. Ask once whether to commit Piper artifact updates before compacting only
    when those artifacts matter for future continuity; do not commit unless the
    checkpoint decision is made and the active permission profile covers local
@@ -38,34 +39,30 @@ boundary, not after.
 
 ## Required Compact Resume Packet
 
-Include these fields or equivalent clearly labeled sections:
+The fields are defined once in `STATION.md` → Compaction; this list only names
+them. Label each clearly:
 
 - Goal
-- Last completed boundary
-- Current boundary status: wave, group entry, group review, closeout, transition,
-  explicit slice, queued task, or blocker
+- Current boundary status: the wave or group and its status (`idle`,
+  `mid-wave`, `accepted`, `group-review`, `closeout`, `between-groups`, or
+  `blocked`); the scope boundary when no `active-work.md` carries it; the
+  branch when it is not the repo's default
 - Next exact action: a file to open, command to run, or question to answer,
   specific enough to do cold
-- Scope boundary: files or areas in scope and out of scope
-- Files already changed and files to inspect first after compact
-- Known reference paths or repos
-- Verification status: commands run, pass/fail result, and known gaps
-- Review state
-- Group-level review state when a group exists
-- Cross-group transition state (when between groups): next group candidate and
-  its entry-readiness, carry-forward contracts/learnings, roadmap drift or
-  deferred scope, and the transition decision (proceed to next Entry vs surface
-  for re-planning)
-- Drift result: none, expected expansion, out-of-scope, or unknown
-- Blockers and risks
-- Git state: repo path, branch, HEAD, changed tracked files, untracked files,
-  and whether a commit was made
-- Piper artifact state: changed `projects/<project-id>/work/` files, Piper
-  Station hub branch/HEAD/status, and whether artifact changes are committed
-- Broad-search triggers: concrete reasons a future session should expand
-  beyond the active boundary neighborhood
+- Verification and review state not yet recorded in `build-log.md`: unverified
+  claims, open findings with their verdicts, and drift when it is not none
+- Blockers, risks, and open questions
 - Stop reason: why work is pausing, handing off, or compacting
-- What to hand a human or fresh agent
+- Optional: Broad-search triggers (concrete reasons a future session should
+  expand beyond the active boundary neighborhood) and a short resume note for
+  a human or fresh agent
+
+Derived at resume, never authored into the packet: repo path, branch, HEAD,
+and status; files changed and commits since the last acceptance commit; what
+to inspect first; hub artifact commit state; and group or transition state
+(read from `roadmap.md` and the closeout entries). When the status is
+`between-groups`, the next group candidate and the transition decision are the
+next exact action, not a separate field.
 
 Rules:
 
