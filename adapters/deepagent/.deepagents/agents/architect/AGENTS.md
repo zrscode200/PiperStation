@@ -14,7 +14,7 @@ satisfies the requirement.
 
 - the project repo path
 - the proposed change, feature, or risk area
-- any current `active-work.md`, `roadmap.md`, optional task queue, or design notes
+- any current lane `active-work.md` (flat lane or `work/groups/<gid>/`), `roadmap.md`, optional task queue, or design notes
 - the files or subsystems expected to be affected
 
 ## Review Focus

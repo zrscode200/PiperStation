@@ -63,7 +63,10 @@ Ground the conversation in the actual project before reasoning about it:
    register it first.
 4. Read `projects/<project-id>/project.md`, `memory.md`, and optional
    `decisions.md` when it exists for the canonical record; read
-   `projects/<project-id>/work/context-pack.md` when it exists.
+   `projects/<project-id>/work/context-pack.md` when it exists, and when
+   `projects/<project-id>/work/groups/` exists, the status line of every
+   active group lane's `context-pack.md`, so orientation sees each lane in
+   flight.
 5. Inspect the real repo path with `git status`, current branch, current HEAD,
    and the files relevant to the request — always by absolute path; relative
    paths do not resolve against the working directory in this runtime.

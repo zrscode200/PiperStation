@@ -106,20 +106,28 @@ Piper Workflow operates across groups, not only within one. The group lifecycle 
 defined in `STATION.md` — has four stages, each run through this skill's modes:
 
 - **Entry**: re-verify the next group's structural sketch against current code;
+  create the group's lane folder `work/groups/<gid>/` and bind it (`branch:`,
+  `checkout:` — a worktree when another lane holds `repo_path` — `boundary:`,
+  `status: active`), surfacing any boundary overlap with other active lanes;
   run Superpowers Structural Planning scoped to that group if it needs repair,
   then Wave Formalization for its first wave.
-- **Execution**: run the group's waves through Ralph Mode with per-wave gates.
-  Commit the project source per completed wave when the active profile covers
-  `local` — commit and report, no per-wave ask — separate from artifact commits.
-- **Closeout**: run the group review gate over the integrated diff, commit any
-  remaining group source, write the build-log closeout entry, tick the group's
-  acceptance in `roadmap.md`, record contracts later groups depend on, and roll
-  the group off the windows — condense its completed-wave detail into that
-  build-log entry and drop it from `active-work.md` and `task-queue.md`.
+- **Execution**: run the group's waves through Ralph Mode in the lane's
+  checkout with per-wave gates; wave entries go to the group ledger. Commit the
+  project source per completed wave on the lane's branch when the active
+  profile covers `local` — commit and report, no per-wave ask — separate from
+  artifact commits.
+- **Closeout**: sync with base, verify, run the group review gate over
+  `base..group`, commit any remaining group source, integrate into base (or
+  record `integrated: pending-pr`), write the closeout entry in the project
+  `build-log.md`, tick the group's acceptance in `roadmap.md`, record contracts
+  later groups depend on, and roll the group off the windows — condense the
+  group ledger into that closeout entry and rewrite the lane's windows to a
+  short `closed` pointer.
 - **Transition**: check whether the outcome reshapes later groups; carry
-  learnings forward; continue to the next group's Entry, or surface for
-  re-planning when the roadmap materially changes. Keep re-planning here in
-  Superpowers; hand back to `brainstorm` only for a genuinely divergent question.
+  learnings forward; lanes still active sync with base before their next wave;
+  continue to the next group's Entry, or surface for re-planning when the
+  roadmap materially changes. Keep re-planning here in Superpowers; hand back
+  to `brainstorm` only for a genuinely divergent question.
 
 See `STATION.md` → Group Lifecycle for the canonical stage policy, gates, and
 artifact obligations.
@@ -132,12 +140,15 @@ Design Studio owns optional deeper design and its hub artifacts. When intent
 reaches Piper Workflow, durable execution records are expected. The full
 intent-to-writes map lives in `STATION.md`.
 
-Formal planning or Ralph preparation may create useful
-`projects/<id>/work/` records when they do a clear job: preserve long-horizon
-direction in `roadmap.md`, stabilize the current group and wave in
-`active-work.md`, create durable queued execution in optional `task-queue.md`,
-record checkpoint history in `build-log.md`, or prepare compact/resume
-continuity in `context-pack.md`. Ralph execution may update those records and
+Every convergent entry selects a lane first (`STATION.md` → Group Lifecycle →
+Lane selection): the flat lane under `projects/<id>/work/` or a group lane
+under `projects/<id>/work/groups/<gid>/`; with more than one candidate, ask,
+never guess. Formal planning or Ralph preparation may create useful records in
+that lane when they do a clear job: preserve long-horizon direction in
+`roadmap.md`, stabilize the current group and wave in `active-work.md`, create
+durable queued execution in optional `task-queue.md`, record checkpoint
+history in `build-log.md`, or prepare compact/resume continuity in
+`context-pack.md`. Ralph execution may update those records and
 edit only the real project repo when `local` profile coverage exists. Finish,
 local git, worktree, PR, dependency, network, CI, external, or exceptional
 actions route through `automation-policy` when they cross the active permission

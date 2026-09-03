@@ -207,9 +207,9 @@ Each mutable fact has one owner:
 | Integrated design, current revision, and acceptance | studio `design.md` |
 | Detailed initiative-local rationale, when split | `working-decisions.md` |
 | Broader design questions, when split | `open-questions.md` |
-| Current design or execution boundary | `active-work.md` |
-| Meaningful checkpoint history | `build-log.md` |
-| Full pause, compact, and resume state | `context-pack.md` |
+| Current design or execution boundary | the lane's `active-work.md` (the flat lane for studio work) |
+| Meaningful checkpoint history | the lane's `build-log.md` |
+| Full pause, compact, and resume state | the lane's `context-pack.md` |
 | Longer direction and revisit triggers | `roadmap.md`, when useful |
 | Deliberate durable queued work | `task-queue.md`, when useful |
 | Project-significant decisions | project `decisions.md` |

@@ -57,7 +57,10 @@ Ground the conversation in the actual project before reasoning about it:
 4. Read `projects/<project-id>/project.md`, `memory.md`, and optional
    `decisions.md` when it exists for the canonical record. Treat the registry
    as the lookup index; treat `project.md` as authoritative.
-5. Read `projects/<project-id>/work/context-pack.md` when it exists.
+5. Read `projects/<project-id>/work/context-pack.md` when it exists. When
+   `projects/<project-id>/work/groups/` exists, also read the status line of
+   every active group lane's `context-pack.md`, so orientation sees each lane
+   in flight.
 6. Inspect the real repo path with `git status`, current branch, current HEAD,
    and the files relevant to the request.
 7. If the repo is outside the hub, ensure Claude Code has workspace access through `/add-dir <repo-path>` or `claude --add-dir <repo-path>` before editing.

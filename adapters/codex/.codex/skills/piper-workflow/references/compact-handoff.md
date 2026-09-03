@@ -11,16 +11,18 @@ handoff, or compact-ready state on a registered project.
    confirm registration and resolve `repo_path`, then read the project
    record: `project.md`, `memory.md`, and optional `decisions.md` when it
    exists.
-2. Read relevant files under `projects/<project-id>/work/`, especially
-   `roadmap.md`, `active-work.md`, `build-log.md`, `context-pack.md`, and
-   optional `task-queue.md`.
-3. Inspect the real repo with `git status --short`,
+2. Select the lane (`STATION.md` → Group Lifecycle → Lane selection), then
+   read its files — `active-work.md`, `build-log.md`, `context-pack.md`, and
+   optional `task-queue.md` — under `projects/<project-id>/work/` for the flat
+   lane or `projects/<project-id>/work/groups/<gid>/` for a group lane, plus
+   `roadmap.md`.
+3. Inspect the lane's checkout with `git status --short`,
    `git rev-parse --short HEAD`, and `git diff --stat` enough to summarize
    changed files and risks.
 4. Inspect the Piper Station hub git state when `projects/<project-id>/work/`
    exists or will be updated, so the packet can distinguish hub artifact
    changes from registered project source changes.
-5. Rewrite `projects/<project-id>/work/context-pack.md` in full with the
+5. Rewrite the lane's `context-pack.md` in full with the
    required fields defined once in `STATION.md` → Compaction — regenerate the
    whole packet to reflect only the current boundary; do not section-edit or
    append. It also carries the handoff fields when pausing or transferring work.
@@ -30,7 +32,9 @@ handoff, or compact-ready state on a registered project.
 7. Ask once whether to commit Piper artifact updates before compacting only
    when those artifacts matter for future continuity; do not commit unless the
    checkpoint decision is made and the active permission profile covers local
-   git actions; otherwise route through `automation-policy`.
+   git actions; otherwise route through `automation-policy`. Stage only the
+   lane's paths plus touched project-level files — never `git add -A` in the
+   shared hub checkout.
 8. Report that the project is compact-ready and tell the user they may run
    `/compact`.
 

@@ -108,8 +108,9 @@ At a meaningful design boundary:
 - reconcile the canonical `design.md`;
 - update the studio README only when its artifact map or reading paths change;
 - update the project design index only when indexed design work changes;
-- use `active-work.md` for the current Design Studio boundary when durable
-  continuity is useful, without inventing a Ralph wave;
+- use the flat lane's `active-work.md` for the current Design Studio boundary
+  when durable continuity is useful, without inventing a Ralph wave; a studio
+  never enters a group lane folder;
 - append `build-log.md` only for meaningful design checkpoints;
 - rewrite `context-pack.md` only at Piper's resume triggers (`STATION.md` →
   Artifact Persistence → Boundary triggers);

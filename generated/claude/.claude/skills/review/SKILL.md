@@ -10,12 +10,15 @@ Use a two-stage review:
 1. Did we build the right thing?
 2. Did we build it well?
 
-Read the request, `active-work.md`, `build-log.md`, optional `task-queue.md`,
-changed code or diff, and relevant surrounding code before reporting findings.
-Use `active-work.md` to identify the selected wave, group, explicit slice, or
-queued task and its acceptance criteria. For a group review, inspect the
-integrated cross-wave diff and the interactions between waves, not only the
-last wave's diff. Read `context-pack.md` when resume state affects the review.
+Read the request, the selected lane's `active-work.md`, `build-log.md`,
+optional `task-queue.md`, changed code or diff, and relevant surrounding code
+before reporting findings (the flat lane's files live under `work/`, a group
+lane's under `work/groups/<gid>/`). Use that `active-work.md` to identify the
+selected wave, group, explicit slice, or queued task and its acceptance
+criteria. For a group review, inspect the integrated cross-wave diff
+(`base..group`, in the lane's checkout) and the interactions between waves,
+not only the last wave's diff. Read the lane's `context-pack.md` when resume
+state affects the review.
 
 Do not use this skill for general repo orientation, planning, implementation,
 or automation approval. Route orientation, planning, and implementation through

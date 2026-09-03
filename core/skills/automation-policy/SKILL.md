@@ -26,8 +26,10 @@ must use this skill before editing source.
 Piper artifact updates under `projects/<project-id>/work/` are ordinary local
 assistance while active work is in progress. A commit that saves those artifact
 updates in the Piper Station hub is a `local` permission action: keep it at the
-normal artifact checkpoint, name the project id and artifact files, and keep it
-distinct from any registered project source commit.
+normal artifact checkpoint, name the project id and artifact files, stage only
+the lane's paths plus touched project-level files — never `git add -A` or
+`commit -a` in the shared hub checkout — and keep it distinct from any
+registered project source commit.
 
 Non-destructive worktree creation or switching is `local`; deleting worktrees
 is `exceptional`.

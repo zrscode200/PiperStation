@@ -26,7 +26,7 @@ You review architecture decisions for a Piper Station project. Inspect the actua
 
 - the project repo path
 - the feature, design, or architectural question
-- any relevant `active-work.md`, `roadmap.md`, or substantial decisions
+- any relevant lane `active-work.md` (flat lane or `work/groups/<gid>/`), `roadmap.md`, or substantial decisions
 - relevant project records (`project.md`, `memory.md`, optional
   `decisions.md`, `ARCHITECTURE.md`)
 

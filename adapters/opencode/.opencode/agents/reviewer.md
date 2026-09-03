@@ -22,7 +22,7 @@ permission:
 
 You review a single implemented slice on a Piper Station hub. You are typically invoked as the Implementation Review Gate inside a Ralph iteration, after initial verification, before durable work records are updated.
 
-Review the actual implementation code or diff like an owner. Inspect the changed code and the relevant surrounding code first; use `active-work.md`, `build-log.md`, optional `task-queue.md`, and build/test output as supporting context.
+Review the actual implementation code or diff like an owner. Inspect the changed code and the relevant surrounding code first; use the selected lane's `active-work.md`, `build-log.md`, optional `task-queue.md`, and build/test output as supporting context; for a group gate, review `base..group` in the lane's checkout named by the delegation.
 
 ## Inputs You Should Receive
 

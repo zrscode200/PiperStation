@@ -1,6 +1,6 @@
 ---
 description: Enter Superpowers Mode for direction verification and planning
-argument-hint: "[project id or repo path and request]"
+argument-hint: "[project id or repo path, optional group id, and request]"
 ---
 
 # Superpowers
@@ -67,20 +67,24 @@ still route through `automation-policy`.
 5. Classify risk as `L0`, `L1`, `L2`, or `L3`.
 6. Ask only blocking clarification questions. If you cannot articulate what
    answer would change the design, do not ask.
-7. Create or update active work files under `projects/<project-id>/work/` only
+7. Create or update active work files in the selected lane — the flat lane's
+   `projects/<project-id>/work/` or a group lane's `work/groups/<gid>/` — only
    when they do a clear job: preserve long-horizon direction, stabilize current
    active work, create durable queued execution, record a checkpoint, or prepare
    compact/resume continuity.
 8. Define the group or milestone structure: give each in-scope group a
-   boundary, an acceptance target, and risks or revisit triggers. Update
+   lower-kebab `<gid>` (its future lane folder name), a boundary, an
+   acceptance target, and risks or revisit triggers. Update
    `roadmap.md` only when long-term direction, milestones, deferred work,
    risks, or revisit triggers change.
 9. Decide explicitly whether the work needs a group: only when multiple waves
    share one acceptance target, cross-wave interaction risk matters, or the
    work will run alongside other work on the project. Otherwise keep it one
    ungrouped wave with a light boundary (`STATION.md` → Project Records). When
-   a group is entered, write the group header in `active-work.md` with the
-   goal, wave list, required gates, group review state, and acceptance target.
+   a group is entered, its lane folder `work/groups/<gid>/` is created at
+   Entry, and the group header in that lane's `active-work.md` carries the
+   goal, wave list, required gates, group review state, acceptance target, and
+   the lane binding (`branch:`, `checkout:`, `boundary:`, `status:`).
 10. Check structural readiness: the structure is complete when every in-scope
     group has a boundary, an acceptance target, and revisit triggers.
     Wave-level detail is not part of this bar; later waves and groups may stay
@@ -102,8 +106,9 @@ wave is still a sketch.
     later waves only when the current code, context, and prior results make
     them reliable; this economy rule scopes artifact detail, not execution
     readiness — a sketched wave is formalized through this pass when its
-    boundary arrives. Keep work artifacts in `projects/<project-id>/work/`
-    unless the user explicitly asks for a project-local copy. When input is an
+    boundary arrives. Keep work artifacts in the selected lane under
+    `projects/<project-id>/work/` unless the user explicitly asks for a
+    project-local copy. When input is an
     accepted studio revision, record its `design_artifact` and exact
     `accepted_revision` but reference rather than copy the canonical design.
 13. Produce a Ralph-ready `task-queue.md` only when waves, slices, or group
@@ -150,6 +155,10 @@ Create only under `projects/<project-id>/work/`, and only when useful:
 - `task-queue.md`: optional durable Ralph wave, slice, or group gate list with
   ids, status, risk, acceptance criteria, verification, and expected diff
   boundary.
+- `work/groups/<gid>/`: one lane folder per group, created at group Entry,
+  holding that group's own `active-work.md`, `context-pack.md`,
+  `build-log.md`, and optional `task-queue.md`; the project-level files serve
+  the flat lane.
 - `work/design/<topic>.md`: optional lightweight topical design note,
   superseded in place and preserved during any later promotion.
 - `work/design/<studio-slug>/`: optional full Design Studio after explicit
@@ -186,7 +195,8 @@ non-goals, current assumptions, current wave details, acceptance criteria,
 expected diff boundary, slice breakdown for the current wave, risks and
 guardrails, verification strategy, review expectations, stop conditions, and
 open questions. When a group exists, include a `Group` section with goal,
-waves, required gates, group review state, and acceptance target. The group
+waves, required gates, group review state, acceptance target, and the lane
+binding (`branch:`, `checkout:`, `boundary:`, `status:`). The group
 section is Structural Planning output; current-wave detail is Wave
 Formalization output. Later waves are optional; include only reliable
 sketches, dependencies, and revisit triggers.

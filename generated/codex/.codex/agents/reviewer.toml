@@ -6,7 +6,7 @@ sandbox_mode = "read-only"
 developer_instructions = """
 Review the actual implementation code or diff like an owner.
 Inspect changed code and relevant surrounding code first.
-Use `active-work.md`, `build-log.md`, optional `task-queue.md`, and build/test output as supporting context.
+Use the selected lane's `active-work.md`, `build-log.md`, optional `task-queue.md`, and build/test output as supporting context; for a group gate, review `base..group` in the lane's checkout named by the delegation.
 Use two passes. First, check active-work compliance: acceptance criteria, expected diff boundary, drift, and any active work still not addressed. Second, check code quality: correctness, regressions, security, reliability, error handling, project conventions, and missing tests.
 Lead with concrete findings ordered by severity.
 Prioritize correctness, behavior regressions, security, reliability, and missing tests.

@@ -1,6 +1,6 @@
 ---
 description: Enter Ralph Mode for the current wave, explicit slice, or queued task
-argument-hint: "<project-id> [boundary id or description]"
+argument-hint: "<project-id> [<gid> | boundary id or description]"
 ---
 
 # Ralph
@@ -15,9 +15,10 @@ drift-checks, applies the Implementation Review Gate when required or expected,
 and updates compact-safe records when active work records are in use.
 
 Ralph is not a shell runner and not a general planner. Use it after a wave,
-explicit slice, or queued task is clear from the user request,
-`projects/<project-id>/work/active-work.md`, or the optional durable
-`task-queue.md`. If the selected wave is still a sketch, Ralph formalizes it
+explicit slice, or queued task is clear from the user request, the selected
+lane's `active-work.md`, or its optional durable `task-queue.md` (lanes are
+defined in `STATION.md` → Project Records). If the selected wave is still a
+sketch, Ralph formalizes it
 first through the Wave Formalization pass in `/superpowers`; open-ended
 planning stays out of scope. Slices are decomposition units; waves are
 execution and checkpoint units. Natural-language routing can choose this
@@ -30,13 +31,19 @@ profile boundary still route through `automation-policy`.
    `projects/registry.json` to confirm registration and resolve `repo_path`,
    then read the relevant `projects/<project-id>/project.md`, `memory.md`, and
    optional `decisions.md` when it exists.
-2. Read relevant files under `projects/<project-id>/work/`, especially
-   `active-work.md`, `build-log.md`, `context-pack.md`, and optional
-   `task-queue.md`.
+2. Select the lane first (`STATION.md` → Group Lifecycle → Lane selection): a
+   token naming an existing `work/groups/<gid>` folder selects that group
+   lane; with no token, exactly one active candidate selects itself, more than
+   one means ask, never guess, and none means the flat lane. Then read the
+   lane's files — `active-work.md`, `build-log.md`, `context-pack.md`, and
+   optional `task-queue.md` — under `projects/<project-id>/work/` for the flat
+   lane or `projects/<project-id>/work/groups/<gid>/` for a group lane, plus
+   `roadmap.md` when group order matters.
 3. Select one execution boundary: the wave, group review, explicit slice, or
-   task matching `$ARGUMENTS` if specified; otherwise the current boundary from
-   `active-work.md` or `context-pack.md`; otherwise the top ready item in the
-   optional queue. If the final wave in a group has landed and the group review
+   task matching `$ARGUMENTS` if specified, inside the selected lane;
+   otherwise the current boundary from the lane's `active-work.md` or
+   `context-pack.md`; otherwise the top ready item in the lane's optional
+   queue. If the final wave in a group has landed and the group review
    is pending, select the group review before any acceptance task. Once a
    group's closeout completes, the next boundary is the next group's Entry:
    re-verify its sketch per the Group Lifecycle before selecting its first wave.
@@ -50,15 +57,16 @@ profile boundary still route through `automation-policy`.
    to formalize it, then continue. A sketched current wave is a formalization
    input, not a stop, and later waves being sketches is
    never a reason to down-scope the selected work.
-5. Verify the real project repo is writable in the active session. If the repo
-   is outside the current workspace or sandbox, state that writable access is
-   required before execution instead of declaring the task Ralph-ready. Confirm
+5. Verify the lane's checkout — `repo_path` or the lane's recorded worktree —
+   is writable in the active session. If it is outside the current workspace
+   or sandbox, state that writable access is required before execution instead
+   of declaring the task Ralph-ready. Confirm
    the active permission profile covers `local` project source edits; if not,
    route through `automation-policy` before editing.
 6. State the selected wave, group review, explicit slice, or queued task and
    its expected diff boundary before editing.
-7. Mark the boundary active in `projects/<project-id>/work/task-queue.md` only
-   when a durable queue exists.
+7. Mark the boundary active in the lane's `task-queue.md` only when a durable
+   queue exists.
 8. Stop if the boundary is ambiguous, still lacks verification after Wave
    Formalization, is `L3`, is outside the approved active work,
    lacks `local` profile coverage for source edits, or is `L2` without
@@ -76,12 +84,15 @@ profile boundary still route through `automation-policy`.
    group-level review gate over the integrated diff before the slice, group, or
    acceptance task is marked complete, even if every per-wave gate already
    passed. Per-wave gates inspect one wave; the group gate inspects cross-wave
-   interactions. When the group gate passes, complete closeout: write the
-   build-log group-closeout entry, mark the acceptance target met and tick the
-   group in `roadmap.md`, capture contracts later groups depend on, and roll the
-   group off the windows — condense its completed-wave detail into that build-log
-   entry and drop it from `active-work.md` and `task-queue.md`, leaving a one-line
-   pointer (see `STATION.md` → Group Lifecycle).
+   interactions over `base..group` in the lane's checkout. When the group gate
+   passes, complete closeout in the order `STATION.md` → Group Lifecycle
+   defines: integrate the group branch into base (or record
+   `integrated: pending-pr`), write the group-closeout entry in the project
+   `build-log.md`, mark the acceptance target met and tick the group in
+   `roadmap.md`, capture contracts later groups depend on, and roll the
+   group off the windows — condense the group ledger into that closeout entry
+   and rewrite the lane's `active-work.md`, `context-pack.md`, and
+   `task-queue.md` to a short `closed` pointer.
 12. Validate reviewer findings before editing: give each finding an explicit
     verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or
     `false-positive` — and do not edit code until every finding has one. Then
@@ -91,13 +102,14 @@ profile boundary still route through `automation-policy`.
     fixed behavior. Run broader verification only when fixes touch shared,
     risky, or cross-cutting behavior.
 13. Drift-check the diff against the selected boundary, active work, and user
-    request. Once the drift-check passes, commit the wave's project source when
-    the active profile covers `local` — commit and report, without a per-wave
+    request. Once the drift-check passes, commit the wave's project source on
+    the lane's branch when the active profile covers `local` — commit and report, without a per-wave
     confirmation, separate from any Piper artifact commit; route through
     `automation-policy` when `local` coverage is absent; never commit mid-slice;
     and do not push or open PRs. At group closeout, commit any remaining group
     source.
-14. For boundary bookkeeping, append `build-log.md` at checkpoint cadence with
+14. For boundary bookkeeping, append the lane's `build-log.md` at checkpoint
+    cadence with
     changed source areas, verification result, review result, drift, risks, and
     next step. Update `task-queue.md` status only when a durable queue is in
     use, including explicit group review gate status for multi-wave groups.
@@ -221,14 +233,13 @@ they may run `/compact`.
 
 After compact, resume from designed anchors first:
 
-- `context-pack.md`
-- `active-work.md`
-- `build-log.md`
-- optional `task-queue.md`
+- the selected lane's `context-pack.md`, `active-work.md`, `build-log.md`, and
+  optional `task-queue.md` (`work/` for the flat lane, `work/groups/<gid>/`
+  for a group lane)
 - `roadmap.md` when long-horizon direction matters
 - project `project.md` and `memory.md`
 - optional `decisions.md` when present
-- branch, HEAD, and `git status --short`
+- branch, HEAD, and `git status --short` in the lane's checkout
 
 Then rebuild the active boundary neighborhood before editing. Inspect changed
 files, explicitly named files, related tests, configs, docs, generated
