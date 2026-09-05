@@ -15,7 +15,7 @@ Claude Code auto-loads this file. It is the always-on operating contract for wor
 - Use Claude Code-native behavior for planning, implementation, review, testing, subagents, handoff, and git operations within the routed workflow; substantial registered-project development enters through piper-workflow (Superpowers, then Ralph) rather than starting directly from a design or brainstorm conversation.
 - Do not start work, create plans, checkpoint state, commit, push, install dependencies, or edit project source as a side effect of registration.
 - Do not store secrets, credentials, private keys, customer data, or raw sensitive logs in hub records.
-- Use `automation-policy.md` before crossing the active permission profile boundary for source edits, local git, pushes, pull requests, dependency installs, non-destructive worktree create or switch operations, network, CI, deployments, or external automation. Deleting worktrees and other exceptional actions always need explicit one-off approval.
+- Use `automation-policy.md` before any `external` action (push, pull request, dependency install, networked command with effects, CI, deployment, external automation) or `exceptional` action. Source edits in the lane's checkout, local git, and non-destructive worktree create or switch operations are routine. Deleting worktrees and other exceptional actions always need explicit one-off approval.
 
 ## Required Reading
 
@@ -27,12 +27,12 @@ Use these docs as the canonical human-readable references:
 - `CONVENTIONS.md` - naming, context, and work style conventions.
 - `TESTING.md` - verification expectations.
 - `SECURITY.md` - sensitive-data and boundary rules.
-- `automation-policy.md` - permission profiles and action-boundary gates.
+- `automation-policy.md` - action classes (routine, `external`, `exceptional`), boundary asks, and standing policy notes.
 
 ## Instruction Precedence
 
 `STATION.md` defines shared behavior and ownership. `automation-policy.md`
-defines permission profiles and action boundaries. This `CLAUDE.md` is the
+defines action classes and boundary asks. This `CLAUDE.md` is the
 always-on Claude Code summary. Skills route intent, slash commands provide
 procedures, hooks give lifecycle reminders, and agents stay within their
 delegated roles.
@@ -75,7 +75,7 @@ Route each request through the smallest mode that fits.
 - Brainstorm (front door) - orient, frame the problem, weigh options, investigate, route explicit registration through the helper, and produce a decision-ready hand-off brief. Read-only except for that deterministic registration path.
 - Design Studio (optional divergent path) - after explicit user choice, create or reuse hub-owned studio artifacts, work discussion-first across sessions, and continue, pause, conclude without execution, or hand an explicitly accepted revision to Piper Workflow; do not edit project source or create groups and waves.
 - Superpowers Mode - verify the handed-off direction, define the group or milestone structure (Structural Planning), then formalize the current wave (Wave Formalization) before substantial implementation.
-- Ralph Mode - execute the current active-work wave, group review and closeout, one explicit slice, or one queued task; verify, drift-check, commit completed waves under `local`, and use implementation review gates at meaningful boundaries.
+- Ralph Mode - execute the current active-work wave, group review and closeout, one explicit slice, or one queued task; verify, drift-check, commit completed waves on the lane's branch, and use implementation review gates at meaningful boundaries.
 - Review Mode - first check whether the work matches the request or active work, then check code quality; group reviews inspect the integrated cross-wave diff.
 - Finish Mode - report verification, residual risk, changed files, and commit or pull request options without mutating git automatically.
 
@@ -85,7 +85,7 @@ for explicit deeper design, and `piper-workflow` for convergent execution. Use
 `/ralph` for explicit Ralph execution, the Piper `review` skill for explicit
 Piper review work or review gates, Claude Code's native `/review` when you
 specifically want its built-in PR review command, and `automation-policy`
-before crossing the active permission profile boundary. Prefer consequence
+before an `external` or `exceptional` action. Prefer consequence
 language such as "I will keep this
 read-only" or "I will create Ralph-ready work records" over ceremonial mode
 announcements.
@@ -104,16 +104,15 @@ Scope tiers are advisory sizing, not artifact rules.
 - `L0` - routine implementation risk.
 - `L1` - normal implementation risk.
 - `L2` - guarded implementation risk; get explicit confirmation before Ralph edits.
-- `L3` - blocked inside Ralph; stop for replanning, a human decision, or an exceptional permission decision.
+- `L3` - blocked inside Ralph; stop for replanning, a human decision, or an `exceptional` action that needs a fresh instruction.
 
-### Permission Profiles
+### Action Boundaries
 
-- `strict` - read-only inspection, planning, review, safe git status/log/diff style commands, deterministic registration, and drafting.
-- `local` - `strict` plus registered project source edits, Piper artifact updates, local checks/build/test, non-destructive worktree create or switch operations, and non-destructive local git actions when the workflow has reached that action.
-- `external` - `local` plus dependency install or update, networked commands, push, pull request creation or update, CI reruns or repair, and other non-destructive external-system actions.
-- `exceptional` - outside profiles; always requires explicit one-off approval.
+- Routine - no ask, no record: reading, planning, review, registration, source edits in the lane's checkout, local checks and tests, local git add or commit on the lane's branch, non-destructive worktree create or switch operations, Piper artifact updates and their path-scoped hub commits, read-only network reads.
+- `external` - ask once at the boundary where the workflow reaches it: push, pull request creation or update, dependency install or update, networked commands with effects, CI reruns or repair, and other non-destructive external-system actions; a standing grant in `projects/<project-id>/project.md` may pre-approve a named class with a target.
+- `exceptional` - a fresh explicit instruction every time; can never be pre-approved: force push, rewriting pushed history, deleting branches, worktrees, or user data, discarding changes the boundary did not make, secrets, production deploys, irreversible external actions.
 
-Permission profiles gate action categories. They do not change Piper phase routing, artifact checkpoints, Ralph review gates, or finish behavior. Record project-level profile preferences in `projects/<project-id>/project.md`.
+Routine actions proceed when the workflow reaches them; `external` and `exceptional` are the only Piper-level asks. Enforcement is Claude Code's own permission system (`.claude/settings.json` permissions and the session permission mode); where it is bypassed, the Piper asks are the only gate. A broad request like "finish this" is never a go-ahead. Go-aheads are recorded in the lane's `build-log.md`; `project.md` holds standing policy notes only.
 
 ## Project Records
 
@@ -147,7 +146,7 @@ Piper work artifacts stay under `projects/<project-id>/work/` by default. Do not
 
 Concurrency is per lane: one active session per lane, regardless of harness. A group lane binds its `branch:` and `checkout:` in its `active-work.md` header; `repo_path` is held by at most one lane and every other active lane works in its own git worktree. Hub artifact commits are path-scoped — stage only the lane's paths plus touched project-level files, never `git add -A` in the shared hub checkout. See `STATION.md` → Project Records and Group Lifecycle for lane selection, Entry, Closeout, and the legacy-layout move.
 
-At each boundary trigger, satisfy the checkpoint invariant defined once in `STATION.md` → Artifact Persistence: windows and ledger agree, a fresh session can resume from hub records plus live git, and changed Piper artifacts are reported separately from registered project source changes with their hub commit state. Updating artifacts is allowed local assistance; committing Piper artifact changes is a `local` permission action handled through `automation-policy.md` when the active profile does not already cover local git. Do not ask to commit after every artifact edit; ask only at the resume triggers in that same list.
+At each boundary trigger, satisfy the checkpoint invariant defined once in `STATION.md` → Artifact Persistence: windows and ledger agree, a fresh session can resume from hub records plus live git, and changed Piper artifacts are reported separately from registered project source changes with their hub commit state. Updating artifacts is allowed local assistance; committing Piper artifact changes is routine and path-scoped; the checkpoint decides whether one happens. Do not ask to commit after every artifact edit; ask only at the resume triggers in that same list.
 
 Record artifacts economically: `context-pack.md` is the only fully self-contained resume packet, rewritten in full when updated and holding only the non-derivable fields defined once in `STATION.md` → Compaction. Git is the source of truth for branch/HEAD/commit/diff history — derive it live and let `build-log.md` record the acceptance commit rather than repeating it across other records; superseded detail rolls off into a sink at group closeout. See `STATION.md` for temporal roles and fact ownership.
 
@@ -169,7 +168,7 @@ Before editing a registered project:
 6. If the lane's checkout is outside the hub, ensure Claude Code has workspace access through `/add-dir <checkout-path>` or by launching with `claude --add-dir <checkout-path>` before editing.
 7. State any uncommitted or recent user changes that affect the task.
 8. Make a short task-specific plan unless the user has asked only for review or explanation.
-9. Before Ralph execution or source edits, verify the lane's checkout (`repo_path` or its recorded worktree; if an active group header binds `repo_path`, the flat lane has none) is writable in the active session and confirm the active permission profile covers `local` source edits; if writable access or `local` coverage is absent, state what is required and route profile coverage through `automation-policy.md` before editing.
+9. Before Ralph execution or source edits, verify the lane's checkout (`repo_path` or its recorded worktree; if an active group header binds `repo_path`, the flat lane has none) is writable in the active session; source edits there are routine. If writable access is absent, state what is required and wait.
 10. Implement in the lane's checkout, using the repo's own conventions and verification commands.
 11. Update `projects/<project-id>/work/` only when active continuity is useful.
 12. Update hub `memory.md`, `project.md` policy notes, or optional `decisions.md` only when durable context changed.
@@ -195,7 +194,7 @@ Root docs are the canonical references. Skills should point back to these docs i
 
 During Ralph Mode, run a read-only implementation review after substantial waves, queued work, or high-impact slices are implemented and initially verified, before marking the boundary complete in active work records. The reviewer inspects the actual code or diff with `active-work.md`, `build-log.md`, optional `task-queue.md`, and relevant surrounding code as context.
 
-Review gate selection is based on scope and change impact. Risk tier controls Ralph implementation confirmation before editing, not permission profile. Review gates are required for `S2/S3` wave or group boundaries and queued tasks that touch foundational behavior such as bootstrap, install, update, registration, generated commands, hooks, settings, config, test harnesses, project or hub ownership, security policy, or automation policy.
+Review gate selection is based on scope and change impact. Risk tier controls Ralph implementation confirmation before editing, not action class. Review gates are required for `S2/S3` wave or group boundaries and queued tasks that touch foundational behavior such as bootstrap, install, update, registration, generated commands, hooks, settings, config, test harnesses, project or hub ownership, security policy, or automation policy.
 After the final wave in a group lands, run a group-level review gate over the integrated cross-wave diff before the slice, group, or acceptance task is marked complete, even if every per-wave gate already passed.
 
 The main Claude Code session must validate reviewer findings before acting: give each finding an explicit verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or `false-positive` — before editing any code, then apply only `confirmed-in-scope` fixes, turn `confirmed-out-of-scope` findings into follow-up notes or tasks, and reverify review-driven fixes with the narrowest meaningful command for the fixed behavior. If a required or expected gate is skipped, record review debt and do not continue to dependent tasks until the debt is resolved or explicitly accepted by the user.

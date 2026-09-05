@@ -59,9 +59,10 @@ These follow from how Deep Agents Code discovers and uses this hub:
   anchors its trust boundary to this hub directory and will fight edits in
   registered repos elsewhere on disk. Headless runs execute file writes
   without approval gates — use them only when the user has explicitly
-  accepted that, and note that gate-free execution does not widen the active
-  permission profile: profile boundaries still apply to what you choose to
-  do. YOLO mode only ever by explicit user decision.
+  accepted that, and note that gate-free execution does not change the action
+  classes: `external` and `exceptional` still wait for the user's go-ahead in
+  chat, because nothing else will ask. YOLO mode only ever by explicit user
+  decision.
 - Thread pickers scope to this hub directory by default; launching from the
   hub keeps a per-hub session namespace.
 
@@ -75,12 +76,13 @@ When working in this hub, use these docs as the canonical references:
 - `CONVENTIONS.md`: naming, context, and work style conventions.
 - `TESTING.md`: verification expectations.
 - `SECURITY.md`: sensitive-data and boundary rules.
-- `automation-policy.md`: permission profiles and action-boundary gates.
+- `automation-policy.md`: action classes (routine, `external`, `exceptional`),
+  boundary asks, and standing policy notes.
 
 ## Instruction Precedence
 
 `STATION.md` defines shared behavior and ownership. `automation-policy.md`
-defines permission profiles and action boundaries. This file is the always-on
+defines action classes and boundary asks. This file is the always-on
 Deep Agents summary. Skills route intent, skill references provide procedures,
 hooks give lifecycle reminders, and subagents stay within their delegated
 roles.
@@ -142,9 +144,8 @@ At each boundary trigger, satisfy the checkpoint invariant defined once in
 can resume from hub records plus live git, and changed Piper artifacts are
 reported separately from registered project source changes with their hub
 commit state. Updating artifacts is allowed local assistance; committing Piper
-artifact changes is a `local` permission action handled through
-`automation-policy.md` when the active profile does not already cover local
-git. Do not ask to commit after every artifact edit; ask only at the resume
+artifact changes is routine and path-scoped; the checkpoint decides whether
+one happens. Do not ask to commit after every artifact edit; ask only at the resume
 triggers in that same list.
 
 Record artifacts economically: `context-pack.md` is the only fully
@@ -202,8 +203,8 @@ Route each request through the smallest mode that fits:
   milestone structure (Structural Planning), then formalize the current wave
   (Wave Formalization) before substantial implementation.
 - Ralph Mode: execute the current active-work wave, group review and closeout,
-  one explicit slice, or one queued task, committing completed waves under
-  `local`, with implementation review gates at meaningful boundaries.
+  one explicit slice, or one queued task, committing completed waves on the
+  lane's branch, with implementation review gates at meaningful boundaries.
 - Review Mode: first check whether the work matches the request or active work,
   then check code quality; group reviews inspect the integrated cross-wave
   diff.
@@ -213,7 +214,7 @@ Route each request through the smallest mode that fits:
 Use `brainstorm` as the broad natural-language front door, `design-studio` only
 for explicit deeper design, and `piper-workflow` for convergent execution. Use
 the `review` skill for explicit review work or review gates, and
-`automation-policy` before crossing the active permission profile boundary.
+`automation-policy` before an `external` or `exceptional` action.
 Prefer consequence language such as "I will keep this read-only" or "I will
 create Ralph-ready work records" over ceremonial mode announcements.
 
@@ -233,32 +234,40 @@ Risk tiers:
 - `L2`: guarded implementation risk; get explicit confirmation before Ralph
   edits.
 - `L3`: blocked inside Ralph; stop for replanning, a human decision, or an
-  exceptional permission decision.
+  `exceptional` action that needs a fresh instruction.
 
-Permission profiles:
+Action classes:
 
-- `strict`: read-only inspection, planning, review, safe git status/log/diff
-  style commands, deterministic registration, and drafting.
-- `local`: `strict` plus registered project source edits, Piper artifact
-  updates, local checks/build/test, non-destructive worktree create or switch
-  operations, and non-destructive local git actions when the workflow has
-  reached that action.
-- `external`: `local` plus dependency install or update, networked commands,
-  push, pull request creation or update, CI reruns or repair, and other
-  non-destructive external-system actions.
-- `exceptional`: outside profiles; always requires explicit one-off approval.
+- Routine — no ask, no record: reading, planning, review, registration,
+  source edits in the lane's checkout, local checks and tests, local git add
+  or commit on the lane's branch, non-destructive worktree create or switch
+  operations, Piper artifact updates and their path-scoped hub commits,
+  read-only network reads.
+- `external` — ask once at the boundary where the workflow reaches it: push,
+  pull request creation or update, dependency install or update, networked
+  commands with effects, CI reruns or repair, and other non-destructive
+  external-system actions; a standing grant in
+  `projects/<project-id>/project.md` may pre-approve a named class with a
+  target.
+- `exceptional` — a fresh explicit instruction every time; can never be
+  pre-approved: force push, rewriting pushed history, deleting branches,
+  worktrees, or user data, discarding changes the boundary did not make,
+  secrets, production deploys, irreversible external actions.
 
-Permission profiles gate action categories. They do not change Piper phase
-routing, artifact checkpoints, Ralph review gates, or finish behavior. Record
-project-level profile preferences in `projects/<project-id>/project.md`.
+Routine actions proceed when the workflow reaches them; `external` and
+`exceptional` are the only Piper-level asks. Enforcement is Deep Agents'
+Manual approval mode (below); where it is bypassed, the Piper asks are the
+only gate. A broad request like "finish this" is never a go-ahead. Go-aheads
+are recorded in the lane's `build-log.md`; `project.md` holds standing policy
+notes only.
 
-In this runtime the profiles ride on Manual approval mode: the profile decides
-which approvals you request and accept, and the approval screen is the
-per-action gate. Under `strict`, decline gated write and execute actions.
-Under `local`, approve edits, local checks, and local git in the registered
-repo and hub records as the workflow reaches them. Under `external`,
-additionally approve network, push, install, and CI actions when the workflow
-reaches them. Exceptional actions always need a fresh explicit user approval.
+In this runtime the classes ride on Manual approval mode: attempt routine
+actions as the workflow reaches them, and each surfaces an approval for the
+user; do not attempt an `external` action until a go-ahead exists in chat or
+a standing grant names it, and treat the approval screen as the harness's
+second check, not the Piper ask. `exceptional` actions need a fresh explicit
+instruction, then the attempt. A read-only note in `project.md`, or the user
+saying so in chat, means attempt no writes and report what you would change.
 
 ## Working On A Project
 
@@ -284,12 +293,10 @@ Before editing a registered project:
    explanation.
 8. Before Ralph execution or source edits, verify the lane's checkout
    (`repo_path` or its recorded worktree; if an active group header binds
-   `repo_path`, the flat lane has none) is writable in the active session and
-   confirm the active permission profile
-   covers `local` source edits. The registered repo lives outside this hub;
+   `repo_path`, the flat lane has none) is writable in the active session;
+   source edits there are routine. The registered repo lives outside this hub;
    reach it by absolute path and expect each gated write there to surface an
-   approval. If `local` profile coverage is absent, route through
-   `automation-policy.md` before editing.
+   approval. If writable access is absent, state what is required and wait.
 9. Implement in the lane's checkout, using the repo's own conventions and
    verification commands.
 10. Update `projects/<project-id>/work/` only when active continuity is useful.
@@ -330,7 +337,7 @@ reviewer inspects the actual code or diff with `active-work.md`,
 context.
 
 Review gate selection is based on scope and change impact. Risk tier controls
-Ralph implementation confirmation before editing, not permission profile.
+Ralph implementation confirmation before editing, not action class.
 Review gates are required for `S2/S3` wave or group boundaries and queued tasks
 that touch foundational behavior such as bootstrap, install, update,
 registration, generated commands, hooks, settings, config, test harnesses,
@@ -385,10 +392,11 @@ security or permissions behavior, or review scope. Remember the runtime
 snapshot: hub instructions and skill listings in a resumed thread reflect
 thread start, not the current files.
 
-## Permission Boundaries
+## Action Boundaries
 
-Use `automation-policy.md` before crossing the active profile boundary for
-source edits, local git, pushes, merges, pull requests, dependency installs,
-non-destructive worktree create or switch operations, long-running commands,
-networked commands, CI changes, deployments, or external automation. Deleting
+Use `automation-policy.md` before any `external` action — pushes, merges to a
+remote, pull requests, dependency installs, networked commands with effects,
+CI changes, deployments, or external automation — and before any
+`exceptional` action. Source edits in the lane's checkout, local git, and
+non-destructive worktree create or switch operations are routine. Deleting
 worktrees and other exceptional actions always need explicit one-off approval.

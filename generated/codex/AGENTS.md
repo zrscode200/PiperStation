@@ -53,8 +53,8 @@ instead.
   (superpowers, ralph, compact-handoff) cited by the skill.
 - `.codex/skills/review/SKILL.md` — explicit review and Ralph review-gate
   behavior.
-- `.codex/skills/automation-policy/SKILL.md` — permission-profile manager and
-  action-boundary gate.
+- `.codex/skills/automation-policy/SKILL.md` — the action-boundary check for
+  `external` and `exceptional` actions.
 - `.codex/agents/*.toml` declared in `config.toml`'s `[agents.X]` blocks —
   `reviewer`, `architect`, `security_reviewer`, `docs_researcher`, `tester`,
   `verifier`, `implementer` (role names match the `name = "..."` field in each
@@ -73,12 +73,13 @@ When working in this hub, use these docs as the canonical references:
 - `CONVENTIONS.md`: naming, context, and work style conventions.
 - `TESTING.md`: verification expectations.
 - `SECURITY.md`: sensitive-data and boundary rules.
-- `automation-policy.md`: permission profiles and action-boundary gates.
+- `automation-policy.md`: action classes (routine, `external`, `exceptional`),
+  boundary asks, and standing policy notes.
 
 ## Instruction Precedence
 
 `STATION.md` defines shared behavior and ownership. `automation-policy.md`
-defines permission profiles and action boundaries. This `AGENTS.md` is the
+defines action classes and boundary asks. This `AGENTS.md` is the
 always-on Codex summary. Skills route intent, command references provide
 procedures, hooks give lifecycle reminders, and agents stay within their
 delegated roles.
@@ -140,9 +141,8 @@ At each boundary trigger, satisfy the checkpoint invariant defined once in
 can resume from hub records plus live git, and changed Piper artifacts are
 reported separately from registered project source changes with their hub
 commit state. Updating artifacts is allowed local assistance; committing Piper
-artifact changes is a `local` permission action handled through
-`automation-policy.md` when the active profile does not already cover local
-git. Do not ask to commit after every artifact edit; ask only at the resume
+artifact changes is routine and path-scoped; the checkpoint decides whether
+one happens. Do not ask to commit after every artifact edit; ask only at the resume
 triggers in that same list.
 
 Record artifacts economically: `context-pack.md` is the only fully
@@ -195,8 +195,8 @@ Route each request through the smallest mode that fits:
   milestone structure (Structural Planning), then formalize the current wave
   (Wave Formalization) before substantial implementation.
 - Ralph Mode: execute the current active-work wave, group review and closeout,
-  one explicit slice, or one queued task, committing completed waves under
-  `local`, with implementation review gates at meaningful boundaries.
+  one explicit slice, or one queued task, committing completed waves on the
+  lane's branch, with implementation review gates at meaningful boundaries.
 - Review Mode: first check whether the work matches the request or active work,
   then check code quality; group reviews inspect the integrated cross-wave
   diff.
@@ -206,7 +206,7 @@ Route each request through the smallest mode that fits:
 Use `brainstorm` as the broad natural-language front door, `design-studio` only
 for explicit deeper design, and `piper-workflow` for convergent execution. Use
 the `review` skill for explicit review work or review gates, and
-`automation-policy` before crossing the active permission profile boundary.
+`automation-policy` before an `external` or `exceptional` action.
 Prefer consequence language such as "I will keep this read-only" or "I will
 create Ralph-ready work records" over ceremonial mode announcements.
 
@@ -226,24 +226,32 @@ Risk tiers:
 - `L2`: guarded implementation risk; get explicit confirmation before Ralph
   edits.
 - `L3`: blocked inside Ralph; stop for replanning, a human decision, or an
-  exceptional permission decision.
+  `exceptional` action that needs a fresh instruction.
 
-Permission profiles:
+Action classes:
 
-- `strict`: read-only inspection, planning, review, safe git status/log/diff
-  style commands, deterministic registration, and drafting.
-- `local`: `strict` plus registered project source edits, Piper artifact
-  updates, local checks/build/test, non-destructive worktree create or switch
-  operations, and non-destructive local git actions when the workflow has
-  reached that action.
-- `external`: `local` plus dependency install or update, networked commands,
-  push, pull request creation or update, CI reruns or repair, and other
-  non-destructive external-system actions.
-- `exceptional`: outside profiles; always requires explicit one-off approval.
+- Routine — no ask, no record: reading, planning, review, registration,
+  source edits in the lane's checkout, local checks and tests, local git add
+  or commit on the lane's branch, non-destructive worktree create or switch
+  operations, Piper artifact updates and their path-scoped hub commits,
+  read-only network reads.
+- `external` — ask once at the boundary where the workflow reaches it: push,
+  pull request creation or update, dependency install or update, networked
+  commands with effects, CI reruns or repair, and other non-destructive
+  external-system actions; a standing grant in
+  `projects/<project-id>/project.md` may pre-approve a named class with a
+  target.
+- `exceptional` — a fresh explicit instruction every time; can never be
+  pre-approved: force push, rewriting pushed history, deleting branches,
+  worktrees, or user data, discarding changes the boundary did not make,
+  secrets, production deploys, irreversible external actions.
 
-Permission profiles gate action categories. They do not change Piper phase
-routing, artifact checkpoints, Ralph review gates, or finish behavior. Record
-project-level profile preferences in `projects/<project-id>/project.md`.
+Routine actions proceed when the workflow reaches them; `external` and
+`exceptional` are the only Piper-level asks. Enforcement is Codex's own
+sandbox and approval policy (`config.toml` `sandbox_mode` and
+`approval_policy`); where it is bypassed, the Piper asks are the only gate. A
+broad request like "finish this" is never a go-ahead. Go-aheads are recorded
+in the lane's `build-log.md`; `project.md` holds standing policy notes only.
 
 ## Working On A Project
 
@@ -269,12 +277,11 @@ Before editing a registered project:
    explanation.
 8. Before Ralph execution or source edits, verify the lane's checkout
    (`repo_path` or its recorded worktree; if an active group header binds
-   `repo_path`, the flat lane has none) is writable in the active session and
-   confirm the active permission profile
-   covers `local` source edits. If the repo is outside the current Codex
-   sandbox, ensure Codex was started with `--add-dir <project-repo>` or that
-   the sandbox otherwise grants writable access. If `local` profile coverage
-   is absent, route through `automation-policy.md` before editing.
+   `repo_path`, the flat lane has none) is writable in the active session;
+   source edits there are routine. If the checkout is outside the current
+   Codex sandbox, ensure Codex was started with `--add-dir <checkout-path>` or
+   that the sandbox otherwise grants writable access. If writable access is
+   absent, state what is required and wait.
 9. Implement in the lane's checkout, using the repo's own conventions and
    verification commands.
 10. Update `projects/<project-id>/work/` only when active continuity is useful.
@@ -314,7 +321,7 @@ reviewer subagent inspects the actual code or diff with `active-work.md`,
 context.
 
 Review gate selection is based on scope and change impact. Risk tier controls
-Ralph implementation confirmation before editing, not permission profile.
+Ralph implementation confirmation before editing, not action class.
 Review gates are required for `S2/S3` wave or group boundaries and queued tasks
 that touch foundational behavior such as bootstrap, install, update,
 registration, generated commands, hooks, settings, config, test harnesses,
@@ -367,10 +374,11 @@ beyond that for concrete triggers such as a stale resume packet, missing
 acceptance criteria, failing verification, generated parity, security or
 permissions behavior, or review scope.
 
-## Permission Boundaries
+## Action Boundaries
 
-Use `automation-policy.md` before crossing the active profile boundary for
-source edits, local git, pushes, merges, pull requests, dependency installs,
-non-destructive worktree create or switch operations, long-running commands,
-networked commands, CI changes, deployments, or external automation. Deleting
+Use `automation-policy.md` before any `external` action — pushes, merges to a
+remote, pull requests, dependency installs, networked commands with effects,
+CI changes, deployments, or external automation — and before any
+`exceptional` action. Source edits in the lane's checkout, local git, and
+non-destructive worktree create or switch operations are routine. Deleting
 worktrees and other exceptional actions always need explicit one-off approval.
