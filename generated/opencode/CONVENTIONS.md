@@ -28,6 +28,6 @@ and checkout; hub artifact commits are path-scoped to the lane. `STATION.md`
 (Project Records, Group Lifecycle) owns the rules.
 
 Use Ralph review gates for substantial waves, high-impact slices, and queued
-foundational work. Risk tier controls Ralph implementation caution; permission
-profiles control action boundaries. Review gate selection comes from scope and
-change impact.
+foundational work. Risk tier controls Ralph implementation caution;
+action classes (`external`, `exceptional`) control asks. Review gate
+selection comes from scope and change impact.

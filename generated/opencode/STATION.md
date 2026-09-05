@@ -41,8 +41,8 @@ Use this order when instructions overlap:
 
 1. `STATION.md` defines shared Piper Station behavior, project-record
    ownership, dispatch boundaries, work artifacts, compaction, and Ralph gates.
-2. `automation-policy.md` defines permission profiles and action-boundary
-   gates.
+2. `automation-policy.md` defines action classes (routine, `external`,
+   `exceptional`), the boundary asks, and standing policy notes.
 3. Runtime root docs (`AGENTS.md`, `CLAUDE.md`, and `opencode.json`
    instruction lists) are always-on summaries that adapt the shared behavior to
    each harness.
@@ -87,9 +87,9 @@ Use this dispatch table when intent is unclear:
 | Orient, explore, compare options, or decide what to do | `brainstorm` | `brainstorm` |
 | Open or continue an in-depth, durable design session | `design-studio` after explicit user choice | `design-studio`; may be suggested by `brainstorm` or invoked directly |
 | Verify a direction, define group or milestone structure, or formalize the current wave | Superpowers Mode or `/superpowers` | `piper-workflow`, `/superpowers`, and this guide |
-| Execute one clear active-work wave, group review and closeout, explicit slice, or optional queued task | Ralph Mode or `/ralph` | `/ralph` and this guide; project source edits require `local` profile coverage |
+| Execute one clear active-work wave, group review and closeout, explicit slice, or optional queued task | Ralph Mode or `/ralph` | `/ralph` and this guide; project source edits in the lane's checkout are routine |
 | Review code, an implemented wave, group, or slice | Review Mode | `review` |
-| Local git, worktree, PR, dependency, network, CI, exceptional, or external action | Finish Mode or permission approval flow | `automation-policy` |
+| Push, pull request, dependency, network, CI, or other `external` or `exceptional` action | Finish Mode or the boundary ask | `automation-policy` |
 | Pause or compact active work | `/compact-handoff` | compact handoff guidance |
 
 If a project-work request is ambiguous or arrives without a slash command, treat
@@ -111,7 +111,7 @@ orientation and conversational planning, plus explicit deterministic
 registration. Explicit Design Studio entry owns useful hub design and
 continuity artifacts without authorizing source implementation. The convergent
 rows below belong to `piper-workflow` (formal planning, Ralph execution) and
-`automation-policy` (permission-gated finish actions):
+`automation-policy` (the `external` and `exceptional` boundary ask):
 
 | User signal | Interpretation | Durable writes | Assistant stance |
 | --- | --- | --- | --- |
@@ -121,13 +121,13 @@ rows below belong to `piper-workflow` (formal planning, Ralph execution) and
 | "open a design studio", "enter design studio", or "continue the studio" | Explicit Design Studio | Useful files under `projects/<id>/work/design/` plus existing Piper continuity records only when needed | Create or reuse one studio for the initiative. Stay discussion-first and hub-owned; do not create groups or waves, edit project source, or infer git/external authority. |
 | "build it", "implement this", or "let's code" after design or brainstorm work when no formalized wave exists | Convergent entry, not direct editing | None until formalization | Check any design artifact's acceptance state first, then route to Superpowers Structural Planning, or a single Ralph task when genuinely small. Do not edit project source before formalization. |
 | "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Create only the durable records the work needs: long-horizon direction, active work continuity, durable task tracking, checkpoint history, or compact/resume continuity. State that source remains untouched. |
-| "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the real project repo when `local` profile coverage exists | Confirm the selected wave, group review, explicit slice, or queued task; diff boundary; risk; verification; writable repo access; and `local` profile coverage before editing. Route through `automation-policy` if coverage is absent. Execute the current boundary. |
-| "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/exceptional action | Finish or permission-gated action | Local/external actions only after the workflow reaches that action and the permission profile allows it; exceptional actions only after explicit one-off approval | Summarize state, verification, and risk first. Route through `automation-policy` before crossing the active profile boundary or requesting exceptional approval. |
+| "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the lane's checkout (routine) | Confirm the selected wave, group review, explicit slice, or queued task; diff boundary; risk; verification; and writable access to the lane's checkout before editing. Execute the current boundary. |
+| "finish", "commit", "open a PR", "push", "install", "run CI repair", or external/exceptional action | Finish or boundary ask | Routine actions when the workflow reaches them; `external` actions after the boundary ask or a standing grant; exceptional actions only after explicit one-off approval. A broad request is never a go-ahead | Summarize state, verification, and risk first. Route through `automation-policy` before any `external` or `exceptional` action. |
 
 Ambiguous signals must not silently escalate durable writes. If the next step
-would create hub records, edit project source (a `local` permission action), or
-cross the active permission profile boundary and the user's intent is unclear,
-state the assumption and ask or choose the less durable action.
+would create hub work records, edit project source, or take an `external`
+action and the user's intent is unclear, state the assumption and ask or
+choose the less durable action.
 
 ## Project Records
 
@@ -147,9 +147,9 @@ projects/<project-id>/
     groups/<gid>/    # one lane folder per group, created at group Entry
 ```
 
-`project.md` stores repo binding, overview, and project policy preferences such
-as permission profile, one-off approvals, accepted risks, and project-level
-automation notes. It is not a commit ledger or a per-wave changelog — commit and
+`project.md` stores repo binding, overview, and standing policy notes (a
+read-only note, a standing grant for a named `external` class, a closeout
+constraint, or accepted risks; see `automation-policy.md`). It is not a commit ledger or a per-wave changelog — commit and
 acceptance history live in `build-log.md`, anchored to git. `memory.md` stores
 durable facts, preferences, stable conventions, and reusable context, not a
 per-wave completion log. `decisions.md` is optional for substantial decision
@@ -179,7 +179,7 @@ lanes of one project may be active in parallel sessions.
 lane at a time. A lane holds it when its `active-work.md` header records
 `checkout:` equal to `repo_path`; the flat lane holds it by default, only while
 no active group header does. Every other active lane works in its own git
-worktree of the project repo (`git worktree add`, a `local` action; default
+worktree of the project repo (`git worktree add`, routine; default
 path `<repo-parent>/<repo-basename>-worktrees/<gid>`), recorded as its
 `checkout:`. A flat lane that takes a worktree records `checkout:` and
 `branch:` in its own `active-work.md` header, so that file is then required.
@@ -344,9 +344,9 @@ When `context-pack.md` changes, rewrite it in full so a fresh session can resume
 without transcript archaeology. Its fields are defined once under Compaction;
 do not restate them here or elsewhere.
 
-Artifact updates are normal local assistance while work is active. Permission
-profiles gate whether a commit action can proceed; they do not make artifact
-commits automatic or change checkpoint timing. Do not ask after every artifact
+Artifact updates are normal local assistance while work is active. An artifact
+commit is routine, but the checkpoint decides whether one happens; nothing
+makes artifact commits automatic or changes checkpoint timing. Do not ask after every artifact
 edit. Instead, disclose changed Piper artifacts at checkpoints and ask about a
 Piper artifact commit only when the stopping point or future continuity
 warrants it.
@@ -375,7 +375,7 @@ hand-off, blocker, or finish.
    marked accepted has a closeout entry in the project ledger, and vice versa.
 2. Changed Piper artifacts are disclosed separately from registered project
    source changes, with their hub commit state stated. An artifact commit,
-   when the checkpoint chooses one, is a `local` permission action under
+   when the checkpoint chooses one, is routine under
    `automation-policy.md`, kept separate from any project source commit, and
    path-scoped: the hub checkout is shared by every session, so stage and
    commit only your lane's paths plus the project-level files you touched —
@@ -414,7 +414,7 @@ mode that fits:
   (Wave Formalization) before substantial implementation.
 - Ralph Mode: execute the current active-work wave, group review and closeout,
   one explicit slice, or one queued task; verify, drift-check, commit completed
-  waves under `local`, and use implementation review gates at meaningful
+  waves on the lane's branch, and use implementation review gates at meaningful
   boundaries.
 - Review Mode: first check whether the work matches the request or active work,
   then check code quality; group reviews inspect the integrated cross-wave
@@ -449,22 +449,20 @@ Risk tiers:
   broad coupling, generated/runtime configuration, unclear rollback, or
   materially ambiguous requirements.
 - `L3`: blocked inside Ralph; stop for replanning, a human decision, or an
-  exceptional permission decision.
+  `exceptional` action that needs a fresh instruction.
 
-Risk tiers are implementation caution, not permission classes. Permission
-profiles decide whether action categories such as source edits, local git,
-non-destructive worktree changes, dependency, network, pull request, or CI may
-proceed. Exceptional actions are outside standing profiles and require explicit
-one-off approval.
+Risk tiers are implementation caution, not action classes. Action classes decide
+whether an action needs an ask (`automation-policy.md`); risk tiers decide
+whether Ralph confirms before editing. `exceptional` actions can never be pre-approved
+and require explicit one-off approval each time.
 
 ## Ralph Review Gate
 
 Before Ralph edits project source, verify the lane's checkout (`repo_path` or
-its recorded worktree) is writable in the active session and confirm the
-active permission profile covers `local` source edits. If the checkout is
+its recorded worktree) is writable in the active session. If the checkout is
 outside the current workspace or sandbox, state that writable access is
-required before execution instead of declaring the task Ralph-ready. If `local` profile coverage is absent, route through
-`automation-policy` before editing.
+required before execution instead of declaring the task Ralph-ready. Source
+edits there are routine (`automation-policy.md`).
 
 During Ralph Mode, run a read-only implementation review after substantial
 waves, queued work, or high-impact slices are implemented and initially
@@ -473,8 +471,8 @@ reviewer inspects the actual code or diff with the active work record, build
 log, optional task queue, and compact packet when relevant as context.
 
 Review gate selection is based on scope and change impact. Risk tier controls
-Ralph execution confirmation before editing, not review selection or permission
-profile. Review gates are required for `S2/S3` wave or group boundaries and
+Ralph execution confirmation before editing, not review selection or action
+class. Review gates are required for `S2/S3` wave or group boundaries and
 queued tasks that touch foundational behavior such as bootstrap, install,
 update, registration, generated commands, hooks, settings, config, test
 harnesses, project or hub ownership, security policy, or automation policy.
@@ -580,9 +578,8 @@ confirmation is required or the next group's direction is unsettled.
 
 Commit cadence rides on these boundaries: per-wave source commits during
 Execution and a group source commit at Closeout, each on the lane's branch in
-the lane's checkout and each a `local` action under `automation-policy`. Under `local` coverage, commit and report each completed
-wave without a per-wave ask; surface for approval when the profile is below
-`local`. Keep source commits separate from Piper artifact commits, at wave and
+the lane's checkout and each routine under `automation-policy`: commit and
+report each completed wave without a per-wave ask. Keep source commits separate from Piper artifact commits, at wave and
 group boundaries, not mid-slice. These are commits only — push and pull requests
 remain `external` actions.
 
