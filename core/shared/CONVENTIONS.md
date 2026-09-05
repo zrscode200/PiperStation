@@ -4,7 +4,7 @@ Keep project records small. Put active continuity under
 `projects/<id>/work/` only when useful. Prefer project repo conventions when
 editing source.
 
-Use `project.md` for repo binding, overview, and project policy preferences;
+Use `project.md` for repo binding, overview, and standing policy notes;
 use `memory.md` for durable facts and preferences. Use optional `decisions.md`
 only for substantial decision logs future work should not reopen silently.
 

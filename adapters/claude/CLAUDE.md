@@ -15,7 +15,7 @@ Claude Code auto-loads this file. It is the always-on operating contract for wor
 - Use Claude Code-native behavior for planning, implementation, review, testing, subagents, handoff, and git operations within the routed workflow; substantial registered-project development enters through piper-workflow (Superpowers, then Ralph) rather than starting directly from a design or brainstorm conversation.
 - Do not start work, create plans, checkpoint state, commit, push, install dependencies, or edit project source as a side effect of registration.
 - Do not store secrets, credentials, private keys, customer data, or raw sensitive logs in hub records.
-- Use `automation-policy.md` before any `external` action (push, pull request, dependency install, networked command with effects, CI, deployment, external automation) or `exceptional` action. Source edits in the lane's checkout, local git, and non-destructive worktree create or switch operations are routine. Deleting worktrees and other exceptional actions always need explicit one-off approval.
+- Use `automation-policy.md` before any `external` action (push, pull request, dependency install, networked command with effects, CI, external automation) or `exceptional` action. Source edits in the lane's checkout, local git, and non-destructive worktree create or switch operations are routine. Deleting worktrees and other exceptional actions always need explicit one-off approval.
 
 ## Required Reading
 
@@ -131,7 +131,7 @@ projects/<project-id>/
     groups/<gid>/    # one lane folder per group, created at group Entry
 ```
 
-- `project.md` binds the project id to the real repo path and stores a small project overview plus project policy preferences.
+- `project.md` binds the project id to the real repo path and stores a small project overview plus standing policy notes.
 - `memory.md` stores durable facts, preferences, stable conventions, and reusable context.
 - Optional `decisions.md` stores substantial decision logs future work should not silently reopen.
 - `work/` stores optional active continuity such as roadmap, active work, build log, compact pack, durable task queue records, lightweight design notes, and explicitly entered Design Studio folders. Each group is its own lane under `work/groups/<gid>/` with its own active work, compact pack, build log, and optional queue; the project-level files serve the flat lane.
@@ -171,7 +171,7 @@ Before editing a registered project:
 9. Before Ralph execution or source edits, verify the lane's checkout (`repo_path` or its recorded worktree; if an active group header binds `repo_path`, the flat lane has none) is writable in the active session; source edits there are routine. If writable access is absent, state what is required and wait.
 10. Implement in the lane's checkout, using the repo's own conventions and verification commands.
 11. Update `projects/<project-id>/work/` only when active continuity is useful.
-12. Update hub `memory.md`, `project.md` policy notes, or optional `decisions.md` only when durable context changed.
+12. Update hub `memory.md`, `project.md` standing policy notes (only at the user's word), or optional `decisions.md` only when durable context changed.
 
 ## Skills And Agents
 

@@ -89,7 +89,7 @@ Use this dispatch table when intent is unclear:
 | Verify a direction, define group or milestone structure, or formalize the current wave | Superpowers Mode or `/superpowers` | `piper-workflow`, `/superpowers`, and this guide |
 | Execute one clear active-work wave, group review and closeout, explicit slice, or optional queued task | Ralph Mode or `/ralph` | `/ralph` and this guide; project source edits in the lane's checkout are routine |
 | Review code, an implemented wave, group, or slice | Review Mode | `review` |
-| Push, pull request, dependency, network, CI, or other `external` or `exceptional` action | Finish Mode or the boundary ask | `automation-policy` |
+| Push, pull request, dependency, networked command with effects, CI, or other `external` or `exceptional` action | Finish Mode or the boundary ask | `automation-policy` |
 | Pause or compact active work | `/compact-handoff` | compact handoff guidance |
 
 If a project-work request is ambiguous or arrives without a slash command, treat
@@ -287,7 +287,7 @@ not restate it:
 | Group lane binding: branch, checkout, owned boundary, lane status | the group's `active-work.md` header, set at Entry |
 | Long-horizon direction, group/milestone order and acceptance status, milestone labels, durable non-goals | `roadmap.md` |
 | Substantial decision rationale | `decisions.md` (supersede in place) |
-| Repo binding and project policy preferences | `project.md` |
+| Repo binding and standing policy notes | `project.md` |
 | Durable facts and stable conventions | `memory.md` |
 
 Per-artifact rules follow from the roles and ownership above:
@@ -427,7 +427,7 @@ driven by durable need, and scope only informs how strongly persistence is
 surfaced:
 
 - `S0`: direct small task; stay in chat unless the user asks to record
-  something or a durable project fact, policy preference, checkpoint, or
+  something or a durable project fact, standing policy note, checkpoint, or
   verification result appears.
 - `S1`: modest work; use `active-work.md` only when the current work needs
   continuity.

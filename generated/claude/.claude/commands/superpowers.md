@@ -176,7 +176,7 @@ context-pack, roadmap, active-work, queue, or project records.
 See `STATION.md` for the temporal roles (sinks vs windows vs topical references)
 and fact ownership.
 
-Keep stable facts in `memory.md`, project policy preferences in `project.md`,
+Keep stable facts in `memory.md`, standing policy notes in `project.md`,
 and substantial decision logs in optional `decisions.md`. Registration must not
 create active work artifacts.
 
@@ -221,6 +221,6 @@ group review gate before the acceptance task.
 - Mark assumptions separately from confirmed facts.
 - Keep plans concrete enough for a fresh Claude Code session to continue cold.
 - Do not store secrets or sensitive raw logs in hub records.
-- Record project policy preferences in `project.md`; use optional
-  `decisions.md` only for substantial decision logs.
+- Write a standing policy note in `project.md` only at the user's word; use
+  optional `decisions.md` only for substantial decision logs.
 - "Make it better" is not an acceptance criterion; force a testable one.

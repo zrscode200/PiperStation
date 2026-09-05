@@ -10,7 +10,7 @@ Prioritize:
 - project id, the selected lane (flat or `<gid>`), and the current boundary:
   the wave or group and its status
 - important facts from `projects/<id>/memory.md`
-- project policy preferences from `projects/<id>/project.md`
+- standing policy notes from `projects/<id>/project.md`
 - substantial decision logs from optional `projects/<id>/decisions.md`
 - the non-derivable resume fields from the selected lane's `context-pack.md`
   when present (defined once in `STATION.md` → Compaction): goal, boundary and
@@ -22,7 +22,7 @@ Prioritize:
 - files changed in the lane's checkout and why, and commands run with their
   results, as a summary only — branch, HEAD, status, and the diff are derived
   live from git on resume and never trusted from the summary
-- required approvals and permission decisions still pending
+- pending `external` or `exceptional` asks and their go-aheads
 - what to hand a human or fresh agent when pausing or transferring work
 
 Reload on resume:

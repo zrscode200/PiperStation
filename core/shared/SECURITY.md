@@ -6,7 +6,7 @@ sensitive logs in hub records.
 Project repos own source code and repo-local sensitive context. The hub stores
 only lightweight coordination records. If a task touches auth, permissions,
 secrets, billing, deployments, destructive operations, or external systems,
-classify implementation as higher risk. Route external or destructive actions
+classify implementation as higher risk. Route `external` actions
 through the `external` ask in `automation-policy.md` before execution;
-exceptional actions require explicit one-off approval through
-`automation-policy`.
+destructive and other exceptional actions require a fresh explicit one-off
+instruction through `automation-policy` every time.

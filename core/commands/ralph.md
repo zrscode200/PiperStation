@@ -118,7 +118,8 @@ route through `automation-policy`.
     state. During internal slice progress, do not ask to commit artifact
     updates or update `context-pack.md`. An ungrouped wave pays the
     light boundary only.
-16. Record project policy preferences in `project.md`, and use optional
+16. Write a standing policy note in `project.md` only when the user states
+    one (verbatim, dated), never inferred from a go-ahead; use optional
     `decisions.md` only for substantial decision logs.
 17. If a required or expected review gate was skipped, record review debt and do
     not continue to a dependent task until it is resolved or explicitly
@@ -131,7 +132,7 @@ route through `automation-policy`.
 Do not push, open PRs, install dependencies, or run external automation unless
 the selected workflow has reached that action and the `external` ask (or a
 standing grant) has a go-ahead; commits and worktree changes are routine once
-the workflow reaches them. Delete, force-push, rewrite history, deploy to
+the workflow reaches them. Delete, force-push, rewrite pushed history, deploy to
 production, or take other exceptional actions only after explicit one-off
 approval through `automation-policy`. Ralph prepares for
 compaction; it does not invoke `/compact` itself.

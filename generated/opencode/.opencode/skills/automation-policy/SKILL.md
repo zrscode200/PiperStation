@@ -1,6 +1,6 @@
 ---
 name: automation-policy
-description: Use when the next action is `external` (push, pull request, dependency install or update, networked command with effects, CI) or `exceptional` (force push, history rewrite, deleting branches, worktrees, or user data, discarding changes, secrets, production deploys) — the one action-boundary check that asks, checks standing policy notes, and records the go-ahead. Routine work never routes here.
+description: Use when the next action is `external` (push, pull request, dependency install or update, networked command with effects, CI) or `exceptional` (force push, pushed-history rewrite, deleting branches, worktrees, or user data, discarding changes, secrets, production deploys) — the one action-boundary check that asks, checks standing policy notes, and records the go-ahead. Routine work never routes here.
 ---
 
 # Automation Policy

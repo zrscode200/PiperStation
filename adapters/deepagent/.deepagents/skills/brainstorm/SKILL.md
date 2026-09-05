@@ -39,7 +39,7 @@ artifacts.
 
 Convergent work escalates out of brainstorm: use the `piper-workflow` skill for
 formal planning and Ralph execution, `review` for review gates, and
-`automation-policy` before protected actions.
+`automation-policy` before `external` or `exceptional` actions.
 
 ## Posture
 
@@ -120,7 +120,7 @@ goals, non-goals), options considered and the tradeoffs that mattered, the
 recommended direction and why, a short pressure-test of that direction (failure
 modes or a quick pre-mortem), open questions and assumptions to verify, and the
 suggested next surface: optional Design Studio, formal planning, a Ralph task,
-review, or an automation-policy flow.
+review, or an automation-policy boundary ask.
 
 ## Register
 
@@ -170,7 +170,7 @@ current frame; it does not perform the destination's durable work itself.
 | "start Ralph", "build task X", "execute the queue item", "implement the plan" | `piper-workflow` — Ralph execution |
 | "review this change" or an implemented slice or review gate | `review` |
 | "open a PR", "push", "install", "run CI", or another `external` or `exceptional` action | `automation-policy` |
-| "commit" or a worktree change (routine once the workflow reaches it) | `piper-workflow` — Finish |
+| "commit" or a worktree change (routine once the workflow reaches it) | `piper-workflow` — the mode that reaches it (Finish for a commit, group Entry for a worktree) |
 | "pause", "hand off", or "get this compact-ready" | `piper-workflow` — compact handoff |
 
 Wait for go-ahead when the route requires confirmation, risk is `L2`, the
@@ -197,6 +197,6 @@ recommendation.
 - Do not push, merge to a remote, open a pull request, install dependencies,
   or run external automation unless the selected workflow has reached that
   action and the `external` ask has a go-ahead; see `automation-policy.md`.
-  Commits and worktree changes are routine once reached. Delete, force-push, rewrite history, deploy to
+  Commits and worktree changes are routine once reached. Delete, force-push, rewrite pushed history, deploy to
   production, or take other exceptional actions only after explicit one-off
   approval through `automation-policy`.

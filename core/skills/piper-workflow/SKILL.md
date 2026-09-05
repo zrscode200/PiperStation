@@ -39,7 +39,7 @@ Choose the smallest convergent path that fits:
 | Formalize the current wave into Ralph-ready detail | Superpowers — Wave Formalization | `/superpowers`; Ralph runs this pass at a wave boundary when the selected wave is still a sketch |
 | Execute one clear active-work wave, explicit slice, or optional queued task | Ralph | `/ralph` and Ralph sections in `STATION.md`; project source edits in the lane's checkout are routine |
 | Review an implemented wave, group, or slice | Review | `review` |
-| Push, pull request, dependency, network, CI, or other `external` or `exceptional` action | Finish or the boundary ask | `automation-policy` |
+| Push, pull request, dependency, networked command with effects, CI, or other `external` or `exceptional` action | Finish or the boundary ask | `automation-policy` |
 | Pause or compact active work | compact handoff | `/compact-handoff` and compact sections in `STATION.md` |
 
 When routing into Superpowers, Ralph, or compact handoff, read and follow the
@@ -215,9 +215,11 @@ Update hub records only when useful:
 
 - `memory.md`: durable facts, user preferences, stable repo conventions, and
   reusable context — not a per-wave changelog.
-- `project.md`: project policy preferences, one-off approvals, accepted risks,
-  and project-level automation notes — not a commit ledger; commit history lives
-  in `build-log.md`, anchored to git.
+- `project.md`: repo binding, overview, and standing policy notes (a read-only
+  note, a standing grant with a target, a closeout constraint, accepted risks),
+  written only at the user's word — never approvals; go-aheads live in the
+  lane's `build-log.md`, and commit history lives in `build-log.md`, anchored
+  to git.
 - optional `decisions.md`: substantial decision logs future work should not
   silently reopen; supersede a reversed decision in place rather than deleting it.
 
@@ -246,6 +248,6 @@ worktree) is writable in the active session. {{WORKSPACE_ACCESS}}
   or run external automation unless the selected workflow has reached that
   action and the `external` ask has a go-ahead; see `automation-policy.md`.
   Commits, local merges, and worktree changes are routine once reached.
-  Delete, force-push, rewrite history, deploy to
+  Delete, force-push, rewrite pushed history, deploy to
   production, or take other exceptional actions only after explicit one-off
   approval through `automation-policy`.

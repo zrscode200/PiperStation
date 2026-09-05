@@ -60,7 +60,7 @@ projects/<project-id>/
 ```
 
 - `project.md` binds the project id to the real repo path and stores a small
-  project overview plus project policy preferences — not a commit ledger; commit
+  project overview plus standing policy notes — not a commit ledger; commit
   and acceptance history live in `build-log.md`, anchored to git.
 - `memory.md` stores durable facts, preferences, stable conventions, and
   reusable context, not a per-wave changelog.
@@ -243,7 +243,7 @@ Before editing a registered project:
 9. Implement in the lane's checkout, using the repo's own conventions and
    verification commands.
 10. Update `projects/<project-id>/work/` only when active continuity is useful.
-11. Update hub `memory.md`, `project.md` policy notes, or optional
+11. Update hub `memory.md`, `project.md` standing policy notes (only at the user's word), or optional
     `decisions.md` only when durable context changed.
 
 ## Ralph Review Gate
@@ -303,7 +303,7 @@ shell hooks.
 
 Use `automation-policy.md` before any `external` action — pushes, merges to a
 remote, pull requests, dependency installs, networked commands with effects,
-CI changes, deployments, or external automation — and before any
+CI changes, or external automation — and before any
 `exceptional` action. Source edits in the lane's checkout, local git, and
 non-destructive worktree create or switch operations are routine. Deleting
 worktrees and other exceptional actions always need explicit one-off approval.

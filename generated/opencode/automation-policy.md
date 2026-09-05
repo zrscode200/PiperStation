@@ -81,8 +81,8 @@ policy note from a one-off go-ahead. Four kinds:
   group G1").
 
 A legacy profile-preference line written by the older registration template
-carries no standing policy: strict is not a read-only note, and local or
-external is not a grant. Leave such lines in place and ignore them.
+carries no standing policy: "strict" is not a read-only note, and "local" or
+"external" is not a grant. Leave such lines in place and ignore them.
 
 ## Enforcement
 

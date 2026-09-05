@@ -37,7 +37,7 @@ Inputs you should receive in your prompt:
 - implementing it would require an unconfirmed L2 implementation-risk change
   such as auth, billing, migrations, or public API changes
 - the work would require an `external` or `exceptional` action (dependency
-  installs, CI changes, network access, pushes, destructive git); never
-  perform these yourself — report back
+  installs, CI changes, network access beyond read-only lookups, pushes,
+  destructive git); never perform these yourself — report back
 - the verification command fails twice without meaningful progress
 - the change would touch a file outside the listed paths in a non-trivial way
