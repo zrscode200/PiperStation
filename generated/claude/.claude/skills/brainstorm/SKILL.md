@@ -1,6 +1,6 @@
 ---
 name: brainstorm
-description: "Use when the user wants to explore, understand, decide, or explicitly register rather than execute on a Piper Station project: orient to a repo or registered project, compare approaches, frame a problem, think through direction, optionally suggest Design Studio for deeper durable design, or route deterministic registration. Stays read-only except explicit registration through the helper. Hand off to design-studio only after explicit user choice, piper-workflow for convergent execution, review for review, and automation-policy for permission-gated actions."
+description: "Use when the user wants to explore, understand, decide, or explicitly register rather than execute on a Piper Station project: orient to a repo or registered project, compare approaches, frame a problem, think through direction, optionally suggest Design Studio for deeper durable design, or route deterministic registration. Stays read-only except explicit registration through the helper. Hand off to design-studio only after explicit user choice, piper-workflow for convergent execution, review for review, and automation-policy for external or exceptional actions."
 ---
 
 # Brainstorm
@@ -120,7 +120,7 @@ checklist `piper-workflow` verifies. Include:
   pre-mortem — try to break it before committing.
 - Open questions and assumptions that should be verified before durable work.
 - Suggested next surface: optional Design Studio, formal planning, a single
-  Ralph task, review, or an automation-policy permission flow.
+  Ralph task, review, or an automation-policy boundary ask.
 
 ## Register
 
@@ -155,9 +155,9 @@ those routes — formal planning, Ralph execution, finish, or automation — the
 signal is convergent: escalate per the table below rather than writing here.
 
 Ambiguous signals must not silently escalate durable writes. If the next step
-would create hub work records, edit project source, or cross the active
-permission profile boundary and intent is unclear, state the assumption and
-choose the less durable action or ask.
+would create hub work records, edit project source, or take an `external`
+action and intent is unclear, state the assumption and choose the less
+durable action or ask.
 
 ## Escalation
 
@@ -172,7 +172,8 @@ current frame; it does not perform the destination's durable work itself.
 | "make this a formal plan", "prepare for Ralph", "create the queue", "set this up for later" | `piper-workflow` — formal planning |
 | "start Ralph", "build task X", "execute the queue item", "implement the plan" | `piper-workflow` — Ralph execution |
 | "review this change" or an implemented wave, slice, or review gate | `review` |
-| "commit", "open a PR", "push", "install", "run CI", worktree change, or external/exceptional action | `automation-policy` |
+| "open a PR", "push", "install", "run CI", or another `external` or `exceptional` action | `automation-policy` |
+| "commit" or a worktree change (routine once the workflow reaches it) | `piper-workflow` — Finish |
 | "pause", "hand off", or "get this compact-ready" | `piper-workflow` — `/compact-handoff` |
 
 Wait for go-ahead when the route requires confirmation, risk is `L2`, the
@@ -198,9 +199,9 @@ before any recommendation.
 - Do not copy source code into the hub.
 - Hand convergent work to `piper-workflow`, `review`, or `automation-policy`
   rather than executing durable changes here.
-- Do not commit, push, merge, create or switch worktrees, install dependencies,
+- Do not push, merge to a remote, open a pull request, install dependencies,
   or run external automation unless the selected workflow has reached that
-  action and the active permission profile allows it; see
-  `automation-policy.md`. Delete, force-push, rewrite history, deploy to
+  action and the `external` ask has a go-ahead; see `automation-policy.md`.
+  Commits and worktree changes are routine once reached. Delete, force-push, rewrite history, deploy to
   production, or take other exceptional actions only after explicit one-off
   approval through `automation-policy`.

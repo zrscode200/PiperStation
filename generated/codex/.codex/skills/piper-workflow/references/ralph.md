@@ -19,8 +19,8 @@ defined in `STATION.md` → Project Records). If the selected wave is still a
 sketch, Ralph formalizes it
 first through the Wave Formalization pass in `references/superpowers.md`;
 open-ended planning stays out of scope. Slices are decomposition units; waves
-are execution and checkpoint units. Actions that cross the active permission
-profile boundary still route through the `automation-policy` skill.
+are execution and checkpoint units. `external` and `exceptional` actions still
+route through the `automation-policy` skill.
 
 ## Steps
 
@@ -61,17 +61,16 @@ profile boundary still route through the `automation-policy` skill.
    `STATION.md` → One checkout per lane). If it is outside the current Codex
    sandbox, state that writable access is required (e.g. start Codex with
    `--add-dir <checkout-path>`) before
-   execution instead of declaring the task Ralph-ready. Confirm the active
-   permission profile covers `local` project source edits; if not, route
-   through `automation-policy` before editing.
+   execution instead of declaring the task Ralph-ready. Source edits there are
+   routine; no further check precedes them.
 6. State the selected wave, group review, explicit slice, or queued task and
    its expected diff boundary before editing.
 7. Mark the boundary active in the lane's `task-queue.md` only when a durable
    queue exists.
 8. Stop if the boundary is ambiguous, still lacks verification after Wave
-   Formalization, is `L3`, is outside the approved active work,
-   lacks `local` profile coverage for source edits, or is `L2` without
-   explicit user confirmation.
+   Formalization, is `L3`, is outside the approved active work, is `L2`
+   without explicit user confirmation, or requires an `external` or
+   `exceptional` action that has no go-ahead.
 9. Implement only the selected boundary in the lane's checkout. Within a
    wave, use slices to organize the work; do not turn each internal slice into a
    mandatory stop unless risk, verification, or drift requires it.
@@ -81,7 +80,7 @@ profile boundary still route through the `automation-policy` skill.
    foundational work, expected for meaningful behavior-changing `S1`, optional
    for `S0/L0`, docs-only, or trivial work. Risk tier controls Ralph
    implementation confirmation before editing, not review selection or
-   permission profile. After the final wave in a group lands, sync the group
+   action class. After the final wave in a group lands, sync the group
    branch with base and re-verify, then run a
    group-level review gate over the integrated diff before the slice, group, or
    acceptance task is marked complete, even if every per-wave gate already
@@ -105,10 +104,9 @@ profile boundary still route through the `automation-policy` skill.
     risky, or cross-cutting behavior.
 13. Drift-check the diff against the selected boundary, active work, and user
     request. Once the drift-check passes, commit the wave's project source on
-    the lane's branch when the active profile covers `local` — commit and report, without a per-wave
-    confirmation, separate from any Piper artifact commit; route through
-    `automation-policy` when `local` coverage is absent; never commit mid-slice;
-    and do not push or open PRs. At group closeout, commit any remaining group
+    the lane's branch — a routine action: commit and report, without a per-wave
+    confirmation, separate from any Piper artifact commit; never commit
+    mid-slice; and do not push or open PRs (`external`). At group closeout, commit any remaining group
     source.
 14. For boundary bookkeeping, append the lane's `build-log.md` at checkpoint
     cadence with
@@ -134,9 +132,10 @@ profile boundary still route through the `automation-policy` skill.
 19. Continue only if the next boundary is safe and the user asked for
     continuation.
 
-Do not commit, push, open PRs, create or switch worktrees, install dependencies,
-or run external automation unless the selected workflow reached that action and
-the active permission profile allows it. Delete, force-push, rewrite history,
+Do not push, open PRs, install dependencies, or run external automation unless
+the selected workflow reached that action and the `external` ask (or a standing
+grant) has a go-ahead; commits and worktree changes are routine once the
+workflow reaches them. Delete, force-push, rewrite history,
 deploy to production, or take other exceptional actions only after explicit
 one-off approval through `automation-policy`. Ralph prepares for compaction; it
 does not invoke `/compact` itself.
@@ -155,8 +154,8 @@ Drift-check the actual diff:
 Stop and hand control back when the same verification fails twice without
 meaningful progress, requirements are ambiguous, implementation drifts outside
 the selected boundary, an `L2` boundary lacks confirmation, `L3`
-implementation risk would be required, the next action crosses the active
-permission profile boundary without sufficient profile coverage, tests or
+implementation risk would be required, the next action is `external` or
+`exceptional` without a go-ahead, tests or
 builds cannot run and no fallback exists, active work records cannot be updated
 when needed for continuation, a required review gate cannot run, or the plan
 appears wrong after repeated implementation attempts.
@@ -177,8 +176,8 @@ Review gate examples:
 - Meaningful `S1` behavior-changing wave or explicit slice: gate expected.
 - Queued bootstrap, registration, hook/config, or test-harness wave or task:
   gate required.
-- Dependency install, network, pull request, CI, or other external action:
-  route the action through `automation-policy`; choose the gate from scope and
+- Dependency install, network, pull request, CI, or other `external` action:
+  route the action through the `automation-policy` ask; choose the gate from scope and
   impact.
 
 When the gate runs, spawn the `reviewer` subagent (declared in
@@ -223,8 +222,8 @@ When active work records are in use:
    resume rather than writing them into the packet.
 4. Report artifact files updated in the Piper Station hub and whether they are
    committed. If the stop is a resume trigger, ask once whether to commit the
-   Piper artifact updates (path-scoped to the lane); route through `automation-policy` if the
-   active profile does not cover local git.
+   Piper artifact updates (path-scoped to the lane) — a routine action the
+   checkpoint decides.
 
 If the next boundary is safe and context is not a concern, continue normally.
 If context is low, a milestone just finished, or the next wave needs a clean

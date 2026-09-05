@@ -30,8 +30,7 @@ The user invoked this command with: `$ARGUMENTS`
    changes and state whether they are uncommitted in the hub.
 7. Ask once whether to commit Piper artifact updates before compacting only when
    those artifacts matter for future continuity; do not commit unless the
-   checkpoint decision is made and the active permission profile covers local
-   git actions; otherwise route through `automation-policy`. Stage only the
+   checkpoint decision is made; the commit itself is routine. Stage only the
    lane's paths plus touched project-level files — never `git add -A` in the
    shared hub checkout.
 8. Report that the project is compact-ready and tell the user they may run
@@ -69,9 +68,10 @@ Rules:
 - Do not run `/compact`; the user or runtime runs it.
 - Do not say `/compact` ran. Say only that the state is compact-ready and the
   user may run `/compact`.
-- Do not commit, push, open PRs, install dependencies, or run external
-  automation unless the selected workflow has reached that action and the
-  active permission profile allows it; see `automation-policy`.
+- Do not push, open PRs, install dependencies, or run external automation
+  unless the selected workflow has reached that action and the `external` ask
+  has a go-ahead; a commit is routine once the checkpoint decides it; see
+  `automation-policy`.
 - If `projects/<project-id>/work/` does not exist yet, create only the files
   needed for safe compaction.
 - Treat `context-pack.md` as the only fully self-contained resume packet; do

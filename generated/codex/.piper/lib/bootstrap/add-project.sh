@@ -552,8 +552,7 @@ write_project_md() {
       cat "$block"
       printf '\n## Purpose\n\nTBD\n\n'
       printf '## Project Policy\n\n'
-      printf -- '- Permission profile preference: strict unless recorded otherwise.\n'
-      printf -- '- One-off approvals, accepted risks, and automation notes: none recorded.\n\n'
+      printf -- '- Standing policy notes (read-only project, pre-approved external actions, closeout constraints, accepted risks): none recorded.\n\n'
       printf '## Working Notes\n\n'
       printf -- '- Keep durable project context in this folder.\n'
       printf -- '- Keep implementation work in the repo path above.\n'

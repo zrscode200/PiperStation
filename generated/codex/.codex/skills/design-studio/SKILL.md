@@ -42,7 +42,7 @@ It does not authorize:
 - destructive migration, deletion, or exceptional actions.
 
 Route later implementation planning to `piper-workflow`, explicit code review
-to `review`, and permission-gated actions to `automation-policy`.
+to `review`, and `external` or `exceptional` actions to `automation-policy`.
 
 ## Resolve The Project
 
@@ -143,8 +143,8 @@ accepted_revision: N
 
 Do not copy the full design into execution artifacts. Piper Workflow verifies
 that exact revision against live source before planning.
-Source implementation never starts from the studio, regardless of permission
-profile. A failed fixed contract or core premise returns upstream to Design
+Source implementation never starts from the studio, regardless of action
+class. A failed fixed contract or core premise returns upstream to Design
 Studio; choices inside recorded implementation freedoms stay downstream.
 
 ## Exit Choices

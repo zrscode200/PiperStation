@@ -28,6 +28,9 @@ assert_design_studio_contract() {
   assert_contains "$studio_skill_dir/SKILL.md" "Design Studio is discussion-first"
   assert_contains "$studio_skill_dir/SKILL.md" "not a studio exit into direct editing"
   assert_contains "$studio_skill_dir/SKILL.md" "Source implementation never starts from the studio"
+  assert_contains "$studio_skill_dir/SKILL.md" "regardless of action"
+  assert_not_contains "$studio_skill_dir/SKILL.md" "regardless of permission"
+  assert_contains "$studio_skill_dir/references/artifact-contracts.md" "standing policy notes"
   assert_contains "$studio_skill_dir/SKILL.md" "once the design tree has two or more entries"
   assert_contains "$studio_skill_dir/references/artifact-contracts.md" "once the design tree has two or more entries"
   assert_contains "$studio_skill_dir/references/artifact-contracts.md" "when they earn their place"
@@ -224,8 +227,9 @@ assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "r
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "confirmed-in-scope"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "confirmed-out-of-scope"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "false-positive"
-assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "covers \`local\` project source edits"
-assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "lacks \`local\` profile coverage for source edits"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Source edits there are"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "action that has no go-ahead"
+assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "profile coverage"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "exceptional actions only after explicit"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "For boundary bookkeeping"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Rewrite \`context-pack.md\` in full only when"
@@ -255,6 +259,8 @@ assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "Check structural readiness"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "lower-kebab \`<gid>\`"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "Lane selection; ask, never guess"
+assert_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "unless the checkpoint decision is made"
+assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/superpowers.md" "permission profile"
 assert_contains "$codex_hub/.codex/compact-prompt.md" "work/groups/<gid>/"
 assert_contains "$codex_hub/.codex/compact-prompt.md" "lane's checkout"
 assert_contains "$codex_hub/.codex/skills/piper-workflow/references/ralph.md" "Wave Formalization pass"
@@ -454,8 +460,9 @@ assert_contains "$claude_hub/.claude/commands/ralph.md" "group-level review gate
 assert_contains "$claude_hub/.claude/commands/ralph.md" "group gate inspects cross-wave"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "implementation confirmation before editing"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "writable access is"
-assert_contains "$claude_hub/.claude/commands/ralph.md" "covers \`local\` project source edits"
-assert_contains "$claude_hub/.claude/commands/ralph.md" "lacks \`local\` profile coverage for source edits"
+assert_contains "$claude_hub/.claude/commands/ralph.md" "Source edits there are"
+assert_contains "$claude_hub/.claude/commands/ralph.md" "action that has no go-ahead"
+assert_not_contains "$claude_hub/.claude/commands/ralph.md" "profile coverage"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "Review gate examples"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "Post-Compact Resume"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "internal slice progress"
@@ -484,6 +491,8 @@ assert_contains "$claude_hub/.claude/commands/superpowers.md" "scoped to a singl
 assert_contains "$claude_hub/.claude/commands/superpowers.md" "Check structural readiness"
 assert_contains "$claude_hub/.claude/commands/superpowers.md" "lower-kebab \`<gid>\`"
 assert_contains "$claude_hub/.claude/commands/superpowers.md" "Lane selection; ask, never guess"
+assert_contains "$claude_hub/.claude/commands/superpowers.md" "unless the checkpoint decision is made"
+assert_not_contains "$claude_hub/.claude/commands/superpowers.md" "permission profile"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "Wave Formalization pass"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "next group's Entry"
 assert_contains "$claude_hub/.claude/commands/ralph.md" "commit the wave's project source"
@@ -632,8 +641,9 @@ assert_contains "$opencode_hub/.opencode/commands/ralph.md" "select the group re
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "group-level review gate over the integrated diff"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "group gate inspects cross-wave"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "writable access is"
-assert_contains "$opencode_hub/.opencode/commands/ralph.md" "covers \`local\` project source edits"
-assert_contains "$opencode_hub/.opencode/commands/ralph.md" "lacks \`local\` profile coverage for source edits"
+assert_contains "$opencode_hub/.opencode/commands/ralph.md" "Source edits there are"
+assert_contains "$opencode_hub/.opencode/commands/ralph.md" "action that has no go-ahead"
+assert_not_contains "$opencode_hub/.opencode/commands/ralph.md" "profile coverage"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "Review gate examples"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "Post-Compact Resume"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "internal slice progress"
@@ -662,6 +672,8 @@ assert_contains "$opencode_hub/.opencode/commands/superpowers.md" "scoped to a s
 assert_contains "$opencode_hub/.opencode/commands/superpowers.md" "Check structural readiness"
 assert_contains "$opencode_hub/.opencode/commands/superpowers.md" "lower-kebab \`<gid>\`"
 assert_contains "$opencode_hub/.opencode/commands/superpowers.md" "Lane selection; ask, never guess"
+assert_contains "$opencode_hub/.opencode/commands/superpowers.md" "unless the checkpoint decision is made"
+assert_not_contains "$opencode_hub/.opencode/commands/superpowers.md" "permission profile"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" 'argument-hint: "\[project id, optional group id, and optional boundary id\]"'
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "Wave Formalization pass"
 assert_contains "$opencode_hub/.opencode/commands/ralph.md" "next group's Entry"
@@ -818,12 +830,17 @@ assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/sup
 assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/superpowers.md" "Pass 2: Wave Formalization"
 assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/superpowers.md" "lower-kebab \`<gid>\`"
 assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/superpowers.md" "Lane selection; ask, never guess"
+assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/superpowers.md" "unless the checkpoint decision is made"
+assert_not_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/superpowers.md" "permission profile"
 assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/ralph.md" "Implementation Review Gate"
 assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/ralph.md" "group off the windows"
 assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/ralph.md" "checkpoint invariant"
 assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/ralph.md" "work/groups/<gid>/"
 assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/ralph.md" "ask, never guess"
 assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/ralph.md" "lane's checkout"
+assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/ralph.md" "Source edits there are"
+assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/ralph.md" "action that has no go-ahead"
+assert_not_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/ralph.md" "profile coverage"
 assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/ralph.md" "light boundary"
 assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/compact-handoff.md" "Required Compact Resume Packet"
 assert_contains "$deepagent_hub/.deepagents/skills/piper-workflow/references/compact-handoff.md" "Current boundary status"
@@ -987,6 +1004,8 @@ for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$openc
   assert_contains "$skill_dir/brainstorm/SKILL.md" "Orient"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "projects/registry.json"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "active group lane"
+  assert_contains "$skill_dir/brainstorm/SKILL.md" "\`external\` or \`exceptional\` action"
+  assert_not_contains "$skill_dir/brainstorm/SKILL.md" "permission profile"
   assert_contains "$skill_dir/brainstorm/SKILL.md" "read-only except explicit registration through the helper"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Piper Workflow owns convergent execution"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Lane selection"
@@ -999,9 +1018,11 @@ for skill_dir in "$codex_hub/.codex/skills" "$claude_hub/.claude/skills" "$openc
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "current wave enough to execute safely"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "Groups bundle related waves"
   assert_contains "$skill_dir/piper-workflow/SKILL.md" "meaningful boundaries"
-  assert_contains "$skill_dir/piper-workflow/SKILL.md" "project source edits require \`local\` profile coverage"
-  assert_contains "$skill_dir/piper-workflow/SKILL.md" "when \`local\` profile coverage exists"
-  assert_contains "$skill_dir/piper-workflow/SKILL.md" "Permission profiles control action boundaries separately"
+  assert_contains "$skill_dir/piper-workflow/SKILL.md" "project source edits in the lane's checkout are routine"
+  assert_not_contains "$skill_dir/piper-workflow/SKILL.md" "permission profile"
+  assert_not_contains "$skill_dir/piper-workflow/SKILL.md" "profile coverage"
+  assert_contains "$skill_dir/piper-workflow/SKILL.md" "edit only the lane's checkout (routine)"
+  assert_contains "$skill_dir/piper-workflow/SKILL.md" "Action classes control asks separately"
   assert_not_exists "$skill_dir/superpowers-planning/SKILL.md"
   assert_not_exists "$skill_dir/ralph-loop/SKILL.md"
   assert_contains "$skill_dir/review/SKILL.md" "Do not use this skill for general repo orientation"
@@ -1161,7 +1182,8 @@ assert_file "$both_hub/projects/sample-project/project.md"
 assert_file "$both_hub/projects/sample-project/memory.md"
 assert_not_exists "$both_hub/projects/sample-project/decisions.md"
 assert_contains "$both_hub/projects/sample-project/project.md" "Project Policy"
-assert_contains "$both_hub/projects/sample-project/project.md" "Permission profile preference"
+assert_contains "$both_hub/projects/sample-project/project.md" "Standing policy notes"
+assert_not_contains "$both_hub/projects/sample-project/project.md" "Permission profile preference"
 assert_not_exists "$both_hub/projects/sample-project/work"
 assert_file "$project_repo/.piper/project.json"
 assert_file "$project_repo/PIPER.md"
@@ -1215,6 +1237,19 @@ project_repo_real=$(CDPATH= cd -- "$project_repo" && pwd -P)
 assert_contains "$both_hub/projects/registry.json" "\"repo_path\": \"$project_repo_real\""
 
 # Re-registering the same project_id is idempotent in the index.
+python3 - "$both_hub/projects/legacy-project/project.md" <<'PY'
+import sys
+path = sys.argv[1]
+text = open(path, encoding="utf-8").read()
+new_line = "- Standing policy notes (read-only project, pre-approved external actions, closeout constraints, accepted risks): none recorded."
+old_lines = "- Permission profile preference: strict unless recorded otherwise.\n- One-off approvals, accepted risks, and automation notes: none recorded."
+if new_line not in text:
+    raise SystemExit("expected the new policy line in legacy-project/project.md")
+open(path, "w", encoding="utf-8").write(text.replace(new_line, old_lines))
+PY
+"$ADD_PROJECT" --hub "$both_hub" --repo "$legacy_repo" --project-id legacy-project --display-name "Legacy Project" > "$TMP_ROOT/legacy-re-add.log"
+assert_contains "$both_hub/projects/legacy-project/project.md" "Permission profile preference: strict unless recorded otherwise."
+assert_not_contains "$both_hub/projects/legacy-project/project.md" "Standing policy notes"
 "$ADD_PROJECT" --hub "$both_hub" --repo "$project_repo" --project-id sample-project --display-name "Sample Project" > "$TMP_ROOT/re-add.log"
 both_count_after=$(python3 -c 'import json,sys; print(len(json.load(open(sys.argv[1]))["projects"]))' "$both_hub/projects/registry.json")
 [ "$both_count_after" = "3" ] || fail "re-registration changed entry count to $both_count_after"
@@ -1291,7 +1326,7 @@ if grep -R -n 'openaiDeveloperDocs_\*: allow\|"openaiDeveloperDocs_\\\*": "allow
 if grep -R -n 'read-only band\|creates no hub records' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-brainstorm-readonly.log"; then cat "$TMP_ROOT/stale-brainstorm-readonly.log" >&2; fail "brainstorm registration wording must acknowledge the deterministic write exception"; fi
 if grep -R -n -E 'automation approval\. Route those through|automation approval.*piper-workflow' "$ROOT/core/skills/review/SKILL.md" "$ROOT/generated/codex/.codex/skills/review/SKILL.md" "$ROOT/generated/claude/.claude/skills/review/SKILL.md" "$ROOT/generated/opencode/.opencode/skills/review/SKILL.md" > "$TMP_ROOT/stale-review-automation-routing.log"; then cat "$TMP_ROOT/stale-review-automation-routing.log" >&2; fail "review skill must route automation approval directly to automation-policy"; fi
 if grep -R -n -E '(^|[^[:alnum:]_])A[0-3]([^[:alnum:]_]|$)|A-tier|Automation Tiers|automation tiers' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-automation-tiers.log"; then cat "$TMP_ROOT/stale-automation-tiers.log" >&2; fail "active instructions must use action classes, not stale automation tiers"; fi
-if grep -R -n -E --include='*.md' '[Pp]ermission [Pp]rofile|profile coverage|profile boundary|profile preference|`strict`|`local`' "$ROOT/core/shared" > "$TMP_ROOT/stale-profiles-shared.log"; then cat "$TMP_ROOT/stale-profiles-shared.log" >&2; fail "shared canon must use action classes, not permission profiles"; fi
+if grep -R -n -E '[Pp]ermission [Pp]rofile|profile coverage|profile boundary|profile preference|`strict`|`local`' "$ROOT/core" "$ROOT/bootstrap/add-project.sh" "$ROOT/adapters/codex/.codex/skills" "$ROOT/adapters/deepagent/.deepagents/skills" > "$TMP_ROOT/stale-profiles-core.log"; then cat "$TMP_ROOT/stale-profiles-core.log" >&2; fail "core canon, skills, and forks must use action classes, not permission profiles"; fi
 if grep -R -n -E 'protected local git action|Risk tier controls approval|Risk tier determines whether execution|L2.*dependency|dependency or CI action' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-permission-risk-mix.log"; then cat "$TMP_ROOT/stale-permission-risk-mix.log" >&2; fail "active instructions must keep Ralph risk separate from permission profiles"; fi
 if grep -R -n -E 'protected finish action|Do not commit, push, merge, delete, install dependencies|exceptional actions through the permission profile gate|exceptional actions may proceed|Only after the workflow reaches that action and the permission profile allows it' "$ROOT/core" "$ROOT/adapters" "$ROOT/generated" > "$TMP_ROOT/stale-permission-profile-semantics.log"; then cat "$TMP_ROOT/stale-permission-profile-semantics.log" >&2; fail "active instructions must keep exceptional actions one-off and source edits locally gated"; fi
 if grep -R -n '\.codex/commands' "$ROOT/core" "$ROOT/adapters" "$ROOT/docs/capability-matrix.md" "$ROOT/generated" > "$TMP_ROOT/codex-commands.log"; then

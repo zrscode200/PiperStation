@@ -28,7 +28,7 @@ configuration, generated surfaces, or runtime seams that can validate or
 invalidate the current model.
 
 Use external research or disposable experiments only when the evidence is
-needed and the applicable permission profile permits the action. Record
+needed and the action is routine or has a recorded go-ahead. Record
 findings and implications; do not confuse research material with current design
 authority.
 

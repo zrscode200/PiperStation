@@ -26,8 +26,8 @@ against current code before its first wave (see `STATION.md` → Group Lifecycle
 Use this command for formal planning, not for divergent exploration or general
 repo orientation (those belong to `brainstorm`), implementation, review, or
 automation approval. Natural-language routing reaches this behavior through
-`piper-workflow`; actions that cross the active permission profile boundary
-still route through `automation-policy`.
+`piper-workflow`; `external` and `exceptional` actions still route through
+`automation-policy`.
 
 ## Pass 1: Structural Planning
 
@@ -130,9 +130,9 @@ wave is still a sketch.
     → Artifact Persistence): report changed Piper artifacts separately from
     source changes and state whether they are uncommitted in the hub.
 17. Offer one Piper artifact commit (path-scoped to the lane) at planning
-    finish only when the changed artifacts matter for future continuity. Do not commit unless the checkpoint
-    decision is made and the active permission profile covers local git actions;
-    otherwise route through `automation-policy`.
+    finish only when the changed artifacts matter for future continuity. Do not
+    commit unless the checkpoint decision is made; the commit itself is
+    routine.
 18. Stop before implementation unless the user explicitly asks to proceed.
 
 Registration must not create `projects/<project-id>/work/`; Claude Code
@@ -188,8 +188,8 @@ summarize the artifact files touched, their role in the next Ralph wave,
 explicit slice, or future session, and whether they remain uncommitted in the
 Piper Station hub.
 Offer a single artifact commit only when the artifact checkpoint matters for
-future continuity; permission profiles gate whether that local git action can
-proceed, not whether the checkpoint exists.
+future continuity; the commit is routine, and the checkpoint decides whether
+it happens.
 
 ## Spec Shape
 

@@ -214,7 +214,7 @@ Each mutable fact has one owner:
 | Deliberate durable queued work | `task-queue.md`, when useful |
 | Project-significant decisions | project `decisions.md` |
 | Stable facts and preferences | project `memory.md` |
-| Project binding and permission preference | project `project.md` |
+| Project binding and standing policy notes | project `project.md` |
 | Branch, HEAD, commit list, and raw diff | live project git |
 
 If records disagree, `design.md` wins for design content and revision,

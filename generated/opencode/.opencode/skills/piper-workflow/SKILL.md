@@ -1,6 +1,6 @@
 ---
 name: piper-workflow
-description: "Use when executing rather than exploring on a registered Piper Station project: verify an ordinary brainstorm direction or an explicitly accepted Design Studio revision, formalize active work, prepare Ralph execution, operate waves and group lifecycle gates, prepare compact-safe handoff, or route a permission-gated finish action. Entered from brainstorm, an accepted design-studio handoff, or /superpowers, /ralph, /compact-handoff."
+description: "Use when executing rather than exploring on a registered Piper Station project: verify an ordinary brainstorm direction or an explicitly accepted Design Studio revision, formalize active work, prepare Ralph execution, operate waves and group lifecycle gates, prepare compact-safe handoff, or route an external or exceptional finish action. Entered from brainstorm, an accepted design-studio handoff, or /superpowers, /ralph, /compact-handoff."
 ---
 
 # Piper Workflow
@@ -21,8 +21,8 @@ assumes a registered project and a direction that has converged toward durable
 work. If a request is actually still divergent, hand it back to `brainstorm` or
 to Design Studio when an existing design premise must be reconsidered. Use the
 narrow skills when their consequence applies: `review` for explicit review or
-review gates, and `automation-policy` before crossing the active permission
-profile boundary.
+review gates, and `automation-policy` before an `external` or `exceptional`
+action.
 
 Read `AGENTS.md` and `STATION.md` first. Resolve the project in
 `projects/registry.json` to its `repo_path` and read
@@ -37,9 +37,9 @@ Choose the smallest convergent path that fits:
 | --- | --- | --- |
 | Verify the direction and define group or milestone structure | Superpowers — Structural Planning | this skill and `/superpowers` |
 | Formalize the current wave into Ralph-ready detail | Superpowers — Wave Formalization | `/superpowers`; Ralph runs this pass at a wave boundary when the selected wave is still a sketch |
-| Execute one clear active-work wave, explicit slice, or optional queued task | Ralph | `/ralph` and Ralph sections in `STATION.md`; project source edits require `local` profile coverage |
+| Execute one clear active-work wave, explicit slice, or optional queued task | Ralph | `/ralph` and Ralph sections in `STATION.md`; project source edits in the lane's checkout are routine |
 | Review an implemented wave, group, or slice | Review | `review` |
-| Local git, worktree, PR, dependency, network, CI, exceptional, or external action | Finish or permission flow | `automation-policy` |
+| Push, pull request, dependency, network, CI, or other `external` or `exceptional` action | Finish or the boundary ask | `automation-policy` |
 | Pause or compact active work | compact handoff | `/compact-handoff` and compact sections in `STATION.md` |
 
 When routing into Superpowers, Ralph, or compact handoff, read and follow the
@@ -113,9 +113,8 @@ defined in `STATION.md` — has four stages, each run through this skill's modes
   then Wave Formalization for its first wave.
 - **Execution**: run the group's waves through Ralph Mode in the lane's
   checkout with per-wave gates; wave entries go to the group ledger. Commit the
-  project source per completed wave on the lane's branch when the active
-  profile covers `local` — commit and report, no per-wave ask — separate from
-  artifact commits.
+  project source per completed wave on the lane's branch — routine: commit
+  and report, no per-wave ask — separate from artifact commits.
 - **Closeout**: sync with base, verify, run the group review gate over
   `base..group`, commit any remaining group source, integrate into base (or
   record `integrated: pending-pr`), write the closeout entry in the project
@@ -149,10 +148,9 @@ that lane when they do a clear job: preserve long-horizon direction in
 durable queued execution in optional `task-queue.md`, record checkpoint
 history in `build-log.md`, or prepare compact/resume continuity in
 `context-pack.md`. Ralph execution may update those records and
-edit only the lane's checkout when `local` profile coverage exists. Finish,
-local git, worktree, PR, dependency, network, CI, external, or exceptional
-actions route through `automation-policy` when they cross the active permission
-profile boundary.
+edit only the lane's checkout (routine). Push, pull request, dependency,
+network, CI, and other `external` or `exceptional` actions route through
+`automation-policy` for the boundary ask.
 
 When work starts from Design Studio, `active-work.md` records only the
 `design_artifact` and exact `accepted_revision` plus downstream execution state;
@@ -165,8 +163,7 @@ than escalating durable writes.
 
 Piper artifacts stay in `projects/<project-id>/work/` by default. Updating
 them during active work is allowed local assistance; committing those updates
-is a `local` permission action and must go through `automation-policy` when
-the active permission profile does not cover local git.
+is routine; the checkpoint decides whether it happens.
 Record artifacts economically: `context-pack.md` is the only fully
 self-contained resume packet, rewritten in full when updated and holding only
 the non-derivable fields defined once in `STATION.md` → Compaction; roadmap,
@@ -210,7 +207,7 @@ and consider an artifact commit only at the resume triggers in that same list.
 Use the scope and risk tiers defined in `STATION.md`. Scope is advisory sizing:
 it guides planning depth, review expectations, and continuity pressure, but it
 does not mechanically create artifacts. Risk controls Ralph implementation
-caution. Permission profiles control action boundaries separately.
+caution. Action classes control asks separately.
 
 ## Durable Context
 
@@ -245,9 +242,10 @@ worktree) is writable in the active session. If the lane's checkout (`repo_path`
 - Do not make Design Studio mandatory. Preserve direct brainstorm-to-Piper
   planning, and do not silently reinterpret a stale or contradicted accepted
   design during Superpowers.
-- Do not commit, push, merge, create or switch worktrees, install dependencies,
+- Do not push, merge to a remote, open a pull request, install dependencies,
   or run external automation unless the selected workflow has reached that
-  action and the active permission profile allows it; see
-  `automation-policy.md`. Delete, force-push, rewrite history, deploy to
+  action and the `external` ask has a go-ahead; see `automation-policy.md`.
+  Commits, local merges, and worktree changes are routine once reached.
+  Delete, force-push, rewrite history, deploy to
   production, or take other exceptional actions only after explicit one-off
   approval through `automation-policy`.
