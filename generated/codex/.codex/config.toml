@@ -1,24 +1,12 @@
 #:schema https://developers.openai.com/codex/config-schema.json
 
-model = "gpt-5.5"
-model_reasoning_effort = "medium"
-review_model = "gpt-5.5"
-sandbox_mode = "workspace-write"
-approval_policy = "on-request"
+# Keep user/host model, reasoning, memory and permission choices.
+# This layer installs Piper behavior, roles and lifecycle reminders.
+
 experimental_compact_prompt_file = "compact-prompt.md"
 
 [features]
-multi_agent = true
 hooks = true
-memories = true
-
-[memories]
-use_memories = true
-generate_memories = true
-
-[agents]
-max_threads = 7
-max_depth = 1
 
 [agents.architect]
 config_file = "./agents/architect.toml"

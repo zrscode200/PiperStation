@@ -2,108 +2,32 @@
 from __future__ import annotations
 
 import argparse
-import filecmp
 import os
 import shutil
+import stat
 import sys
 import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNTIMES = ("codex", "claude", "opencode", "deepagent")
-COMMANDS = ("add-project.md", "superpowers.md", "ralph.md", "compact-handoff.md")
-SKILLS = (
-    "brainstorm",
-    "design-studio",
-    "piper-workflow",
-    "review",
-    "automation-policy",
-)
-# Runtimes without a native slash-command surface (Codex, Deep Agents) render
-# commands as reference files under their owning skill: add-project belongs to
-# the brainstorm front door; the planning and execution commands belong to
-# piper-workflow. Runtimes with a command surface render every command into a
-# single flat command_dir instead. A runtime opts into reference routing by
-# setting "command_skill" in its RUNTIME_CONFIG entry.
+# This branch distributes one Codex hub. The output subdirectory stays stable
+# so existing Codex bootstrap callers do not need a path migration.
 COMMAND_OWNING_SKILL = {
     "add-project.md": "brainstorm",
     "superpowers.md": "piper-workflow",
     "ralph.md": "piper-workflow",
     "compact-handoff.md": "piper-workflow",
 }
-RUNTIME_CONFIG = {
-    "codex": {
-        "runtime_name": "Codex",
-        "instruction_doc": "AGENTS.md",
-        # Commands render as references under their owning skill, so no single
-        # command_dir applies here.
-        "command_skill": COMMAND_OWNING_SKILL,
-        "skill_dir": ".codex/skills",
-        "frontmatter": {
-            "add-project.md": "",
-            "superpowers.md": "",
-            "ralph.md": "",
-            "compact-handoff.md": "",
-        },
-        "runtime_native": "Codex-native",
-        "runtime_session": "Codex session",
-        "workspace_access": "If the lane's checkout (`repo_path` or its recorded worktree) is outside the current workspace or sandbox, ask the user to make it accessible before editing.",
-        "registration_entrypoints": "`./bin/add-project`",
-        "review_helper": "read-only reviewer subagent",
-    },
-    "claude": {
-        "runtime_name": "Claude Code",
-        "instruction_doc": "CLAUDE.md",
-        "command_dir": ".claude/commands",
-        "skill_dir": ".claude/skills",
-        "frontmatter": {
-            "add-project.md": "---\ndescription: Register a project repo with this Piper Station hub\nargument-hint: \"<repo-path> [project-id]\"\n---\n\n",
-            "superpowers.md": "---\ndescription: Enter Superpowers Mode for direction verification and planning\nargument-hint: \"<project-id> [<gid>] [request]\"\n---\n\n",
-            "ralph.md": "---\ndescription: Enter Ralph Mode for the current wave, explicit slice, or queued task\nargument-hint: \"<project-id> [<gid> | boundary id or description]\"\n---\n\n",
-            "compact-handoff.md": "---\ndescription: Prepare compact-safe project work records before /compact\nargument-hint: \"[project-id] [<gid>] [current boundary]\"\n---\n\n",
-        },
-        "runtime_native": "Claude Code-native",
-        "runtime_session": "Claude Code session",
-        "workspace_access": "If the lane's checkout (`repo_path` or its recorded worktree) is outside the hub, ensure Claude Code has workspace access through `/add-dir <checkout-path>` or `claude --add-dir <checkout-path>` before editing.",
-        "registration_entrypoints": "`/add-project` or `./bin/add-project`",
-        "review_helper": "read-only reviewer agent",
-    },
-    "opencode": {
-        "runtime_name": "OpenCode",
-        "instruction_doc": "AGENTS.md",
-        "command_dir": ".opencode/commands",
-        "skill_dir": ".opencode/skills",
-        "frontmatter": {
-            "add-project.md": "---\ndescription: Register a project repo with this Piper Station hub\nargument-hint: \"[repo path and optional project id]\"\n---\n\n",
-            "superpowers.md": "---\ndescription: Enter Superpowers Mode for direction verification and planning\nargument-hint: \"[project id or repo path, optional group id, and request]\"\n---\n\n",
-            "ralph.md": "---\ndescription: Enter Ralph Mode for the current wave, explicit slice, or queued task\nargument-hint: \"[project id, optional group id, and optional boundary id]\"\n---\n\n",
-            "compact-handoff.md": "---\ndescription: Prepare compact-safe project work records\nargument-hint: \"[project id, optional group id, and current boundary]\"\n---\n\n",
-        },
-        "runtime_native": "OpenCode-native",
-        "runtime_session": "OpenCode session",
-        "workspace_access": "If the lane's checkout (`repo_path` or its recorded worktree) is outside the current working directory, open OpenCode from that directory or adjust workspace access before editing.",
-        "registration_entrypoints": "`./bin/add-project`",
-        "review_helper": "read-only reviewer subagent",
-    },
-    "deepagent": {
-        "runtime_name": "Deep Agents",
-        "instruction_doc": ".deepagents/AGENTS.md",
-        # Deep Agents Code has no custom slash-command surface; commands render
-        # as references under their owning skill, same routing as Codex.
-        "command_skill": COMMAND_OWNING_SKILL,
-        "skill_dir": ".deepagents/skills",
-        "frontmatter": {
-            "add-project.md": "",
-            "superpowers.md": "",
-            "ralph.md": "",
-            "compact-handoff.md": "",
-        },
-        "runtime_native": "Deep Agents-native",
-        "runtime_session": "Deep Agents session",
-        "workspace_access": "The agent works in the hub directory it was launched from, and the hub must be a git repository root for hub surfaces to load. Use absolute paths when reading or editing files in registered project repos and their lane worktrees; relative paths do not resolve against the working directory.",
-        "registration_entrypoints": "`./bin/add-project`",
-        "review_helper": "read-only reviewer subagent",
-    },
+SKILLS = ("brainstorm", "design-studio", "piper-workflow", "review", "automation-policy")
+SUBSTITUTIONS = {
+    "RUNTIME_NAME": "Codex",
+    "INSTRUCTION_DOC": "AGENTS.md",
+    "FRONTMATTER": "",
+    "RUNTIME_NATIVE": "Codex-native",
+    "RUNTIME_SESSION": "Codex session",
+    "WORKSPACE_ACCESS": "If the lane's checkout (`repo_path` or its recorded worktree) is outside the current workspace or sandbox, ask the user to make it accessible before editing.",
+    "REGISTRATION_ENTRYPOINTS": "`./bin/add-project`",
+    "REVIEW_HELPER": "read-only reviewer subagent",
 }
 
 
@@ -126,104 +50,76 @@ def copy_tree(src: Path, dst: Path) -> None:
             shutil.copy2(file, out)
 
 
-def render_text(text: str, runtime: str, frontmatter: str = "") -> str:
-    cfg = RUNTIME_CONFIG[runtime]
-    return (
-        text.replace("{{RUNTIME_NAME}}", cfg["runtime_name"])
-        .replace("{{INSTRUCTION_DOC}}", cfg["instruction_doc"])
-        .replace("{{FRONTMATTER}}", frontmatter)
-        .replace("{{RUNTIME_NATIVE}}", cfg["runtime_native"])
-        .replace("{{RUNTIME_SESSION}}", cfg["runtime_session"])
-        .replace("{{WORKSPACE_ACCESS}}", cfg["workspace_access"])
-        .replace("{{REGISTRATION_ENTRYPOINTS}}", cfg["registration_entrypoints"])
-        .replace("{{REVIEW_HELPER}}", cfg["review_helper"])
-    )
+def render_text(text: str) -> str:
+    for key, value in SUBSTITUTIONS.items():
+        text = text.replace("{{" + key + "}}", value)
+    return text
 
 
-def command_dir_for(runtime: str, command: str) -> str:
-    cfg = RUNTIME_CONFIG[runtime]
-    command_skill = cfg.get("command_skill")
-    if command_skill is not None:
-        return f"{cfg['skill_dir']}/{command_skill[command]}/references"
-    return cfg["command_dir"]
-
-
-def render_skill_tree(runtime: str, out: Path, skill: str) -> None:
-    cfg = RUNTIME_CONFIG[runtime]
-    src_root = ROOT / "core/skills" / skill
-    dst_root = out / cfg["skill_dir"] / skill
-    for src in sorted(src_root.rglob("*")):
-        if not src.is_file():
-            continue
-        rel = src.relative_to(src_root)
-        text = render_text(src.read_text(encoding="utf-8"), runtime)
-        write(dst_root / rel, text)
-
-
-def render_behavior(runtime: str, out: Path) -> None:
-    cfg = RUNTIME_CONFIG[runtime]
+def render_behavior(out: Path) -> None:
     for skill in SKILLS:
-        render_skill_tree(runtime, out, skill)
-    # Commands render after skill trees so command-owned references win for
-    # command_skill runtimes if a core skill ever contains a file with the same
-    # relative path.
-    for command in COMMANDS:
+        src_root = ROOT / "core/skills" / skill
+        for src in sorted(src_root.rglob("*")):
+            if src.is_file():
+                dst = out / ".codex/skills" / skill / src.relative_to(src_root)
+                write(dst, render_text(src.read_text(encoding="utf-8")))
+    for command, skill in COMMAND_OWNING_SKILL.items():
         src = ROOT / "core/commands" / command
-        text = render_text(src.read_text(encoding="utf-8"), runtime, cfg["frontmatter"][command])
-        write(out / command_dir_for(runtime, command) / command, text)
+        dst = out / ".codex/skills" / skill / "references" / command
+        if dst.exists():
+            raise ValueError(f"procedure has two source owners: {dst.relative_to(out)}")
+        write(dst, render_text(src.read_text(encoding="utf-8")))
 
 
-def render_runtime(runtime: str, out_root: Path) -> None:
-    out = out_root / runtime
+def render_codex(out_root: Path) -> None:
+    out = out_root / "codex"
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
     copy_tree(ROOT / "core/shared", out)
-    render_behavior(runtime, out)
-    copy_tree(ROOT / "adapters" / runtime, out)
-    add_project = ROOT / "core/shared/bin/add-project"
-    copy_tree(add_project, out / ".piper/lib/bootstrap/add-project.sh")
-    wrapper = """#!/usr/bin/env sh
-set -eu
-
-SCRIPT_DIR=$(CDPATH= cd -- \"$(dirname -- \"$0\")\" && pwd)
-HUB_DIR=$(CDPATH= cd -- \"$SCRIPT_DIR/..\" && pwd -P)
-HELPER=\"$HUB_DIR/.piper/lib/bootstrap/add-project.sh\"
-
-for arg in \"$@\"; do
-  if [ \"$arg\" = \"--hub\" ]; then
-    echo \"Error: hub-local commands infer --hub; do not pass --hub explicitly.\" >&2
-    exit 1
-  fi
-done
-
-if [ ! -x \"$HELPER\" ]; then
-  echo \"Error: missing Piper Station helper: $HELPER\" >&2
-  exit 1
-fi
-
-exec \"$HELPER\" --hub \"$HUB_DIR\" \"$@\"
-"""
-    write(out / "bin/add-project", wrapper, 0o755)
+    render_behavior(out)
+    adapter = ROOT / "adapters/codex"
+    for src in adapter.rglob("*"):
+        if src.is_file() and (out / src.relative_to(adapter)).exists():
+            raise ValueError(f"adapter shadows core behavior: {src.relative_to(adapter)}")
+    copy_tree(adapter, out)
 
 
 def render_all(out_root: Path) -> None:
+    if out_root.is_symlink():
+        raise ValueError(f"refusing to render through a symlink: {out_root}")
     out_root.mkdir(parents=True, exist_ok=True)
-    for runtime in RUNTIMES:
-        render_runtime(runtime, out_root)
+    # generated/ is renderer-owned, including retired runtime output. Clearing
+    # it avoids leaving obsolete templates installable after the source changes.
+    for child in out_root.iterdir():
+        if child.is_dir() and not child.is_symlink():
+            shutil.rmtree(child)
+        else:
+            child.unlink()
+    render_codex(out_root)
 
 
 def compare_dirs(left: Path, right: Path) -> list[str]:
     problems: list[str] = []
-    cmp = filecmp.dircmp(left, right)
-    for name in cmp.left_only:
-        problems.append(f"missing from generated: {Path(cmp.left) / name}")
-    for name in cmp.right_only:
-        problems.append(f"extra in generated: {Path(cmp.right) / name}")
-    for name in cmp.diff_files:
-        problems.append(f"stale generated file: {Path(cmp.right) / name}")
-    for sub in cmp.common_dirs:
-        problems.extend(compare_dirs(Path(cmp.left) / sub, Path(cmp.right) / sub))
+    expected = {path.name: path for path in left.iterdir()}
+    actual = {path.name: path for path in right.iterdir()}
+    for name in sorted(expected.keys() - actual.keys()):
+        problems.append(f"missing from generated: {right / name}")
+    for name in sorted(actual.keys() - expected.keys()):
+        problems.append(f"extra in generated: {right / name}")
+    for name in sorted(expected.keys() & actual.keys()):
+        src, dst = expected[name], actual[name]
+        if src.is_symlink() or dst.is_symlink():
+            problems.append(f"unexpected generated symlink: {dst}")
+        elif src.is_dir() and dst.is_dir():
+            problems.extend(compare_dirs(src, dst))
+        elif src.is_file() and dst.is_file():
+            if src.read_bytes() != dst.read_bytes():
+                problems.append(f"stale generated file: {dst}")
+            if stat.S_IMODE(src.stat().st_mode) != stat.S_IMODE(dst.stat().st_mode):
+                problems.append(f"stale generated file mode: {dst}")
+        else:
+            problems.append(f"generated path type mismatch: {dst}")
     return problems
 
 

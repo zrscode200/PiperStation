@@ -1,7 +1,5 @@
 name = "security_reviewer"
 description = "Security reviewer for auth, permissions, secrets, user data, networking, and dependency trust."
-model = "gpt-5.5"
-model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 developer_instructions = """
 Review security-sensitive changes with concrete evidence.

@@ -1,5 +1,8 @@
 # Artifact System Redundancy Map
 
+Status: historical. This records the earlier multi-runtime design; use
+`docs/capability-matrix.md` and current source for this Codex-only branch.
+
 Status: historical audit. The current instruction precedence and overlap
 boundaries live in `core/shared/STATION.md`; this file is retained as design
 rationale and may contain superseded recommendations or line references.

@@ -1,8 +1,7 @@
 #!/usr/bin/env sh
 set -eu
-
-cat <<'EOF'
+cat <<'JSON'
 {
-  "systemMessage": "Piper Station post-compact: reload AGENTS.md, STATION.md, and the active projects/<id>/project.md, memory.md, optional decisions.md, the selected lane's context-pack.md, active-work.md, build-log.md, and optional task-queue.md (under work/ for the flat lane or work/groups/<gid>/ for a group lane), and work/roadmap.md when relevant. Verify branch, HEAD, and git status in the lane's checkout before editing. The model-visible resume anchors land via the SessionStart hook (source=compact)."
+  "systemMessage": "Piper Station post-compact: reload AGENTS.md, relevant STATION sections, project binding/memory/decisions and the selected lane's packet, active work, ledger and canonical design when relevant. Verify live git, changed related contracts, incomplete integration/publication and actual native worker status before editing. Stored handles and status are hints, not liveness evidence. Resume the selected phase and preserve ownership; never duplicate work after a wait timeout. SessionStart supplies model-visible resume guidance."
 }
-EOF
+JSON

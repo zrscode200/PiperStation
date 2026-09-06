@@ -1,21 +1,21 @@
 # Repository Operating Instructions
 
-This repository builds Piper Station Unified Bootstrap. It is the upstream
-source for rendering Codex, Claude Code, and OpenCode hub surfaces from one
-shared Piper behavior core.
+This repository builds Piper Station for Codex. It is the source distribution
+for rendering a central Piper hub; it is not itself a generated hub.
 
 ## Required Behavior
 
-- Treat this repo as the source distribution, not as a generated hub.
-- Put shared behavior and docs in `core/`.
-- Put harness mechanics in `adapters/codex/`, `adapters/claude/`,
-  `adapters/opencode/`, and `adapters/deepagent/`.
+- Put Piper behavior, skills, procedures, and hub docs in `core/`.
+- Put Codex configuration, agent roles, hooks, and the always-on root summary in
+  `adapters/codex/`. Adapters must not shadow core skills or procedures.
 - Run `./scripts/render-templates.sh` after changing `core/` or adapters.
 - Do not edit `generated/` directly except to inspect output.
 - Preserve the hub ownership model: generated hub files outside `projects/` are
   managed, and `projects/` records are hub-owned.
 - Do not reintroduce a heavy runtime, daemon, global queue, or copied project
   source tree.
+- This branch supports Codex only. Keep existing-hub migration explicit and
+  preserve all project records and source workspaces.
 
 ## Verification
 

@@ -1,9 +1,10 @@
-{{FRONTMATTER}}# Add Project
+# Add Project
 
-Register a project repo with this Piper Station hub. This is the registration
-route the `brainstorm` front door uses when work becomes formal.
+Register a project repo with this Piper Station hub.
 
-The user invoked this command with: `$ARGUMENTS`
+The `brainstorm` skill routes here when the user asks to register, track, or
+formalize a project. Use the request context to determine the repo path,
+project id, and optional display name.
 
 Use the deterministic helper unless the user only wants an explanation:
 
@@ -18,7 +19,7 @@ ask before registering.
 
 Rules:
 
-- Use {{REGISTRATION_ENTRYPOINTS}} or the deterministic helper; do not manually
+- Use `./bin/add-project` or the deterministic helper; do not manually
   recreate ad hoc project records.
 - Registration creates or updates `project.md`, `memory.md`, the
   `projects/registry.json` index, and optional repo marker files.

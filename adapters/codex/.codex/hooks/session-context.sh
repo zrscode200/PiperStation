@@ -2,69 +2,54 @@
 set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-
 if [ -t 0 ]; then
   input=""
 else
   input=$(cat 2>/dev/null || true)
 fi
 
-source=$(printf "%s" "$input" | sed -n 's/.*"source"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
-source="${source:-startup}"
+PIPER_HUB_ROOT="$ROOT" PIPER_HOOK_INPUT="$input" python3 - <<'PY'
+import json
+import os
+from pathlib import Path
 
-projects_count=0
-projects_list=""
-lanes_list=""
-if [ -d "$ROOT/projects" ]; then
-  projects_count=$(find "$ROOT/projects" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
-  if [ "$projects_count" -gt 0 ]; then
-    projects_list=$(find "$ROOT/projects" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sed 's#.*/##' | sort | sed 's/^/- /')
-  fi
-  lanes_list=$(find "$ROOT/projects" -mindepth 4 -maxdepth 4 -path '*/work/groups/*' -type d 2>/dev/null | sed "s|^$ROOT/projects/||" | sort | sed 's/^/- /')
-fi
-
-base_context="Piper Station hub-lite is active.
-Register repos with ./bin/add-project. Durable hub context stays under projects/<project-id>/; optional active work continuity may live under projects/<project-id>/work/ (the flat lane) and, one lane per group, under projects/<project-id>/work/groups/<gid>/. Select one lane per session; ask when more than one is active.
-Natural-language project work enters through the brainstorm skill (\$brainstorm ...) to orient, explore, and decide what is worth doing; it routes to piper-workflow (\$piper-workflow ...) for formal planning and Ralph execution once direction is set. Detailed procedures live under .codex/skills/brainstorm/references/ and .codex/skills/piper-workflow/references/."
-
-resume_context="
-Resume guidance: start from the selected lane's context-pack.md (projects/<id>/work/ for the flat lane, projects/<id>/work/groups/<gid>/ for a group lane) when present, verify branch/HEAD/git status in the lane's checkout (repo_path or its recorded worktree), rebuild the active boundary neighborhood from named files, changed files, relevant tests, configs, docs, generated surfaces, and known reference paths. Expand beyond that only for concrete triggers such as a stale resume packet, missing acceptance criteria, failing verification, generated parity, security/permissions behavior, or review scope."
-
-if [ "$projects_count" -gt 0 ]; then
-  projects_block="
-
-Registered projects: $projects_count
-$projects_list"
-else
-  projects_block="
-
-No registered projects yet. Use ./bin/add-project --repo /path/to/repo to register."
-fi
-if [ -n "$lanes_list" ]; then
-  projects_block="$projects_block
-
-Group lanes (projects/<id>/work/groups/<gid>):
-$lanes_list"
-fi
-
-additional_context="$base_context"
-case "$source" in
-  resume|compact) additional_context="${additional_context}${resume_context}" ;;
-esac
-additional_context="${additional_context}${projects_block}"
-
-system_message="Piper Station hub-lite ready (source=$source, projects=$projects_count)."
-
-PIPER_ADDITIONAL_CONTEXT="$additional_context" \
-PIPER_SYSTEM_MESSAGE="$system_message" \
-python3 -c '
-import json, os, sys
-json.dump({
-    "hookSpecificOutput": {
-        "hookEventName": "SessionStart",
-        "additionalContext": os.environ.get("PIPER_ADDITIONAL_CONTEXT", ""),
-    },
-    "systemMessage": os.environ.get("PIPER_SYSTEM_MESSAGE", ""),
-}, sys.stdout)
-sys.stdout.write("\n")
-'
+root = Path(os.environ['PIPER_HUB_ROOT'])
+try:
+    event = json.loads(os.environ.get('PIPER_HOOK_INPUT', '') or '{}')
+    source = event.get('source', 'startup') if isinstance(event, dict) else 'startup'
+except ValueError:
+    source = 'startup'
+if source not in ('startup', 'resume', 'compact'):
+    source = 'startup'
+project_dirs = sorted(p for p in (root / 'projects').glob('*')
+                      if p.is_dir() and (p / 'project.md').is_file())
+lanes = []
+for project in project_dirs:
+    work = project / 'work'
+    if any((work / name).is_file() for name in ('active-work.md', 'context-pack.md')):
+        lanes.append(f'{project.name}: flat -> projects/{project.name}/work/')
+    for directory, kind in (('design', 'studio'), ('groups', 'group'), ('lanes', 'lane')):
+        for lane in sorted((work / directory).glob('*')):
+            if lane.is_dir() and any((lane / name).is_file() for name in
+                                     ('design.md', 'active-work.md', 'context-pack.md')):
+                lanes.append(f'{project.name}: {kind}:{lane.name} -> '
+                             f'projects/{project.name}/work/{directory}/{lane.name}/')
+context = '''Piper Station is active. Read AGENTS.md and relevant STATION sections.
+Use brainstorm for orientation, explicit design-studio for durable design, and piper-workflow for converged execution. Register only through ./bin/add-project.
+Select the clearly requested or already selected lane; ask on actual ambiguity. STATION -> Lanes defines flat, studio:<slug>, group:<gid>, and lane:<slug>. Lane records are available work, not proof of a live native session. Studios keep their own design and resume context without source-edit authority. Concurrent writers require exclusive assigned checkouts; group acceptance is independent of concurrency.
+Use protected publication for shared records and ownership state, preserve other lanes' changes, and follow the exact-base integration procedure before publishing source.'''
+if source in ('resume', 'compact'):
+    context += '''
+Resume guidance: read the selected lane's context-pack.md, active-work.md, build-log.md and canonical design when relevant. Verify actual source git state, related contract revisions and unresolved impacts before acting. Check native worker status and actual results; a handle or old status is only a locator and a wait timeout is not terminal. Reconcile interrupted integration/publication without duplicating work. Resume design as design; revalidate stale assumptions before dependent execution.'''
+if project_dirs:
+    context += '\nRegistered project records: ' + ', '.join(p.name for p in project_dirs[:40])
+else:
+    context += '\nNo registered project records yet; registration does not start work.'
+if lanes:
+    context += '\nAvailable lane records (inspect phase/status; not a liveness claim):\n' + '\n'.join(lanes[:40])
+    if len(lanes) > 40:
+        context += f'\n{len(lanes) - 40} additional lane records omitted; inspect the selected project.'
+print(json.dumps({'hookSpecificOutput': {'hookEventName': 'SessionStart',
+                                       'additionalContext': context},
+                  'systemMessage': f'Piper Station ready (source={source}, projects={len(project_dirs)}).'}))
+PY

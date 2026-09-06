@@ -1,9 +1,8 @@
-# Shared Piper Behavior Core
+# Piper Behavior Core
 
-This folder is the source of truth for behavior that should affect every
-harness: mode routing, Ralph loop expectations, review gates, compact handoff,
-project-scoped work artifacts, and memory/decision policy.
+This folder describes ownership of Piper behavior: routing, Ralph iteration,
+review gates, compact handoff, project work records, and memory/decision policy.
 
-If feedback from Claude Code or Codex is about Piper Station behavior, update
-shared core first. Use adapter files only when the difference comes from harness
-mechanics.
+Update `core/` for Piper behavior. Use `adapters/codex/` for Codex configuration,
+hooks, agent mechanics, and its always-on summary. Core skills and procedures
+have one source each and cannot be overridden by the adapter.

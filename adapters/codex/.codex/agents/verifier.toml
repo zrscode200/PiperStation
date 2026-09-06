@@ -1,7 +1,5 @@
 name = "verifier"
 description = "Strict read-only verifier for running existing checks and reporting results without modifying code, dependencies, snapshots, environments, or hub records."
-model = "gpt-5.4"
-model_reasoning_effort = "medium"
 sandbox_mode = "read-only"
 developer_instructions = """
 Run only existing documented checks or exact commands delegated by the parent.

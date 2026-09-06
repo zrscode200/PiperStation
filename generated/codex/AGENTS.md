@@ -1,384 +1,149 @@
 # Piper Station Agent Instructions (Codex)
 
-This directory is a Piper Station hub-lite workspace. It is the central launch
-point for Codex work across registered project repositories.
+This is the central Codex hub for registered projects. Treat it as coordination
+context; project source stays in its registered repository or assigned worktrees,
+and durable Piper records stay under `projects/<id>/`.
 
-Codex auto-loads this `AGENTS.md` at every session. Treat it as the always-on
-operating contract for project work in this hub.
+## Entry And Authority
 
-## Operating Contract
+- `STATION.md` owns phase routing, lanes, artifact ownership, related work,
+  checkpoints, review and resume. `automation-policy.md` owns action boundaries.
+  Read relevant canonical sections before operating a project boundary.
+- `brainstorm` is the read-only front door for orientation, framing, investigation,
+  and route selection. Explicit registration is its narrow write exception,
+  through `./bin/add-project`; registration never creates work records or starts
+  source work, installs, commits, or external actions.
+- `design-studio` is optional deeper durable design after explicit user choice.
+  Each initiative has its own studio lane. Design does not authorize source
+  edits, implementation groups, or external action.
+- `piper-workflow` verifies converged direction and formalizes an execution
+  boundary before Ralph edits. Ordinary brainstorm input is sufficient; a studio
+  is not mandatory. A studio handoff requires its exact accepted revision.
+- Existing user scope and authorization persist across phases and sessions.
+  A request to implement includes required planning; do not ask again just
+  because planning ended. A material change to fixed contracts or product intent
+  returns upstream. Native sandbox/tool permissions still apply.
 
-- Treat this hub as coordination context, not as a source repo for registered
-  projects.
-- Do not copy project source code into the hub.
-- Register project repos with `./bin/add-project` or via the `brainstorm`
-  skill.
-- Registration only updates hub project records and optional repo marker files.
-  It must not start implementation work, create plans, checkpoint state,
-  commit, push, install dependencies, or edit project source files.
-- Work on project source code only in the real repo path recorded in
-  `projects/<project-id>/project.md`, or in a lane's recorded git worktree of
-  that repo.
-- When a registered project repo is outside the current Codex sandbox, start
-  Codex with `--add-dir <checkout-path>` (or otherwise grant writable workspace
-  access) before Ralph executes. Registration can record an outside path, but
-  edits require writable access in the active session.
-- Use Codex-native behavior for planning, implementation, review, testing,
-  subagents, handoff, and git operations within the routed workflow;
-  substantial registered-project development
-  enters through piper-workflow (Superpowers, then Ralph) rather than
-  starting directly from a design or brainstorm conversation.
+## Discover Procedures Progressively
 
-## Codex Discovery Surfaces
+Skills live in `.codex/skills/`. Codex uses skills and natural language, not a
+custom `.codex/commands/` slash-command directory. Trigger `$brainstorm`,
+`$design-studio`, or `$piper-workflow`, or state the matching intent.
 
-Codex CLI discovers Piper Station behavior through these surfaces. Codex does
-not auto-surface a `.codex/commands/` directory as slash commands; `brainstorm`,
-optional `design-studio`, and `piper-workflow` are the skill entry points
-instead.
+- Brainstorm's registration procedure: `brainstorm/references/add-project.md`.
+- Workflow procedures: `piper-workflow/references/superpowers.md`, `ralph.md`,
+  and `compact-handoff.md`.
+- Related independent sessions or authorized workers: also read
+  `piper-workflow/references/coordinated-work.md`.
+- Publishing source into base: read `piper-workflow/references/integration.md`.
+- `review` owns explicit and implementation review; `automation-policy` owns
+  external/exceptional boundary checks.
 
-- `AGENTS.md` (this file) — always loaded.
-- `.codex/skills/brainstorm/SKILL.md` — decision-quality front door for the
-  divergent phase (orient, frame, diverge, investigate, route). Trigger via
-  `$brainstorm ...` or by stating the intent.
-- `.codex/skills/brainstorm/references/` — the registration procedure
-  (`add-project`) cited by the front door; orientation is inline in the skill.
-- `.codex/skills/design-studio/SKILL.md` — optional, discussion-first deep
-  design inside the divergent movement. Trigger directly via
-  `$design-studio ...` or natural-language intent; brainstorm may suggest it
-  but entry requires the user's explicit choice.
-- `.codex/skills/piper-workflow/SKILL.md` — convergent execution entry (formal
-  planning, Ralph, compaction). Trigger via `$piper-workflow ...` once direction
-  is set.
-- `.codex/skills/piper-workflow/references/` — convergent procedure bodies
-  (superpowers, ralph, compact-handoff) cited by the skill.
-- `.codex/skills/review/SKILL.md` — explicit review and Ralph review-gate
-  behavior.
-- `.codex/skills/automation-policy/SKILL.md` — the action-boundary check for
-  `external` and `exceptional` actions.
-- `.codex/agents/*.toml` declared in `config.toml`'s `[agents.X]` blocks —
-  `reviewer`, `architect`, `security_reviewer`, `docs_researcher`, `tester`,
-  `verifier`, `implementer` (role names match the `name = "..."` field in each
-  `.toml`).
-- `.codex/hooks/*.sh` wired in `hooks.json` — `SessionStart` (with
-  `startup|resume|compact` matcher), `PreCompact`, `PostCompact`.
-- `.codex/compact-prompt.md` referenced by `experimental_compact_prompt_file`.
+`PRODUCT.md`, `ARCHITECTURE.md`, `CONVENTIONS.md`, `TESTING.md`, and `SECURITY.md`
+provide supporting context when relevant. Roles and hooks are narrow mechanics;
+they do not override canonical policy or user instructions.
 
-## Required Reading
+## Project And Lane Ownership
 
-When working in this hub, use these docs as the canonical references:
+Resolve projects from `projects/registry.json` and their canonical `project.md`.
+The registry is derived; rebuild it with `./bin/add-project --rebuild` if needed.
+Keep stable facts in `memory.md`, significant rationale in optional `decisions.md`,
+and standing policy only in `project.md` at the user's word.
 
-- `STATION.md`: primary operating guide.
-- `PRODUCT.md`: product intent and non-goals.
-- `ARCHITECTURE.md`: hub and project record structure.
-- `CONVENTIONS.md`: naming, context, and work style conventions.
-- `TESTING.md`: verification expectations.
-- `SECURITY.md`: sensitive-data and boundary rules.
-- `automation-policy.md`: action classes (routine, `external`, `exceptional`),
-  boundary asks, and standing policy notes.
+STATION defines four lane locators: default `flat`, `studio:<slug>`,
+`group:<gid>`, and optional `lane:<slug>` for independent execution. One active
+coordinating session owns a lane at a time. Select a clearly requested or already
+selected effort without asking about unrelated lanes; ask when the intended
+boundary is ambiguous. Design and execution candidates are phase-specific.
 
-## Instruction Precedence
+The default small fix stays one ungrouped wave with one acceptance entry. A group
+is for shared multi-wave acceptance, never forced by concurrency alone. Standard
+work windows, resume packet and ledger live with their lane; READMEs remain
+navigation and canonical design retains revision/acceptance ownership.
 
-`STATION.md` defines shared behavior and ownership. `automation-policy.md`
-defines action classes and boundary asks. This `AGENTS.md` is the
-always-on Codex summary. Skills route intent, command references provide
-procedures, hooks give lifecycle reminders, and agents stay within their
-delegated roles.
+Each source writer needs an exclusive assigned checkout and branch. Inspect open
+bindings and worktrees before claiming one. Concurrent implementation workers need
+separate worktrees; never assume native subagents receive them automatically.
+Verify native writable access, including `--add-dir <checkout-path>` when launching
+Codex CLI outside existing workspace roots. Registration and worktree creation do
+not grant access. Do not switch branches, merge, or discard in another lane's
+checkout. Read-only source observation does not reserve a writable checkout.
 
-## Project Records
+## Related Work And Publication
 
-`projects/registry.json` is the hub-owned index of registered projects. Use it
-to resolve a `project_id` to its `repo_path` and to list what this hub knows.
-Per-project files remain the canonical rich record; the index is a derived
-lookup, regenerable via `./bin/add-project --rebuild`.
+For meaningful dependencies, record canonical artifact/revision references and
+assumed contracts. At start/resume, wave formalization, shared-contract change,
+and integration, inspect relevant related work for semantic as well as file
+conflicts. Record consequential proposals with evidence, impact and a resolution
+owner. Continue unaffected work; pause or revalidate affected work. Each lane
+reconciles its own current state against the shared decision.
 
-Each registered project has:
+Use `./bin/piper-record` for shared records and lane ownership publication.
+Ordinary edits inside a sole-owned lane may use normal file tools. Read current
+content/digest, prepare replacement, publish with expected digest, and reconcile
+on conflict. Use its path-only commit operation to preserve other sessions'
+staged and unstaged work. Never make an unscoped hub commit. Helpers are
+cooperative protections, not permission enforcement or a global work manager.
+Commit useful completed or paused continuity at checkpoints unless instructed
+otherwise; no repeated artifact-commit ask. Report hub and source changes and
+actual persistence separately.
 
-```text
-projects/<project-id>/
-  project.md
-  memory.md
-  work/              # optional, created by Codex only when useful
-    groups/<gid>/    # one lane folder per group, created at group Entry
-```
+Use `./bin/piper-integrate` only after preparing, verifying and reviewing the
+exact candidate against an exact base through the integration procedure. The
+target must be clean and unoccupied by an open lane. Changed base or candidate
+requires renewed verification; a clean merge is not proof of compatible behavior.
+Keep acceptance, actual integration, and `pending-pr` state explicit.
 
-- `project.md` binds the project id to the real repo path and stores a small
-  project overview plus standing policy notes — not a commit ledger; commit
-  and acceptance history live in `build-log.md`, anchored to git.
-- `memory.md` stores durable facts, preferences, stable conventions, and
-  reusable context, not a per-wave changelog.
-- Optional `decisions.md` stores substantial decision logs future work should
-  not silently reopen; supersede a reversed decision in place rather than
-  deleting it.
-- `work/` stores optional active work continuity such as roadmap, active work,
-  build log, compact pack, durable task queue records, lightweight design
-  notes, and explicitly entered Design Studio folders. Each group is its own
-  lane under `work/groups/<gid>/` with its own active work, compact pack,
-  build log, and optional queue; the project-level files serve the flat lane.
+## Delegation And Review
 
-Do not put routine progress logs, command output, temporary plans, secrets, or
-raw sensitive logs into durable hub records.
+Seven installed role briefs/configs are available: `architect`, `docs_researcher`,
+`implementer`, `reviewer`, `security_reviewer`, `tester`, and `verifier`. Use native
+role selection only when the active client's actual spawn tool exposes it. Some
+Codex clients expose `collaboration.spawn_agent` without an `agent_type` selector;
+do not invent that argument or assume a role TOML was applied. In that case read
+the relevant `.codex/agents/<role>.toml` and include its behavioral brief in the
+explicit assignment using the supported tool parameters.
 
-Registration must not create `work/`. Codex may create it during active work
-when continuity is useful.
+Implementation and test writing require explicit user delegation. Review remains
+behaviorally read-only regardless of the worker's capabilities: no edits, record
+writes, commits, or integration. Verify actual worker permissions from native
+metadata or the worker's observed runtime context; when unavailable, report them
+as unverified. A read-only instruction is not proof of read-only sandbox enforcement,
+and installing or citing a TOML file does not prove its overlay was selected.
+Wider inherited capabilities never authorize work outside the assignment.
 
-## Artifact Persistence
+Workers receive explicit scope, acceptance, isolated checkout/branch, owned paths,
+canonical contracts, verification, and return expectations. Missing ownership or
+access means report and edit nothing. They report actual results and changed
+assumptions; the parent owns hub records, shared resolutions, integration, and
+acceptance. A short-lived worker does not automatically become a group or lane.
 
-Piper work artifacts stay under `projects/<project-id>/work/` by default. Do
-not move roadmap, active work, build log, queues, or context packs into the
-registered project repo unless the user explicitly asks for a project-local
-copy.
+Apply STATION's review gates: required for S2/S3 waves/groups and queued
+foundational work; proportional for smaller changes. After the final wave, review
+the integrated group result even if every wave passed. Inspect cross-worker
+behavior when work was delegated. Self-verify findings as `confirmed-in-scope`,
+`confirmed-out-of-scope`, or `false-positive`; repair in-scope findings and reverify.
+Do not proceed to dependent acceptance with unresolved required review debt
+unless the user explicitly accepts it.
 
-Concurrency is per lane: one active session per lane, regardless of harness.
-A group lane binds its `branch:` and `checkout:` in its `active-work.md`
-header; `repo_path` is held by at most one lane and every other active lane
-works in its own git worktree. Hub artifact commits are path-scoped — stage
-only the lane's paths plus touched project-level files, never `git add -A` in
-the shared hub checkout. See `STATION.md` → Project Records and Group
-Lifecycle for lane selection, Entry, Closeout, and the legacy-layout move.
+## Resume And Action Boundaries
 
-At each boundary trigger, satisfy the checkpoint invariant defined once in
-`STATION.md` → Artifact Persistence: windows and ledger agree, a fresh session
-can resume from hub records plus live git, and changed Piper artifacts are
-reported separately from registered project source changes with their hub
-commit state. Updating artifacts is allowed local assistance; committing Piper
-artifact changes is routine and path-scoped; the checkpoint decides whether
-one happens. Do not ask to commit after every artifact edit; ask only at the resume
-triggers in that same list.
+At resume triggers, rewrite the lane's packet in full from the old packet,
+canonical records and actual source, using the fields owned by STATION. Preserve
+open questions and related-work impacts. On resume verify current git, accepted
+revisions, partial integration/publication, and native worker status before acting.
+A saved handle or status note is not proof of liveness or completion; a wait
+timeout is not a failed worker. Resolve unknown ownership before starting another
+writer. Studios resume design without source edits.
 
-Record artifacts economically: `context-pack.md` is the only fully
-self-contained resume packet, rewritten in full when updated and holding only
-the non-derivable fields defined once in `STATION.md` → Compaction. Git is the
-source of truth for branch/HEAD/commit/diff history — derive it live and let
-`build-log.md` record the acceptance commit rather than repeating it across
-other records; superseded detail rolls off into a sink at group closeout. See
-`STATION.md` for temporal roles and fact ownership.
+Hooks and the compact prompt supply reminders. They do not make snapshots,
+guarantee writes, claim `/compact` ran, or enforce ownership. Complete explicit
+checkpoints even if hooks are unavailable.
 
-Plan in slices, execute in waves, and checkpoint at boundaries. Slices are
-decomposition units; waves are implementation and checkpoint units. Detail the
-current wave enough to execute safely, and sketch later waves only when the
-current code, context, and prior results make them reliable. The default unit
-is one ungrouped wave with a light boundary; ceremony scales with the boundary,
-not the project.
-
-Groups bundle related waves under a shared acceptance target and one
-integrating review gate, entered by an explicit planning decision. Make the
-group boundary, wave list, required gates, group review state, and acceptance
-target visible in `active-work.md`.
-
-Native task tracking is the in-session default for short-lived steps;
-`task-queue.md` exists only when queued work must survive the session or move
-across agents.
-
-## Mode Routing
-
-`brainstorm` owns the decision-quality front door for the divergent phase —
-orientation, framing, divergence, investigation, and routing — and stays
-read-only. `design-studio` is an optional deeper path inside that divergent
-movement; it may be invoked directly or suggested by brainstorm, but it begins
-only after explicit user choice. `piper-workflow` owns convergent execution
-once a direction is set. State the intent (or invoke `$brainstorm ...`,
-`$design-studio ...`, or `$piper-workflow ...`); an ambiguous project-work
-request still enters through `brainstorm`.
-
-Route each request through the smallest mode that fits:
-
-- Brainstorm (front door): orient, frame the problem, weigh options,
-  investigate, route explicit registration through the helper, and produce a
-  decision-ready hand-off brief. Read-only except for that deterministic
-  registration path.
-- Design Studio (optional divergent path): create or reuse useful hub-owned
-  studio artifacts only after explicit user choice; work discussion-first and
-  either continue, pause, conclude without execution, or hand an explicitly
-  accepted revision to Piper Workflow. It does not edit project source or
-  create groups and waves.
-- Superpowers Mode: verify the handed-off direction, define the group or
-  milestone structure (Structural Planning), then formalize the current wave
-  (Wave Formalization) before substantial implementation.
-- Ralph Mode: execute the current active-work wave, group review and closeout,
-  one explicit slice, or one queued task, committing completed waves on the
-  lane's branch, with implementation review gates at meaningful boundaries.
-- Review Mode: first check whether the work matches the request or active work,
-  then check code quality; group reviews inspect the integrated cross-wave
-  diff.
-- Finish Mode: verify, summarize, and present commit or PR options without
-  mutating git automatically.
-
-Use `brainstorm` as the broad natural-language front door, `design-studio` only
-for explicit deeper design, and `piper-workflow` for convergent execution. Use
-the `review` skill for explicit review work or review gates, and
-`automation-policy` before an `external` or `exceptional` action.
-Prefer consequence language such as "I will keep this read-only" or "I will
-create Ralph-ready work records" over ceremonial mode announcements.
-
-Scope tiers are advisory sizing, not artifact rules:
-
-- `S0`: direct small task; stay in chat unless a durable need appears.
-- `S1`: modest work; use `active-work.md` only when continuity matters.
-- `S2`: substantial work; current-wave continuity, durable checkpoints, or
-  durable queued execution may help before execution.
-- `S3`: broad or long-running work; track group or milestone direction in
-  roadmap when that keeps execution clear.
-
-Risk tiers:
-
-- `L0`: routine implementation risk.
-- `L1`: normal implementation risk.
-- `L2`: guarded implementation risk; get explicit confirmation before Ralph
-  edits.
-- `L3`: blocked inside Ralph; stop for replanning, a human decision, or an
-  `exceptional` action that needs a fresh instruction.
-
-Action classes:
-
-- Routine — no ask, no record: reading, planning, review, registration,
-  source edits in the lane's checkout, local checks and tests, local git add
-  or commit on the lane's branch, non-destructive worktree create or switch
-  operations, Piper artifact updates and their path-scoped hub commits,
-  read-only network reads.
-- `external` — ask once at the boundary where the workflow reaches it: push,
-  pull request creation or update, dependency install or update, networked
-  commands with effects, CI reruns or repair, and other non-destructive
-  external-system actions; a standing grant in
-  `projects/<project-id>/project.md` may pre-approve a named class with a
-  target.
-- `exceptional` — a fresh explicit instruction every time; can never be
-  pre-approved: force push, rewriting pushed history, deleting branches,
-  worktrees, or user data, discarding changes the boundary did not make,
-  secrets, production deploys, irreversible external actions.
-
-Routine actions proceed when the workflow reaches them; `external` and
-`exceptional` are the only Piper-level asks. Enforcement is Codex's own
-sandbox and approval policy (`config.toml` `sandbox_mode` and
-`approval_policy`); where it is bypassed, the Piper asks are the only gate. A
-broad request like "finish this" is never a go-ahead. Go-aheads are recorded
-in the lane's `build-log.md`; `project.md` holds standing policy notes only.
-
-## Working On A Project
-
-Before editing a registered project:
-
-1. Read this file and `STATION.md`.
-2. Look up the project in `projects/registry.json` to confirm registration and
-   resolve `repo_path`. If the user's id is ambiguous, list the registered
-   `project_id` entries (with `description` where present) and ask which one
-   to use.
-3. Read `projects/<project-id>/project.md`, `memory.md`, and optional
-   `decisions.md` when present.
-4. Select the lane (`STATION.md` → Lane selection; ask when more than one is
-   active), then read its `context-pack.md`, `active-work.md`, `build-log.md`,
-   and optional `task-queue.md` — under `projects/<project-id>/work/` for the
-   flat lane or `work/groups/<gid>/` for a group lane — plus `roadmap.md` when
-   present and relevant.
-5. Inspect the lane's checkout (`repo_path` or its recorded worktree) with
-   git status, current branch, current HEAD,
-   and the files relevant to the user request.
-6. State any uncommitted or recent user changes that affect the task.
-7. Make a short task-specific plan unless the user has asked only for review or
-   explanation.
-8. Before Ralph execution or source edits, verify the lane's checkout
-   (`repo_path` or its recorded worktree; if an active group header binds
-   `repo_path`, the flat lane has none) is writable in the active session;
-   source edits there are routine. If the checkout is outside the current
-   Codex sandbox, ensure Codex was started with `--add-dir <checkout-path>` or
-   that the sandbox otherwise grants writable access. If writable access is
-   absent, state what is required and wait.
-9. Implement in the lane's checkout, using the repo's own conventions and
-   verification commands.
-10. Update `projects/<project-id>/work/` only when active continuity is useful.
-11. Update hub `memory.md`, `project.md` standing policy notes (only at the user's word), or optional
-    `decisions.md` only when durable context changed.
-
-## Subagents
-
-The hub declares seven Codex subagent roles in `config.toml` and provides their
-`.toml` configs under `.codex/agents/`:
-
-- `reviewer` — read-only implementation review for Ralph review gates.
-- `implementer` — scoped implementation when the user explicitly delegates.
-- `tester` — writes test-layer files, fixtures, or test data only when
-  explicitly delegated.
-- `verifier` — strict read-only helper for existing checks and failure
-  analysis; it reports when a check needs writable state.
-- `architect` — read-only architecture review for broad design and boundary
-  risk.
-- `docs_researcher` — documentation research through official docs and MCP
-  tools.
-- `security_reviewer` — read-only security review for auth, permissions,
-  data, networking, secrets, and dependency trust.
-
-Spawn a subagent with the matching `agent_type` when its specific role
-applies. Implementation stays with the main session unless the user explicitly
-asks for `implementer` delegation. Verify all subagent findings in the main
-session before acting on them.
-
-## Ralph Review Gate
-
-During Ralph Mode, run a read-only implementation review after substantial
-waves, queued work, or high-impact slices are implemented and initially
-verified, before marking the boundary complete in active work records. The
-reviewer subagent inspects the actual code or diff with `active-work.md`,
-`build-log.md`, optional `task-queue.md`, and relevant surrounding code as
-context.
-
-Review gate selection is based on scope and change impact. Risk tier controls
-Ralph implementation confirmation before editing, not action class.
-Review gates are required for `S2/S3` wave or group boundaries and queued tasks
-that touch foundational behavior such as bootstrap, install, update,
-registration, generated commands, hooks, settings, config, test harnesses,
-project or hub ownership, security policy, or automation policy.
-After the final wave in a group lands, run a group-level review gate over the
-integrated cross-wave diff before the slice, group, or acceptance task is
-marked complete, even if every per-wave gate already passed.
-
-The main agent must validate reviewer findings before acting: give each finding
-an explicit verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or
-`false-positive` — before editing any code, then apply only `confirmed-in-scope`
-fixes, turn `confirmed-out-of-scope` findings into follow-up notes or tasks, and
-reverify review-driven fixes with the narrowest meaningful command for the fixed
-behavior. Record the gate status or skip reason when
-active work records are in use. If a required or expected gate is skipped,
-record review debt in active work records and do not continue to dependent
-tasks until the debt is resolved or explicitly accepted by the user.
-
-## Compaction Discipline
-
-Codex CLI fires `PreCompact` and `PostCompact` hooks around compaction, and
-`SessionStart` with `source=compact` after a compact completes. The
-`PreCompact` hook surfaces a user-facing reminder; the model-visible
-post-compact context arrives via the `SessionStart` hook (with
-`hookSpecificOutput.additionalContext`). The hooks must not edit work
-records, commit, push, or invoke `/compact`.
-
-During Ralph Mode, rewrite `context-pack.md` in full — regenerate it to the
-current boundary, not section-edit, reconciling against the prior packet and live
-git first — at the resume triggers defined once in `STATION.md` → Artifact
-Persistence → Boundary triggers. The packet holds only the non-derivable fields
-defined under `STATION.md` → Compaction; branch, HEAD, status, changed files,
-and what to inspect first are derived live at resume. Internal slice progress
-should stay inside the current wave unless risk, verification, or drift
-requires a stop. Append `build-log.md` at each boundary trigger, and update
-optional `task-queue.md` only when a durable queue is in use, including
-explicit group review gate status for multi-wave groups. If context is low or
-the next wave needs a clean context, pause and tell the user the state is
-compact-ready and they may run `/compact`.
-
-Do not claim `/compact` was run unless the user or Codex actually ran it.
-
-After compact, start from the selected lane's designed resume anchors
-(`work/` or `work/groups/<gid>/`): `context-pack.md`,
-`active-work.md`, `build-log.md`, optional `task-queue.md`, project
-`project.md`, `memory.md`, optional `decisions.md`, and live
-branch/HEAD/status. Read `roadmap.md` when longer-horizon direction matters.
-Then rebuild enough of the active boundary neighborhood to work safely. Expand
-beyond that for concrete triggers such as a stale resume packet, missing
-acceptance criteria, failing verification, generated parity, security or
-permissions behavior, or review scope.
-
-## Action Boundaries
-
-Use `automation-policy.md` before any `external` action — pushes, merges to a
-remote, pull requests, dependency installs, networked commands with effects,
-CI changes, or external automation — and before any
-`exceptional` action. Source edits in the lane's checkout, local git, and
-non-destructive worktree create or switch operations are routine. Deleting
-worktrees and other exceptional actions always need explicit one-off approval.
+Routine local work proceeds when reached, including authorized source edits,
+checks, scoped commits and safe worktree/integration operations. External actions
+(push/PR, dependencies, effects on remote systems) use the normal boundary ask or
+an existing exact grant. Exceptional actions (deletion/discard, force push, pushed
+history rewriting, secrets, production) need explicit one-off authority. L2 scope
+confirmation and review remain separate; existing covered authorization suffices.
+Do not widen permissions by rewriting managed config while working on a project.

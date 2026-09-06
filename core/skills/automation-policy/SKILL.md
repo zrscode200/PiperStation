@@ -20,7 +20,7 @@ must stay visible to the user.
 Do not use this skill for ordinary local inspection, planning, implementation,
 or review. Registered project source edits are routine, and so are local
 checks, local commits on the lane's branch, and path-scoped hub artifact
-commits — never `git add -A` or `commit -a` in the shared hub checkout.
+commits through `piper-record`; never unscoped commits in the shared hub.
 Non-destructive worktree creation or switching is routine; deleting worktrees
 is `exceptional`. Routine actions proceed when the workflow reaches them;
 nothing routes here for them.
@@ -36,8 +36,9 @@ nothing routes here for them.
    the rollback or recovery path, then wait. A broad request such as "finish
    this" is never a go-ahead; a user instruction that names the action and
    target is.
-3. For `exceptional`, restate the action and wait for a fresh explicit
-   instruction every time. `exceptional` actions can never be pre-approved.
+3. For `exceptional`, require a fresh explicit one-off instruction for this
+   action and target. If already given, restate it and proceed; otherwise wait
+   for it. `exceptional` actions can never be covered by a standing grant.
 4. Record the go-ahead and the action in the lane's `build-log.md`, in the
    next entry the lane writes; an `external` action outside any open wave
    writes a one-line finish entry in the project `build-log.md`. Never record

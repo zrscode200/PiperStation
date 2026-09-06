@@ -1,0 +1,362 @@
+#!/usr/bin/env python3
+"""Cooperative, version-checked Markdown writes and scoped hub commits.
+
+This is not a database or a security boundary against direct filesystem/Git
+writes. Owners still reconcile meaning and multi-file checkpoints. A stable
+process-owned lock serializes these short operations across the whole hub.
+"""
+from __future__ import annotations
+
+import argparse
+from contextlib import contextmanager
+import errno
+import fcntl
+import hashlib
+import json
+import math
+import os
+from pathlib import Path, PurePosixPath
+import re
+import stat
+import subprocess
+import sys
+import time
+import uuid
+
+# The same module is rendered beside the helpers in every installed hub.
+# Importing CLI support must not create cache files in managed surfaces.
+sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / ".piper/lib"))
+from work_ownership import OwnershipError, guard_replacement
+
+
+class RecordError(Exception):
+    pass
+
+
+def emit(**fields):
+    print(json.dumps(fields, ensure_ascii=False))
+
+
+def record_path(value):
+    path = PurePosixPath(value)
+    if path.is_absolute() or not value or value != str(path):
+        raise RecordError("Record paths must be literal, project-relative paths.")
+    if any(part in (".", "..") or part.startswith(".") or any(ord(c) < 32 for c in part)
+           for part in path.parts):
+        raise RecordError("Hidden, traversal, and control-character paths are not records.")
+    if value not in ("project.md", "memory.md", "decisions.md") and not (
+            len(path.parts) > 1 and path.parts[0] == "work" and path.suffix == ".md"):
+        raise RecordError("Choose project.md, memory.md, decisions.md, or a Markdown record under work/.")
+    return path
+
+
+@contextmanager
+def directory(root, parts=(), create=False):
+    fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        for part in parts:
+            if create:
+                try:
+                    os.mkdir(part, mode=0o755, dir_fd=fd)
+                except FileExistsError:
+                    pass
+            child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+            os.close(fd)
+            fd = child
+        yield fd
+    finally:
+        os.close(fd)
+
+
+def read_at(root, relative):
+    try:
+        with directory(root, relative.parts[:-1]) as parent:
+            fd = os.open(relative.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent)
+            with os.fdopen(fd, "rb") as stream:
+                mode = os.fstat(stream.fileno()).st_mode
+                if not stat.S_ISREG(mode):
+                    raise RecordError("A record must be a regular file.")
+                data = stream.read()
+    except FileNotFoundError:
+        return dict(digest="missing", content=None), None
+    return dict(digest=hashlib.sha256(data).hexdigest(), content=data.decode("utf-8")), stat.S_IMODE(mode)
+
+
+def project_root(value):
+    raw = Path(value).expanduser().absolute()
+    if raw.is_symlink() or raw.parent.is_symlink():
+        raise RecordError("Project and projects directories must not be symlinks.")
+    project = raw.resolve(strict=True)
+    if project.parent.name != "projects" or not project.is_dir():
+        raise RecordError("--project must be a registered hub projects/<id> directory.")
+    hub = project.parent.parent
+    if not (hub / "STATION.md").is_file() or (hub / "STATION.md").is_symlink():
+        raise RecordError("The project must belong to a Piper hub with a regular STATION.md.")
+    record, _ = read_at(project, PurePosixPath("project.md"))
+    if record["digest"] == "missing":
+        raise RecordError("Register the project before writing its records.")
+    return project, hub
+
+
+@contextmanager
+def locked(hub, timeout):
+    with directory(hub, (".piper", "locks"), create=True) as parent:
+        # Darwin can return ENOENT for concurrent O_CREAT|O_NOFOLLOW opens.
+        # Separate exclusive creation from reopening the stable existing inode.
+        try:
+            fd = os.open("records.lock", os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_NONBLOCK,
+                         0o600, dir_fd=parent)
+        except FileExistsError:
+            fd = os.open("records.lock", os.O_RDWR | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent)
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            raise RecordError("The hub record lock must be a regular file.")
+        deadline = time.monotonic() + timeout
+        while True:
+            try:
+                fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except OSError as exc:
+                if exc.errno not in (errno.EAGAIN, errno.EACCES):
+                    raise
+                if time.monotonic() >= deadline:
+                    raise RecordError("The hub record lock is busy; retry after the active write or commit.")
+                time.sleep(min(0.05, max(0, deadline - time.monotonic())))
+        yield fd
+    finally:
+        # Never unlink a flock file: waiters must continue locking the same inode.
+        os.close(fd)
+
+
+def replace(project, path, expected, content_file):
+    if expected != "missing" and not re.fullmatch(r"[0-9a-f]{64}", expected):
+        raise RecordError("--expected must be the digest returned by read, or missing.")
+    proposal = Path(content_file)
+    fd = os.open(proposal, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    with os.fdopen(fd, "rb") as stream:
+        if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
+            raise RecordError("The proposal must be a regular UTF-8 file.")
+        data = stream.read()
+    proposal_text = data.decode("utf-8")
+    current, mode = read_at(project, path)
+    if current["digest"] != expected:
+        emit(status="conflict", path=str(path), **current,
+             message="Record changed. Read and reconcile this version before replacing it.")
+        return 3
+    # Digest protection alone cannot arbitrate two different lane records that
+    # claim one checkout. Check that project-wide invariant under this same lock.
+    guard_replacement(project, path, proposal_text)
+    with directory(project, path.parts[:-1], create=True) as parent:
+        temporary = ".piper-record-" + uuid.uuid4().hex
+        try:
+            fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                         0o644 if mode is None else mode, dir_fd=parent)
+            with os.fdopen(fd, "wb") as stream:
+                if mode is not None:
+                    os.fchmod(stream.fileno(), mode)
+                stream.write(data)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temporary, path.name, src_dir_fd=parent, dst_dir_fd=parent)
+            os.fsync(parent)
+        finally:
+            try:
+                os.unlink(temporary, dir_fd=parent)
+            except FileNotFoundError:
+                pass
+    emit(status="replaced", path=str(path), digest=hashlib.sha256(data).hexdigest())
+    return 0
+
+
+def git(hub, *args, lock_fd=None, binary=False):
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update(GIT_TERMINAL_PROMPT="0", GIT_OPTIONAL_LOCKS="0")
+    return subprocess.run(["git", "--literal-pathspecs", "-C", str(hub), *args],
+                          env=env, text=not binary, errors=None if binary else "replace",
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                          pass_fds=() if lock_fd is None else (lock_fd,))
+
+
+def checked_git(hub, *args, lock_fd=None):
+    result = git(hub, *args, lock_fd=lock_fd)
+    if result.returncode:
+        raise RecordError(result.stderr.strip() or result.stdout.strip() or "Git operation failed.")
+    return result.stdout
+
+
+def oid(hub):
+    result = git(hub, "rev-parse", "--verify", "HEAD")
+    return result.stdout.strip() if result.returncode == 0 else None
+
+
+def file_state(hub, name):
+    parts = PurePosixPath(name).parts
+    with directory(hub) as root:
+        fd = os.dup(root)
+    try:
+        for number, part in enumerate(parts):
+            try:
+                info = os.stat(part, dir_fd=fd, follow_symlinks=False)
+            except FileNotFoundError:
+                return None
+            if stat.S_ISLNK(info.st_mode):
+                # A tracked descendant may now have a symlink ancestor. Observe
+                # the link itself, never the external object it happens to name.
+                return ("symlink", number, os.readlink(part, dir_fd=fd))
+            if number < len(parts) - 1:
+                if not stat.S_ISDIR(info.st_mode):
+                    return ("non-directory-parent", number, info.st_mode)
+                child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+                os.close(fd)
+                fd = child
+            elif stat.S_ISREG(info.st_mode):
+                child = os.open(part, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=fd)
+                with os.fdopen(child, "rb") as stream:
+                    if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
+                        raise RecordError("A hub file changed type during inspection; retry after its owner finishes.")
+                    return ("file", info.st_mode & 0o777, hashlib.sha256(stream.read()).hexdigest())
+            else:
+                return ("non-regular", info.st_mode)
+    finally:
+        os.close(fd)
+
+
+def other_state(hub, selected):
+    """Observe unrelated contents without following symlinks or staging them."""
+    result = git(hub, "ls-files", "--cached", "--others", "--exclude-standard", "-z", binary=True)
+    if result.returncode:
+        raise RecordError("Cannot inspect hub files around the commit.")
+    files = {}
+    for name in set(os.fsdecode(n) for n in result.stdout.split(b"\0") if n):
+        if name in selected:
+            continue
+        files[name] = file_state(hub, name)
+    result = git(hub, "ls-files", "--stage", "-z", binary=True)
+    if result.returncode:
+        raise RecordError("Cannot inspect hub index around the commit.")
+    index = {}
+    for item in result.stdout.split(b"\0"):
+        if item:
+            entry, raw_name = item.split(b"\t", 1)
+            name = os.fsdecode(raw_name)
+            if name not in selected:
+                index.setdefault(name, []).append(entry.decode("ascii"))
+    return files, index
+
+
+def changed_keys(before, after):
+    return sorted(k for k in before.keys() | after.keys() if before.get(k) != after.get(k))
+
+
+def commit(project, hub, paths, message, lock_fd):
+    top = checked_git(hub, "rev-parse", "--show-toplevel").strip()
+    if Path(top).resolve() != hub:
+        raise RecordError("Commit requires the hub's own Git root; it must not use a parent repository.")
+    relative = [record_path(value) for value in paths]
+    selected = [str(project.relative_to(hub) / str(path)) for path in relative]
+    if len(set(selected)) != len(selected):
+        raise RecordError("Each selected record must appear once.")
+    if not message.strip():
+        raise RecordError("A nonempty commit message is required.")
+    # --only snapshots the named working files and preserves unrelated staged and
+    # partially staged entries. A newly created record first needs intent-to-add.
+    new = []
+    proposal_digests = {}
+    for path, name in zip(relative, selected):
+        current, _ = read_at(project, path)
+        if current["digest"] == "missing":
+            raise RecordError("Selected records must exist; deletion is an explicit maintenance operation.")
+        if git(hub, "ls-files", "--error-unmatch", "--", name).returncode:
+            new.append(name)
+        proposal_digests[str(path)] = current["digest"]
+    before = oid(hub)
+    previous_files, previous_index = other_state(hub, selected)
+    if new:
+        checked_git(hub, "add", "--intent-to-add", "--", *new, lock_fd=lock_fd)
+    result = git(hub, "commit", "--only", "--message", message, "--", *selected, lock_fd=lock_fd)
+    after = oid(hub)
+    # Hooks remain enabled. Inspect what actually landed; never undo a commit or
+    # reset somebody else's index on failure or an unexpected hook mutation.
+    try:
+        files, index = other_state(hub, selected)
+        unrelated_files = changed_keys(previous_files, files)
+        unrelated_index = changed_keys(previous_index, index)
+        if after == before:
+            attention = bool(unrelated_files or unrelated_index)
+            emit(status="not-committed-needs-attention" if attention else "not-committed",
+                 head=after, message=result.stderr.strip() or result.stdout.strip(),
+                 proposed_digests=proposal_digests, unrelated_worktree_changes=unrelated_files,
+                 unrelated_index_changes=unrelated_index)
+            return 4 if attention else 2
+        return inspect_commit(project, hub, relative, selected, proposal_digests, result,
+                              before, after, unrelated_files, unrelated_index)
+    except (RecordError, OSError, UnicodeError, ValueError) as exc:
+        emit(status="commit-needs-inspection", previous_head=before, observed_head=after,
+             head_changed=after != before, message=str(exc),
+             instruction="Inspect actual HEAD, commit scope and working/index state before retrying.")
+        return 4
+
+
+def inspect_commit(project, hub, relative, selected, proposal_digests, result,
+                   before, after, unrelated_files, unrelated_index):
+    if after is None:
+        raise RecordError("Cannot resolve HEAD after the commit attempt.")
+    if before:
+        changed = checked_git(hub, "diff", "--name-only", "-z", before, after).split("\0")
+        parents = checked_git(hub, "rev-list", "--parents", "-n", "1", after).split()[1:]
+        expected_parent = parents == [before]
+    else:
+        changed = checked_git(hub, "ls-tree", "-r", "--name-only", "-z", after).split("\0")
+        expected_parent = len(checked_git(hub, "rev-list", "--parents", "-n", "1", after).split()) == 1
+    unexpected = sorted(set(filter(None, changed)) - set(selected))
+    committed_digests = {}
+    for path, name in zip(relative, selected):
+        blob = git(hub, "show", f"{after}:{name}", binary=True)
+        committed_digests[str(path)] = hashlib.sha256(blob.stdout).hexdigest() if blob.returncode == 0 else "missing"
+    remaining = checked_git(hub, "status", "--porcelain=v1", "--", *selected).strip()
+    attention = bool(result.returncode or unexpected or not expected_parent or remaining
+                     or proposal_digests != committed_digests or unrelated_files or unrelated_index)
+    emit(status="committed-needs-attention" if attention else "committed", head=after,
+         previous_head=before, paths=selected, unexpected_paths=unexpected,
+         committed_digests=committed_digests, remaining_status=remaining,
+         unrelated_worktree_changes=unrelated_files, unrelated_index_changes=unrelated_index,
+         message=result.stderr.strip() or result.stdout.strip())
+    return 4 if attention else 0
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--project", required=True)
+    parser.add_argument("--lock-timeout", type=float, default=30)
+    sub = parser.add_subparsers(dest="command", required=True)
+    read = sub.add_parser("read", help="Read one record and its SHA-256 version, without writing.")
+    read.add_argument("path")
+    write = sub.add_parser("replace", help="Atomically publish a reconciled version if its old digest still matches.")
+    write.add_argument("path")
+    write.add_argument("--expected", required=True)
+    write.add_argument("--content-file", required=True)
+    save = sub.add_parser("commit", help="Commit only explicitly named hub records, preserving other staged work.")
+    save.add_argument("--paths", required=True, nargs="+")
+    save.add_argument("--message", required=True)
+    args = parser.parse_args()
+    try:
+        if not math.isfinite(args.lock_timeout) or args.lock_timeout < 0:
+            raise RecordError("Lock timeout must be finite and nonnegative.")
+        project, hub = project_root(args.project)
+        if args.command == "read":
+            path = record_path(args.path)
+            current, _ = read_at(project, path)
+            emit(status="read", path=str(path), **current)
+            return 0
+        with locked(hub, args.lock_timeout) as lock_fd:
+            if args.command == "replace":
+                return replace(project, record_path(args.path), args.expected, args.content_file)
+            return commit(project, hub, args.paths, args.message, lock_fd)
+    except (RecordError, OwnershipError, OSError, UnicodeError) as exc:
+        emit(status="error", message=str(exc))
+        return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

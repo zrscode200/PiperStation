@@ -1,148 +1,240 @@
 #!/usr/bin/env sh
 set -eu
 
-HUB_VERSION="0.1.0"
+HUB_VERSION="0.2.0"
 DRY_RUN=false
 GIT_INIT=false
-RUNTIME_INPUT=""
 TARGET_INPUT=""
 
 usage() {
-  cat <<'EOF'
+  cat <<'USAGE'
 Usage:
-  bootstrap/init.sh --runtime codex|claude|opencode|deepagent (comma-separate to combine) [--dry-run] [--git-init] /path/to/piper-station-hub
+  bootstrap/init.sh [--runtime codex] [--dry-run] [--git-init] /path/to/piper-station-hub
 
-Creates or updates a Piper Station hub directory from generated runtime templates.
-Unselected runtime surfaces are left alone. Shared project records under
-projects/ are preserved.
-EOF
+Creates or updates a Codex Piper Station hub. The optional --runtime codex
+argument is retained for existing callers. Other runtimes are not supported
+on this branch. Generated files outside projects/ are managed; hub-owned
+project records are preserved. Existing mixed-runtime hubs require migration
+before this installer can update them. See docs/capability-matrix.md.
+USAGE
 }
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --runtime) shift; [ $# -gt 0 ] || { echo "Error: --runtime requires a value" >&2; exit 1; }; RUNTIME_INPUT="$1" ;;
+    --runtime)
+      shift
+      [ $# -gt 0 ] || { echo "Error: --runtime requires a value" >&2; exit 1; }
+      [ "$1" = codex ] || { echo "Error: unsupported runtime: $1; this branch supports codex only" >&2; exit 1; }
+      ;;
     --dry-run) DRY_RUN=true ;;
     --git-init) GIT_INIT=true ;;
-    --force) ;;
+    --force) ;; # Legacy no-op; never bypasses ownership or migration checks.
     -h|--help) usage; exit 0 ;;
-    --) shift; TARGET_INPUT="${1:-}"; break ;;
+    --)
+      shift
+      [ $# -eq 1 ] && [ -z "$TARGET_INPUT" ] || { usage >&2; exit 1; }
+      TARGET_INPUT="$1"
+      break
+      ;;
     -*) echo "Error: unknown option: $1" >&2; usage >&2; exit 1 ;;
-    *) if [ -z "$TARGET_INPUT" ]; then TARGET_INPUT="$1"; else echo "Error: unexpected extra argument: $1" >&2; exit 1; fi ;;
+    *)
+      [ -z "$TARGET_INPUT" ] || { echo "Error: unexpected extra argument: $1" >&2; exit 1; }
+      TARGET_INPUT="$1"
+      ;;
   esac
   shift
 done
-
-[ -n "$RUNTIME_INPUT" ] || { echo "Error: --runtime is required" >&2; usage >&2; exit 1; }
 [ -n "$TARGET_INPUT" ] || { usage >&2; exit 1; }
 
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-SOURCE_ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
-GENERATED="$SOURCE_ROOT/generated"
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+SOURCE_ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd -P)
+TEMPLATE="$SOURCE_ROOT/generated/codex"
+[ -d "$TEMPLATE" ] || { echo "Error: missing generated Codex template" >&2; exit 1; }
+command -v python3 >/dev/null 2>&1 || { echo "Error: bootstrap requires python3 for manifest validation" >&2; exit 1; }
+TARGET_DIR=$(python3 - "$TARGET_INPUT" "$SOURCE_ROOT" <<'PY'
+import os, sys
+target, source = os.path.realpath(sys.argv[1]), sys.argv[2]
+if target == source or (os.path.exists(target) and os.path.samefile(target, source)):
+    sys.exit(f"Error: refusing to initialize the bootstrap source as a hub: {source}")
+print(target)
+PY
+)
+[ ! -e "$TARGET_DIR" ] || [ -d "$TARGET_DIR" ] || { echo "Error: target exists and is not a directory: $TARGET_DIR" >&2; exit 1; }
 
-normalize_runtimes() {
-  result=""
-  rest="$RUNTIME_INPUT"
-  while :; do
-    case "$rest" in
-      *,*) runtime=${rest%%,*}; rest=${rest#*,} ;;
-      *) runtime=$rest; rest="" ;;
-    esac
-    runtime=$(printf "%s" "$runtime" | sed 's/^ *//; s/ *$//')
-    if [ -n "$runtime" ]; then
-      case "$runtime" in
-        codex|claude|opencode|deepagent)
-          case " $result " in *" $runtime "*) ;; *) result="${result}${result:+ }$runtime" ;; esac
-          ;;
-        *) echo "Error: unsupported runtime: $runtime" >&2; return 1 ;;
-      esac
-    fi
-    [ -n "$rest" ] || break
-  done
-  printf '%s\n' "$result" | tr ' ' '\n'
-}
-RUNTIMES=$(normalize_runtimes) || exit 1
-[ -n "$RUNTIMES" ] || { echo "Error: --runtime did not name any runtimes" >&2; exit 1; }
-for runtime in $RUNTIMES; do [ -d "$GENERATED/$runtime" ] || { echo "Error: missing generated template for runtime '$runtime'" >&2; exit 1; }; done
+# Validate every existing manifest and destination before the first write. The
+# older mixed-runtime installer preserved unselected surfaces; silently doing
+# that here would leave incompatible instructions alongside a new Codex core.
+python3 - "$TARGET_DIR" "$TEMPLATE" <<'PY'
+import json
+import sys
+from pathlib import Path, PurePosixPath
 
-if [ -e "$TARGET_INPUT" ] && [ ! -d "$TARGET_INPUT" ]; then echo "Error: target exists and is not a directory: $TARGET_INPUT" >&2; exit 1; fi
-[ "$DRY_RUN" = true ] || mkdir -p "$TARGET_INPUT"
-if [ -d "$TARGET_INPUT" ]; then
-  TARGET_DIR=$(CDPATH= cd -- "$TARGET_INPUT" && pwd)
-else
-  parent=$(dirname -- "$TARGET_INPUT"); base=$(basename -- "$TARGET_INPUT")
-  if [ -d "$parent" ]; then parent_abs=$(CDPATH= cd -- "$parent" && pwd); TARGET_DIR="$parent_abs/$base"; else TARGET_DIR="$TARGET_INPUT"; fi
-fi
-[ "$TARGET_DIR" != "$SOURCE_ROOT" ] || { echo "Error: refusing to initialize the bootstrap source as a hub: $SOURCE_ROOT" >&2; exit 1; }
+hub, template = map(Path, sys.argv[1:])
+retired = (".claude", "CLAUDE.md", ".opencode", "opencode.json", ".deepagents")
+manifest = hub / ".piper/hub-manifest.json"
+if (hub / ".piper").is_symlink() or manifest.is_symlink():
+    sys.exit("Error: managed manifest uses a symlink; no hub files changed")
+try:
+    data = json.loads(manifest.read_text()) if manifest.exists() else {}
+    if not isinstance(data, dict):
+        raise ValueError("expected an object")
+    runtimes = data.get("runtimes", [])
+    managed = data.get("managed_files", [])
+    if not isinstance(runtimes, list) or not all(isinstance(x, str) for x in runtimes):
+        raise ValueError("runtimes must be a list of names")
+    if not isinstance(managed, list) or not all(isinstance(x, str) for x in managed):
+        raise ValueError("managed_files must be a list of paths")
+except (OSError, ValueError) as exc:
+    sys.exit(f"Error: invalid existing hub manifest: {exc}; no hub files changed")
+legacy = any((hub / item).exists() or (hub / item).is_symlink() for item in retired)
+legacy = legacy or any(runtime != "codex" for runtime in runtimes)
+legacy = legacy or any(path == item or path.startswith(item + "/") for path in managed for item in retired)
+if legacy:
+    sys.exit("Error: existing hub contains retired runtime surfaces; no hub files changed. "
+             "Create a separate Codex hub or migrate the existing hub explicitly. "
+             "See docs/capability-matrix.md; --force does not bypass this check.")
+for rel in managed:
+    path = PurePosixPath(rel)
+    if (not rel or path.is_absolute() or ".." in path.parts or "\\" in rel
+            or any(ord(char) < 32 or ord(char) == 127 for char in rel)):
+        sys.exit(f"Error: unsafe managed manifest path: {rel!r}; no hub files changed")
+    # These identities must stay reserved on case-insensitive filesystems too.
+    parts = tuple(part.casefold() for part in path.parts)
+    if ".git" in parts or parts[:2] == (".piper", "locks"):
+        sys.exit(f"Error: reserved operational path in managed manifest: {rel!r}; no hub files changed")
+# Reject symlinked destinations and parent components instead of following them
+# outside the hub. Also catch file/directory collisions before partial refresh.
+paths = {str(p.relative_to(template)) for p in template.rglob("*") if p.is_file()}
+paths.update(managed)
+paths.add(".piper/hub-manifest.json")
+for rel in paths:
+    dest = hub / rel
+    for component in [dest, *dest.parents]:
+        if component == hub:
+            break
+        if component.is_symlink():
+            sys.exit(f"Error: managed destination uses a symlink: {component}; no hub files changed")
+        if component != dest and component.exists() and not component.is_dir():
+            sys.exit(f"Error: managed parent is not a directory: {component}; no hub files changed")
+    if dest.exists() and not dest.is_file():
+        sys.exit(f"Error: managed destination is not a file: {dest}; no hub files changed")
+PY
 
-is_runtime_selected() { printf '%s\n' "$RUNTIMES" | grep -qx -- "$1"; }
-rel_runtime() { case "$1" in AGENTS.md|.codex/*|.piper/plugin/*) printf codex ;; CLAUDE.md|.claude/*) printf claude ;; opencode.json|.opencode/*) printf opencode ;; .deepagents/*) printf deepagent ;; *) printf shared ;; esac; }
 is_managed() { case "$1" in projects/*) return 1 ;; *) return 0 ;; esac; }
-is_safe_manifest_rel() { case "$1" in ""|/*|../*|*/../*|projects/*) return 1 ;; *) return 0 ;; esac; }
+template_files() { (cd "$TEMPLATE" && find . -type f -print | sed 's#^\./##') | sort; }
+previous_managed_files() {
+  python3 - "$TARGET_DIR/.piper/hub-manifest.json" <<'PY'
+import json, sys
+from pathlib import Path, PurePosixPath
+path = Path(sys.argv[1])
+if path.exists():
+    for rel in json.loads(path.read_text()).get("managed_files", []):
+        parts = PurePosixPath(rel).parts
+        if not parts or parts[0].casefold() != "projects":
+            print(rel)
+PY
+}
 
-template_files() { for runtime in $RUNTIMES; do (cd "$GENERATED/$runtime" && find . -type f -print | sed 's#^\./##'); done | sort -u; }
-template_source() { rel="$1"; for runtime in $RUNTIMES; do [ -f "$GENERATED/$runtime/$rel" ] && { printf '%s\n' "$GENERATED/$runtime/$rel"; return 0; }; done; return 1; }
-is_executable_template() { rel="$1"; src=$(template_source "$rel") || return 1; case "$rel" in bin/*|.piper/lib/bootstrap/*.sh|.codex/hooks/*.sh|.claude/hooks/*.sh|.deepagents/hooks/*.sh) return 0 ;; *) [ -x "$src" ] ;; esac; }
-
-nearest_existing_dir() { dir="$1"; while [ ! -d "$dir" ]; do parent=$(dirname -- "$dir"); [ "$parent" != "$dir" ] || return 1; dir="$parent"; done; printf '%s\n' "$dir"; }
-is_path_in_git_worktree() { path="$1"; if [ -d "$path" ]; then git -C "$path" rev-parse --is-inside-work-tree >/dev/null 2>&1; return $?; fi; parent=$(nearest_existing_dir "$path") || return 1; git -C "$parent" rev-parse --is-inside-work-tree >/dev/null 2>&1; }
-initialize_git_repo() { [ "$GIT_INIT" = true ] || return 0; command -v git >/dev/null 2>&1 || { echo "Error: --git-init requires git on PATH" >&2; exit 1; }; if [ "$DRY_RUN" = true ]; then if is_path_in_git_worktree "$TARGET_DIR"; then echo "would preserve git worktree: $TARGET_DIR"; else echo "would initialize git repo: $TARGET_DIR"; fi; elif git -C "$TARGET_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then echo "preserve git worktree: $TARGET_DIR"; else git -C "$TARGET_DIR" init -q; echo "git init: $TARGET_DIR"; fi; }
-
-# Deep Agents resolves its project root through git metadata: a hub that is
-# not its own repository root loses every .deepagents/ surface silently, and
-# sibling-runtime files (root AGENTS.md, .claude/skills) bleed into deepagent
-# sessions in mixed hubs. Both checks warn on stderr and never block.
-warn_deepagent_git_root() {
-  is_runtime_selected deepagent || return 0
-  if [ ! -d "$TARGET_DIR" ]; then
-    if [ "$GIT_INIT" != true ]; then
-      echo "Warning: the deepagent runtime requires the hub to be a git repository root; without one, Deep Agents silently skips .deepagents/AGENTS.md, skills, and subagents. Re-run with --git-init or run git init in the new hub." >&2
-    elif is_path_in_git_worktree "$TARGET_DIR"; then
-      echo "Warning: the deepagent runtime requires the hub to be a git repository root; $TARGET_DIR would sit inside an existing repository, and --git-init preserves an enclosing worktree rather than creating a nested root. Deep Agents will silently skip .deepagents/AGENTS.md, skills, and subagents. Run git init in the hub after creation to give it its own repository root." >&2
+initialize_git_repo() {
+  [ "$GIT_INIT" = true ] || return 0
+  command -v git >/dev/null 2>&1 || { echo "Error: --git-init requires git on PATH" >&2; exit 1; }
+  toplevel=$(git -C "$TARGET_DIR" rev-parse --show-toplevel 2>/dev/null || true)
+  if [ -n "$toplevel" ] && [ -d "$toplevel" ]; then
+    toplevel=$(CDPATH= cd -- "$toplevel" && pwd -P)
+  fi
+  if [ "$toplevel" = "$TARGET_DIR" ]; then
+    echo "preserve git worktree: $TARGET_DIR"
+  elif [ "$DRY_RUN" = true ]; then
+    echo "would initialize git repo: $TARGET_DIR"
+  else
+    # --git-init requests the hub's own Git root, even below an enclosing repo.
+    # Record checkpoint commits must never mutate the parent repository.
+    git -C "$TARGET_DIR" init -q
+    echo "git init: $TARGET_DIR"
+  fi
+}
+remove_empty_parent_dirs() {
+  dir=$(dirname -- "$1")
+  while [ "$dir" != "$TARGET_DIR" ] && [ "$dir" != / ]; do
+    rmdir "$dir" 2>/dev/null || break
+    dir=$(dirname -- "$dir")
+  done
+}
+cleanup_stale_managed_files() {
+  previous_managed_files | while IFS= read -r rel; do
+    [ ! -f "$TEMPLATE/$rel" ] || continue
+    dst="$TARGET_DIR/$rel"
+    [ -f "$dst" ] || continue
+    if [ "$DRY_RUN" = true ]; then
+      echo "would remove stale managed hub file: $rel"
+    else
+      rm -f "$dst"
+      remove_empty_parent_dirs "$dst"
+      echo "remove stale managed: $rel"
     fi
-    return 0
+  done
+}
+apply_mode() {
+  if [ -x "$TEMPLATE/$1" ]; then chmod 755 "$2"; else chmod 644 "$2"; fi
+}
+copy_template_file() {
+  rel="$1"; src="$TEMPLATE/$rel"; dst="$TARGET_DIR/$rel"
+  if ! is_managed "$rel" && [ -e "$dst" ]; then
+    echo "preserve hub file: $rel"
+    return
   fi
-  if [ "$DRY_RUN" = true ] && [ "$GIT_INIT" = true ] && ! is_path_in_git_worktree "$TARGET_DIR"; then return 0; fi
-  target_real=$(CDPATH= cd -- "$TARGET_DIR" && pwd -P)
-  toplevel=$(git -C "$TARGET_DIR" rev-parse --show-toplevel 2>/dev/null || printf '')
-  if [ -n "$toplevel" ] && [ -d "$toplevel" ]; then toplevel=$(CDPATH= cd -- "$toplevel" && pwd -P); fi
-  if [ "$toplevel" != "$target_real" ]; then
-    echo "Warning: the deepagent runtime requires the hub to be a git repository root; $TARGET_DIR is not one (detected toplevel: ${toplevel:-none}). Deep Agents will silently skip .deepagents/AGENTS.md, skills, and subagents. Run git init in the hub to give it its own repository root (or re-run with --git-init when the hub is not nested inside another repository)." >&2
+  if [ "$DRY_RUN" = true ]; then
+    [ -e "$dst" ] && echo "would update managed hub file: $rel" || echo "would create managed hub file: $rel"
+    return
+  fi
+  mkdir -p "$(dirname -- "$dst")"
+  tmp="$dst.tmp.$$"
+  cp "$src" "$tmp"
+  apply_mode "$rel" "$tmp"
+  if [ -f "$dst" ] && cmp -s "$tmp" "$dst"; then
+    rm -f "$tmp"
+    apply_mode "$rel" "$dst"
+    echo "preserve managed: $rel"
+  else
+    mv "$tmp" "$dst"
+    echo "write managed: $rel"
   fi
 }
-hub_has_other_runtime_surface() { [ -d "$TARGET_DIR/.codex" ] || [ -d "$TARGET_DIR/.claude" ] || [ -d "$TARGET_DIR/.opencode" ] || [ -f "$TARGET_DIR/CLAUDE.md" ] || [ -f "$TARGET_DIR/opencode.json" ] || [ -f "$TARGET_DIR/AGENTS.md" ]; }
-other_runtime_selected() { printf '%s\n' "$RUNTIMES" | grep -qvx deepagent; }
-warn_deepagent_composition() {
-  mixed=false
-  if is_runtime_selected deepagent; then
-    if other_runtime_selected || hub_has_other_runtime_surface; then mixed=true; fi
-  elif [ -d "$TARGET_DIR/.deepagents" ]; then
-    mixed=true
+write_manifest() {
+  if [ "$DRY_RUN" = true ]; then
+    echo "would update managed hub file: .piper/hub-manifest.json"
+    return
   fi
-  [ "$mixed" = true ] || return 0
-  echo "Note: composing the deepagent runtime with other runtime surfaces is unvalidated. Deep Agents sessions also read the hub root AGENTS.md and .claude/skills, so sibling-runtime content bleeds into deepagent sessions. Single-runtime deepagent hubs are the validated configuration." >&2
+  python3 - "$TARGET_DIR" "$TEMPLATE" "$HUB_VERSION" <<'PY'
+import datetime, json, os, sys
+from pathlib import Path
+hub, template = map(Path, sys.argv[1:3])
+files = sorted(str(p.relative_to(template)) for p in template.rglob("*") if p.is_file())
+data = {
+    "hub_version": sys.argv[3],
+    "installed_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    "runtimes": ["codex"],
+    "file_mode": "managed-outside-projects",
+    "files": files,
+    "managed_files": [p for p in files if not p.startswith("projects/")],
+}
+manifest = hub / ".piper/hub-manifest.json"
+manifest.parent.mkdir(parents=True, exist_ok=True)
+tmp = manifest.with_name(f"{manifest.name}.tmp.{os.getpid()}")
+tmp.write_text(json.dumps(data, indent=2) + "\n")
+tmp.chmod(0o644)
+tmp.replace(manifest)
+PY
+  echo "write managed: .piper/hub-manifest.json"
 }
 
-previous_managed_files() { manifest="$TARGET_DIR/.piper/hub-manifest.json"; [ -f "$manifest" ] || return 0; awk '/"managed_files"[[:space:]]*:/ { inside = 1; next } inside && /\]/ { exit } inside { line = $0; sub(/^[[:space:]]*"/, "", line); sub(/",[[:space:]]*$/, "", line); sub(/"[[:space:]]*$/, "", line); if (line != "") print line }' "$manifest"; }
-remove_empty_parent_dirs() { file="$1"; dir=$(dirname -- "$file"); while [ "$dir" != "$TARGET_DIR" ] && [ "$dir" != "/" ]; do rmdir "$dir" 2>/dev/null || break; dir=$(dirname -- "$dir"); done; }
-cleanup_stale_managed_files() { [ -f "$TARGET_DIR/.piper/hub-manifest.json" ] || return 0; current_file="$1"; previous_managed_files | while IFS= read -r rel; do [ -n "$rel" ] || continue; is_safe_manifest_rel "$rel" || continue; rel_rt=$(rel_runtime "$rel"); if [ "$rel_rt" != shared ] && ! is_runtime_selected "$rel_rt"; then continue; fi; grep -qx -- "$rel" "$current_file" && continue; dst="$TARGET_DIR/$rel"; [ -e "$dst" ] || continue; if [ "$DRY_RUN" = true ]; then echo "would remove stale managed hub file: $rel"; elif [ -f "$dst" ]; then rm -f "$dst"; remove_empty_parent_dirs "$dst"; echo "remove stale managed: $rel"; fi; done; }
-
-ensure_parent_dir() { [ "$DRY_RUN" = true ] || mkdir -p "$(dirname -- "$1")"; }
-apply_mode() { if is_executable_template "$1"; then chmod 755 "$2"; else chmod 644 "$2"; fi; }
-copy_template_file() { rel="$1"; src=$(template_source "$rel") || { echo "Error: missing template source for $rel" >&2; exit 1; }; dst="$TARGET_DIR/$rel"; if is_managed "$rel"; then if [ "$DRY_RUN" = true ]; then [ -e "$dst" ] && echo "would update managed hub file: $rel" || echo "would create managed hub file: $rel"; return; fi; ensure_parent_dir "$dst"; tmp="$dst.tmp.$$"; cp "$src" "$tmp"; apply_mode "$rel" "$tmp"; if [ -e "$dst" ] && cmp -s "$tmp" "$dst"; then rm -f "$tmp"; apply_mode "$rel" "$dst"; echo "preserve managed: $rel"; else mv "$tmp" "$dst"; echo "write managed: $rel"; fi; else if [ "$DRY_RUN" = true ]; then [ -e "$dst" ] && echo "would preserve hub file: $rel" || echo "would create hub file: $rel"; return; fi; ensure_parent_dir "$dst"; if [ -e "$dst" ]; then echo "preserve: $rel"; else cp "$src" "$dst"; apply_mode "$rel" "$dst"; echo "create: $rel"; fi; fi; }
-
-json_list_from_file() { file="$1"; first=true; while IFS= read -r rel; do [ -n "$rel" ] || continue; if [ "$first" = true ]; then first=false; else printf ',\n'; fi; printf '    "%s"' "$rel"; done < "$file"; }
-manifest_files() { current_file="$1"; cat "$current_file"; [ -f "$TARGET_DIR/.piper/hub-manifest.json" ] || return 0; previous_managed_files | while IFS= read -r rel; do [ -n "$rel" ] || continue; is_safe_manifest_rel "$rel" || continue; rel_rt=$(rel_runtime "$rel"); if [ "$rel_rt" != shared ] && ! is_runtime_selected "$rel_rt" && [ -e "$TARGET_DIR/$rel" ]; then printf '%s\n' "$rel"; fi; done; }
-runtime_file_from_manifest_files() { files="$1"; { if grep -q '^\.codex/\|^\.piper/plugin/' "$files"; then printf 'codex\n'; fi; if grep -q '^\.claude/' "$files"; then printf 'claude\n'; fi; if grep -q '^opencode.json$\|^\.opencode/' "$files"; then printf 'opencode\n'; fi; if grep -q '^\.deepagents/' "$files"; then printf 'deepagent\n'; fi; } | sort -u; }
-write_manifest() { current_file="$1"; manifest="$TARGET_DIR/.piper/hub-manifest.json"; if [ "$DRY_RUN" = true ]; then [ -e "$manifest" ] && echo "would update managed hub file: .piper/hub-manifest.json" || echo "would write: .piper/hub-manifest.json"; return; fi; mkdir -p "$TARGET_DIR/.piper"; all="$TARGET_DIR/.piper/hub-manifest.files.$$"; managed="$TARGET_DIR/.piper/hub-manifest.managed.$$"; runtimes="$TARGET_DIR/.piper/hub-manifest.runtimes.$$"; tmp="$manifest.tmp.$$"; manifest_files "$current_file" | sort -u > "$all"; while IFS= read -r rel; do [ -n "$rel" ] && is_managed "$rel" && printf '%s\n' "$rel"; done < "$all" | sort -u > "$managed"; runtime_file_from_manifest_files "$all" > "$runtimes"; installed_at=$(date -u +"%Y-%m-%dT%H:%M:%SZ"); { printf '{\n'; printf '  "hub_version": "%s",\n' "$HUB_VERSION"; printf '  "installed_at": "%s",\n' "$installed_at"; printf '  "runtimes": [\n'; json_list_from_file "$runtimes"; printf '\n  ],\n'; printf '  "file_mode": "managed-outside-projects",\n'; printf '  "files": [\n'; json_list_from_file "$all"; printf '\n  ],\n'; printf '  "managed_files": [\n'; json_list_from_file "$managed"; printf '\n  ]\n'; printf '}\n'; } > "$tmp"; mv "$tmp" "$manifest"; chmod 644 "$manifest"; rm -f "$all" "$managed" "$runtimes"; echo "write managed: .piper/hub-manifest.json"; }
-
-if [ "$DRY_RUN" = true ]; then current_files_tmp="${TMPDIR:-/tmp}/piper-current-files.$$"; else mkdir -p "$TARGET_DIR/.piper"; current_files_tmp="$TARGET_DIR/.piper/current-files.$$"; fi
-trap 'rm -f "$current_files_tmp"' EXIT HUP INT TERM
-template_files > "$current_files_tmp"
-echo "Initializing Piper Station hub at $TARGET_DIR for runtimes: $(printf '%s' "$RUNTIMES" | tr '\n' ',' | sed 's/,$//')"
+if [ "$GIT_INIT" = true ]; then
+  command -v git >/dev/null 2>&1 || { echo "Error: --git-init requires git on PATH" >&2; exit 1; }
+fi
+[ "$DRY_RUN" = true ] || mkdir -p "$TARGET_DIR"
+echo "Initializing Piper Station Codex hub at $TARGET_DIR"
 initialize_git_repo
-warn_deepagent_composition
-warn_deepagent_git_root
-cleanup_stale_managed_files "$current_files_tmp"
-template_files | while IFS= read -r rel; do [ -n "$rel" ] && copy_template_file "$rel"; done
-write_manifest "$current_files_tmp"
+cleanup_stale_managed_files
+template_files | while IFS= read -r rel; do copy_template_file "$rel"; done
+write_manifest
 echo "Done."

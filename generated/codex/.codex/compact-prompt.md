@@ -1,67 +1,35 @@
-# Piper Station Hub-Lite Compaction Prompt
+# Piper Station Compaction Prompt
 
-Summarize the conversation so a future Codex turn can continue from the hub
-without losing the user's intent, constraints, and current implementation
-state.
+Preserve the user's actual goal, constraints, authorization, current phase,
+project id, and canonical lane locator (`flat`, `studio:<slug>`, `group:<gid>`,
+or `lane:<slug>`). Summarize useful progress without inventing acceptance,
+verification, commits, integration, or running workers.
 
-Prioritize:
+Prioritize the selected lane's non-derivable resume fields owned by STATION:
+goal; boundary/status; next exact action and first file; unrecorded verification,
+review findings and drift; blockers/risks/questions; stop reason; relevant related
+contract and resolution pointers; and unresolved worker/result locators. Keep
+source and hub artifact state distinct. The summary is supplemental recall;
+canonical design/revision, work records and live git remain authoritative.
 
-- the user's latest goal and requested project
-- project id, the selected lane (flat or `<gid>`), and the current boundary:
-  the wave or group and its status
-- important facts from `projects/<id>/memory.md`
-- standing policy notes from `projects/<id>/project.md`
-- substantial decision logs from optional `projects/<id>/decisions.md`
-- the non-derivable resume fields from the selected lane's `context-pack.md`
-  when present (defined once in `STATION.md` → Compaction): goal, boundary and
-  status, next exact action, verification and review state not yet in
-  `build-log.md`, blockers, risks, open questions, stop reason, and any
-  broad-search triggers or resume note
-- active work, build-log checkpoints, optional durable queue, and roadmap
-  direction when relevant
-- files changed in the lane's checkout and why, and commands run with their
-  results, as a summary only — branch, HEAD, status, and the diff are derived
-  live from git on resume and never trusted from the summary
-- pending `external` or `exceptional` asks and their go-aheads
-- what to hand a human or fresh agent when pausing or transferring work
+On resume read AGENTS.md, relevant STATION sections, registry and project binding,
+memory and relevant decisions, then the selected lane's packet, active work,
+ledger and optional queue. Lane locations are in STATION → Lanes; a studio uses
+its own work/design/<slug>/ records and canonical design. Read roadmap when
+long-horizon direction matters.
 
-Reload on resume:
+Derive current branch/HEAD/status, source diffs, acceptance history and hub commit
+status from git and owning records. Reconcile material related-contract revisions,
+resolved or unresolved findings, and partial integration/publication. Read the
+old packet before any replacement, preserving still-relevant state. Use protected
+publication, not blind regeneration from a compacted summary.
 
-- `AGENTS.md`
-- `STATION.md`
-- `projects/registry.json` (project lookup index)
-- `projects/<project-id>/project.md`
-- `projects/<project-id>/memory.md`
-- optional `projects/<project-id>/decisions.md` when present
-- the selected lane's `context-pack.md`, `active-work.md`, `build-log.md`,
-  and optional `task-queue.md` when present — under
-  `projects/<project-id>/work/` for the flat lane or
-  `projects/<project-id>/work/groups/<gid>/` for a group lane
-- `projects/<project-id>/work/roadmap.md` when relevant
-- relevant active-boundary-neighborhood files in the lane's checkout
+Check actual native worker status and checkout results before restarting or
+reassigning. A stored handle is a locator, a wait timeout is nonterminal, and
+unavailable status remains unknown. Do not duplicate another live writer.
 
-Rules:
-
-- Treat hub project records as durable context, not as proof that work was
-  completed.
-- Treat `projects/<id>/work/` as optional active work continuity, not as a
-  registration artifact.
-- Treat built-in memories as supplemental recall only.
-- On resume after compaction, reload the listed records when present, and
-  derive branch, HEAD, git status, and changed files live from the real project
-  repo; treat any such values in the summary as hints to verify.
-- Preserve where to start after compact: designed anchors, exact next action,
-  active boundary neighborhood, and when broader exploration is justified.
-- Do not invent completed work, approvals, test results, commits, branches, or
-  user decisions.
-- Mark uncertain details as unknown instead of filling gaps.
-- Do not include secrets, private keys, credentials, or sensitive raw logs.
-
-Future design note:
-
-- A stronger auto-compact protection layer could snapshot minimal active state
-  into `projects/<id>/work/` before automatic compaction. Codex CLI currently
-  relies on this compact prompt and resume hooks rather than pre-compact or
-  post-compact hooks, so any mutating snapshot design would require external
-  runtime/app-server support, active-project/session-state tracking, and
-  explicit ownership rules for generated work records.
+Resume the selected phase. A studio does not become implementation because a
+summary includes a feature proposal. Revalidate stale accepted contracts before
+dependent execution. Preserve prior user authority without expanding scope.
+Never include secrets or sensitive raw logs. Hooks are reminders; they do not
+persist records automatically or prove compaction and checkpoint work occurred.

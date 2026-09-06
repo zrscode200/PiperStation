@@ -37,9 +37,13 @@ It does not authorize:
 
 - edits to the registered project's source repository;
 - Piper Workflow groups, waves, implementation queues, or Ralph execution;
-- commits, pushes, pull requests, dependency changes, network actions, or
-  external-system changes;
+- project-source commits, pushes, pull requests, dependency changes, or
+  external-system actions not separately authorized;
 - destructive migration, deletion, or exceptional actions.
+
+Useful design checkpoints and their hub artifact commits follow STATION; no
+additional per-checkpoint approval is needed. Shared records and lane ownership
+use `piper-record`; sole-owned studio files may use normal file tools. This does not authorize source implementation.
 
 Route later implementation planning to `piper-workflow`, explicit code review
 to `review`, and `external` or `exceptional` actions to `automation-policy`.
@@ -62,7 +66,10 @@ to `review`, and `external` or `exceptional` actions to `automation-policy`.
 ## Create Or Reuse A Studio
 
 One studio represents one design initiative across conversations, not one
-runtime session.
+runtime session. Its lane is `studio:<slug>` and its optional continuity files
+live in `work/design/<slug>/`. Different studios can remain independently active
+and resumable. One coordinating session owns a studio lane at a time; another
+session may read it and propose synthesis, without rewriting its working state.
 
 - Reuse an existing studio when its initiative matches the user's design
   question.
@@ -97,6 +104,18 @@ Use the method reference adaptively:
    reversibility, and evolution where relevant.
 6. Discuss the synthesis with the user and record it after alignment.
 
+When the question relates to another studio or implementation effort, read its
+canonical records and distinguish tentative ideas from accepted contracts. Use
+STATION → Related Work And Changed Assumptions to record consequential
+relationships and revisions. Combining designs means reconciling assumptions
+and assigning one canonical home to shared behavior. Preserve useful original
+material and reference the resolution from its consumers; do not concatenate
+documents or treat another session's proposal as user acceptance.
+
+A finding can conclude an investigation without implementation. Preserve the
+question, evidence, limits, and resulting decision only when useful. Do not
+create a group, wave, or implementation handoff to count learning as progress.
+
 Research, comparisons, diagrams, journeys, mockups, examples, and disposable
 experiments are activities and emergent artifacts. Do not force them into
 universal topic, aspect, research, probe, or prototype categories.
@@ -105,19 +124,25 @@ universal topic, aspect, research, probe, or prototype categories.
 
 At a meaningful design boundary:
 
-- reconcile the canonical `design.md`;
-- update the studio README only when its artifact map or reading paths change;
-- update the project design index only when indexed design work changes;
-- use the flat lane's `active-work.md` for the current Design Studio boundary
-  when durable continuity is useful, without inventing a Ralph wave; a studio
-  never enters a group lane folder;
-- append `build-log.md` only for meaningful design checkpoints;
-- rewrite `context-pack.md` only at Piper's resume triggers (`STATION.md` →
-  Artifact Persistence → Boundary triggers);
-- use `task-queue.md` only when the user deliberately needs durable queued
-  research, validation, prototype, review, or later execution work.
+- reconcile `design.md` and material revision;
+- update navigation only when artifacts, relationships, or reading paths change;
+- use this studio's `active-work.md` only when its current design boundary needs
+  continuity; record `lane: studio:<slug>` and no Ralph group or wave;
+- append this studio's `build-log.md` for meaningful evidence, decisions or
+  acceptance checkpoints, and publish project-significant conclusions to shared
+  records only when useful;
+- rewrite this studio's `context-pack.md` at STATION resume triggers, preserving
+  open questions, related-work impacts, and the next discussion;
+- use a queue only for deliberately durable pending research or validation.
 
-Do not create progress logs or update every artifact after every exchange.
+Use `piper-record` for shared publication and path-only commits. Read before replacing;
+a stale digest requires reconciliation. Do not update every artifact after every
+exchange. Legacy flat continuity moves only when clearly owned by this studio;
+preserve unrelated execution state and link the earlier project ledger.
+
+On resume, read the studio's actual packet and canonical design, inspect relevant
+live source and changed related records, and continue design without source edits.
+A clearly selected studio is not blocked by other open execution lanes.
 
 ## Revision, Acceptance, And Handoff
 
@@ -168,11 +193,13 @@ complete.
 - Do not create empty optional artifacts in anticipation of future work.
 - Do not treat supporting material as accepted design unless `design.md`
   integrates or adopts it.
-- Do not duplicate current boundary, resume state, or checkpoint history inside
-  studio files.
+- Keep design content in `design.md` and continuity in the studio lane's
+  standard work records; READMEs never duplicate the packet or ledger.
 - Do not turn design subjects into implementation groups or waves.
 - Do not copy project source or executable prototypes into the hub.
 - Do not mark a design accepted without an explicit user signal.
 - Do not infer implementation or external authority from Design Studio entry.
+- Never overwrite another studio's working context or accept its proposals on
+  the user's behalf.
 - Do not exit into direct source editing on a build or implement request; that
   signal enters Piper Workflow.

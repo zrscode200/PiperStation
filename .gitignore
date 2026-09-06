@@ -15,9 +15,14 @@ downloads/
 eggs/
 .eggs/
 lib/
+!core/shared/.piper/lib/
+!core/shared/.piper/lib/work_ownership.py
+!core/shared/.piper/lib/bootstrap/
+!core/shared/.piper/lib/bootstrap/*
 !generated/*/.piper/lib/
+!generated/*/.piper/lib/work_ownership.py
 !generated/*/.piper/lib/bootstrap/
-!generated/*/.piper/lib/bootstrap/add-project.sh
+!generated/*/.piper/lib/bootstrap/*
 lib64/
 parts/
 sdist/

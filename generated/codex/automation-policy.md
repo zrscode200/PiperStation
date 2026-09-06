@@ -11,12 +11,12 @@ only for global shared rules that should apply across the hub.
 
 ## Action Boundaries
 
-- **Routine** — no ask, no record. Reading and inspection; planning, review,
+- **Routine** — no action-approval ask or approval record. Reading and inspection; planning, review,
   and drafting; deterministic registration; registered project source edits
   in the lane's checkout; local checks, builds, and tests; Piper artifact
-  updates and their path-scoped hub commits; non-destructive local git such as
+  publication and their path-only hub commits through `piper-record`; non-destructive local git such as
   add or commit on the lane's branch; worktree creation or switching; rebasing
-  an unpushed lane branch; the local merge into base at group closeout;
+  an unpushed lane branch; verified local integration through `piper-integrate` when closeout reaches it;
   read-only network reads such as documentation lookups. Routine actions
   proceed when the workflow reaches them; Piper never simulates a gate for
   them.
@@ -41,7 +41,9 @@ required review gate; those are implementation caution under `STATION.md` →
 Mode Routing, not action classes. A class says whether an action needs an
 ask; the phase says whether the action is reached at all: brainstorm and
 Design Studio never reach source edits, Superpowers stops before
-implementation, and Ralph reaches only the selected boundary.
+implementation, and Ralph reaches only the selected boundary. Prior explicit authorization or
+a scoped L2 waiver already covering that boundary satisfies the confirmation;
+do not ask again. Worker delegation never widens source or action authority.
 
 ## Asks And Records
 
@@ -95,11 +97,14 @@ the action classes. If the harness blocks a routine action, state what access
 is needed and wait; do not edit bootstrap-managed runtime config files and do
 not add hooks as a Piper gate.
 
-Ralph implementation edits are routine. Committing Piper artifact updates in
-the Piper Station hub is routine and stays separate from any registered
-project source commit. Hub artifact commits are path-scoped: the hub checkout
-is shared by every session, so stage only the lane's paths plus the
-project-level files touched — never `git add -A` or `commit -a` in the hub.
+Ralph implementation edits are routine. Hub record publication and commits are
+routine within an authorized phase and remain separate from source commits.
+STATION defines economical checkpoint timing and `piper-record` publication:
+read, reconcile, digest-checked replacement, and path-only commit preserving other
+sessions' staged and unstaged changes. Do not use unscoped hub commits.
 
-Non-destructive worktree creation or switching is routine, including creating
-a group lane's worktree at group Entry; deleting worktrees is `exceptional`.
+Non-destructive worktree creation is routine, including isolated worker and lane
+checkouts. Integration requires an exclusively assigned clean target and exact
+verified base/candidate evidence, as defined by the integration procedure; routine
+classification does not authorize switching or merging in another lane's checkout.
+Deleting worktrees remains exceptional.

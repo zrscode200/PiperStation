@@ -1,18 +1,14 @@
 # Piper Station Hub
 
 This directory is a Piper Station hub-lite workspace. It coordinates assisted
-development across registered project repositories using one shared project
-ledger and one or more native harness surfaces.
-
-Installed runtime surfaces may include Codex, Claude Code, OpenCode, or any
-combination of them. Runtime files provide native entry points; project records
-stay shared under `projects/`.
+development across registered project repositories through Codex. Project
+records stay shared under `projects/`; source remains in registered repositories.
 
 ## Required Behavior
 
 - Treat this hub as lightweight cross-project context, not a workflow engine.
 - Do not copy project source code into the hub.
-- Register project repos with the native command surface or `./bin/add-project`.
+- Register project repos through the brainstorm registration route or `./bin/add-project`.
 - Registration only updates hub project records and optional repo marker files.
 - Do not start work, create plans, checkpoint state, commit, push, install
   dependencies, or edit project source as a side effect of registration.
@@ -24,16 +20,13 @@ stay shared under `projects/`.
 - Do not store secrets, credentials, private keys, customer data, or raw
   sensitive logs in hub records.
 
-## Runtime Surfaces
+## Runtime Surface
 
-- Codex: `AGENTS.md` and `.codex/`.
-- Claude Code: `CLAUDE.md` and `.claude/`.
-- OpenCode: `opencode.json` and `.opencode/`.
-
-A hub may have multiple runtime surfaces installed. Concurrency is per lane:
-one active session per lane, regardless of harness. Concurrent lanes on one
-project are supported through group folders and worktrees (see Project Records
-and Group Lifecycle); two sessions on one lane are not.
+Codex loads `AGENTS.md`, skills, roles, and lifecycle reminders from `.codex/`.
+Several sessions may use the same hub and project. One active coordinating
+session owns a lane at a time; native workers remain under their parent's
+responsibility. A lane is durable working context, not a native session or a
+claim that a recorded session is still running.
 
 ## Instruction Precedence
 
@@ -43,9 +36,7 @@ Use this order when instructions overlap:
    ownership, dispatch boundaries, work artifacts, compaction, and Ralph gates.
 2. `automation-policy.md` defines action classes (routine, `external`,
    `exceptional`), the boundary asks, and standing policy notes.
-3. Runtime root docs (`AGENTS.md`, `CLAUDE.md`, and `opencode.json`
-   instruction lists) are always-on summaries that adapt the shared behavior to
-   each harness.
+3. `AGENTS.md` is the always-on Codex summary of the shared behavior.
 4. Skills route intent and provide consequence-specific operating checklists.
    They point back to the canonical docs instead of redefining global policy.
 5. Commands and reference files provide procedure bodies for explicit actions.
@@ -70,10 +61,10 @@ registration is the narrow exception and must go through the deterministic
 helper. `design-studio` is an optional deeper practice inside that divergent
 movement: brainstorm may suggest it, and the user may invoke it directly, but
 entry and durable studio artifacts require an explicit user choice.
-`piper-workflow` owns convergent execution once a direction is set. Slash
-commands are explicit shortcuts into the same behavior. Commands, narrow
-skills, agents, hooks, and docs provide supporting behavior after a skill or
-command has selected the route.
+`piper-workflow` owns convergent execution once a direction is set. Skills and
+natural-language requests select the route; named Superpowers, Ralph and compact
+handoff procedures live in skill references. They are not installed as custom
+Codex slash commands. Roles, hooks and docs support the selected route.
 
 The boundary between them is the same verb, different intent: `brainstorm`
 explores to *generate* a direction; `piper-workflow` (Superpowers) verifies that
@@ -83,17 +74,18 @@ Use this dispatch table when intent is unclear:
 
 | User intent | Route | Supporting behavior |
 | --- | --- | --- |
-| Register a repo | `brainstorm`, `/add-project`, or `./bin/add-project` | deterministic registration helper |
+| Register a repo | `brainstorm` or `./bin/add-project` | deterministic registration helper |
 | Orient, explore, compare options, or decide what to do | `brainstorm` | `brainstorm` |
 | Open or continue an in-depth, durable design session | `design-studio` after explicit user choice | `design-studio`; may be suggested by `brainstorm` or invoked directly |
-| Verify a direction, define group or milestone structure, or formalize the current wave | Superpowers Mode or `/superpowers` | `piper-workflow`, `/superpowers`, and this guide |
-| Execute one clear active-work wave, group review and closeout, explicit slice, or optional queued task | Ralph Mode or `/ralph` | `/ralph` and this guide; project source edits in the lane's checkout are routine |
+| Verify a direction, define group or milestone structure, or formalize the current wave | Superpowers planning | `piper-workflow` and its superpowers reference |
+| Execute one clear active-work wave, group review and closeout, explicit slice, or optional queued task | Ralph execution | `piper-workflow` and its ralph reference; project source edits in the lane's checkout are routine |
 | Review code, an implemented wave, group, or slice | Review Mode | `review` |
 | Push, pull request, dependency, networked command with effects, CI, or other `external` or `exceptional` action | Finish Mode or the boundary ask | `automation-policy` |
-| Pause or compact active work | `/compact-handoff` | compact handoff guidance |
+| Pause or compact active work | compact handoff | `piper-workflow` and its compact-handoff reference |
 
-If a project-work request is ambiguous or arrives without a slash command, treat
-it as an implicit `brainstorm` request — skill descriptions match by phase
+If a project-work request is genuinely ambiguous, treat it as an implicit
+`brainstorm` request — a clear natural-language execution request selects
+`piper-workflow` directly. Skill descriptions match by phase
 (explore vs execute), and this contract owns the tie-break for genuine
 ambiguity. A request does not enter Design Studio merely because it mentions
 design or is complex; brainstorm explains the value of the deeper path and
@@ -118,7 +110,7 @@ rows below belong to `piper-workflow` (formal planning, Ralph execution) and
 | "review this repo", "understand what this does", "what is this project", or a repo path with an explanation or review request | Orientation or review | None by default | Inspect the repo in place. Say the work is read-only and that registration or hub records will wait unless asked. |
 | "what would it take", "how should we approach", "compare this to", or "plan the refactor" before registration | Conversational planning | None by default | Produce a grounded plan in chat. Avoid hub records unless the user asks to formalize. |
 | "register this", "track this project", or "this is formal work now" | Registration | `project.md` and `memory.md` only | Use the registration helper. Prefer hub-only records unless repo marker files are explicitly wanted. Do not create `work/` or start implementation. |
-| "open a design studio", "enter design studio", or "continue the studio" | Explicit Design Studio | Useful files under `projects/<id>/work/design/` plus existing Piper continuity records only when needed | Create or reuse one studio for the initiative. Stay discussion-first and hub-owned; do not create groups or waves, edit project source, or infer git/external authority. |
+| "open a design studio", "enter design studio", or "continue the studio" | Explicit Design Studio | Useful files and optional lane continuity under `projects/<id>/work/design/<slug>/` | Create or reuse one studio for the initiative. Stay discussion-first and hub-owned; do not create groups or waves, edit project source, or infer external authority. Hub checkpoint commits follow Artifact Persistence. |
 | "build it", "implement this", or "let's code" after design or brainstorm work when no formalized wave exists | Convergent entry, not direct editing | None until formalization | Check any design artifact's acceptance state first, then route to Superpowers Structural Planning, or a single Ralph task when genuinely small. Do not edit project source before formalization. |
 | "make this a formal plan", "prepare for Ralph", "create the queue", "we need continuity", or "set this up for later execution" | Formal planning or Ralph preparation | Useful `projects/<id>/work/` records | Create only the durable records the work needs: long-horizon direction, active work continuity, durable task tracking, checkpoint history, or compact/resume continuity. State that source remains untouched. |
 | "start Ralph", "build task X", "execute the first queue item", or "implement according to the plan" | Ralph execution | Update `work/` records as useful; edit the lane's checkout (routine) | Confirm the selected wave, group review, explicit slice, or queued task; diff boundary; risk; verification; and writable access to the lane's checkout before editing. Execute the current boundary. |
@@ -131,268 +123,236 @@ choose the less durable action.
 
 ## Project Records
 
-`projects/registry.json` is the hub-owned index of registered projects. Use it
-to resolve a `project_id` to its `repo_path` and to list the projects this hub
-knows about. Per-project records remain the canonical rich source; the index is
-a derived lookup. If it ever drifts, regenerate it with
-`./bin/add-project --rebuild`.
+`projects/registry.json` is the derived lookup from project id to repo path.
+Read `projects/<id>/project.md` for the canonical binding, overview, and standing
+policy notes; regenerate a drifted registry with `./bin/add-project --rebuild`.
+`memory.md` holds durable facts and preferences. Optional `decisions.md` holds
+project-significant rationale, superseded in place when decisions change.
+Registration creates no `work/` records.
 
-Each registered project has:
+### Lanes
 
-```text
-projects/<project-id>/
-  project.md
-  memory.md
-  work/              # optional, created only when useful during active work
-    groups/<gid>/    # one lane folder per group, created at group Entry
-```
+A lane owns independent current-work and resume context. A group bundles waves
+under shared acceptance and an integrating review. Choose these separately:
+concurrency alone does not require a group. Use these stable lane locators:
 
-`project.md` stores repo binding, overview, and standing policy notes (a
-read-only note, a standing grant for a named `external` class, a closeout
-constraint, or accepted risks; see `automation-policy.md`). It is not a commit ledger or a per-wave changelog — commit and
-acceptance history live in `build-log.md`, anchored to git. `memory.md` stores
-durable facts, preferences, stable conventions, and reusable context, not a
-per-wave completion log. `decisions.md` is optional for substantial decision
-logs; registration does not create it, and it is created only when a real
-decision needs a durable home. Supersede a reversed decision in place — mark it
-`Superseded` with a pointer to the decision that replaced it rather than deleting
-it.
+| Locator | Records relative to `projects/<id>/` | Use |
+| --- | --- | --- |
+| `flat` | `work/` | Default ordinary execution, with no folder creation ceremony. |
+| `studio:<slug>` | `work/design/<slug>/` | Explicit Design Studio initiative; independent design continuity without implementation authority. |
+| `group:<gid>` | `work/groups/<gid>/` | Related waves with shared acceptance; created at group Entry. |
+| `lane:<slug>` | `work/lanes/<slug>/` | Independent execution that must coexist or resume separately, without imposing a group. |
 
-`work/` may contain `roadmap.md`, `active-work.md`, `build-log.md`,
-`context-pack.md`, optional `task-queue.md`, lightweight design notes under
-`work/design/<topic>.md`, optional full studios under
-`work/design/<studio-slug>/`, and one lane folder per group under
-`work/groups/<gid>/`.
+Use lower-kebab slugs. Inspect existing records before creating a lane and reuse
+the matching effort. Do not create a session registry, daemon, global queue, or
+empty lanes for hypothetical work. Native short-lived task tracking remains
+the default for steps inside a session.
 
-**Lanes.** A lane is the unit that owns a set of window artifacts and one
-checkout. The **flat lane** is the project-level `active-work.md`,
-`context-pack.md`, and optional `task-queue.md`; it serves ungrouped waves and
-the Design Studio boundary. Each group is its own **group lane**:
-`work/groups/<gid>/{active-work,context-pack,build-log,task-queue}.md`, where
-`<gid>` is the group's lower-kebab id fixed at Structural Planning (for example
-`g1-deepagent-adapter`) and the folder name is that id. Every group uses its
-folder, created at group Entry and never by registration. Windows live where
-their boundary lives: one active session works a lane at a time, and several
-lanes of one project may be active in parallel sessions.
+Each lane uses the same optional `active-work.md`, `context-pack.md`,
+`build-log.md`, and `task-queue.md` semantics below. Design lanes do not invent
+Ralph waves or group gates. A studio's `design.md` remains the sole owner of
+its integrated design, revision, and acceptance.
 
-**One checkout per lane.** The registered `repo_path` is held by at most one
-lane at a time. A lane holds it when its `active-work.md` header records
-`checkout:` equal to `repo_path`; the flat lane holds it by default, only while
-no active group header does. Every other active lane works in its own git
-worktree of the project repo (`git worktree add`, routine; default
-path `<repo-parent>/<repo-basename>-worktrees/<gid>`), recorded as its
-`checkout:`. A flat lane that takes a worktree records `checkout:` and
-`branch:` in its own `active-work.md` header, so that file is then required.
-Before editing, a session reads the active group headers: if one binds
-`repo_path`, the flat lane has no checkout of its own. The lane's checkout
-must be writable in the active session — a worktree outside `repo_path` needs
-its own workspace access grant — and every git-derived fact for the lane is
-read in that checkout. While a group holds `repo_path`, an ungrouped request
-is surfaced rather than started: run it inside that group (its single
-build-log entry then lands in that group's ledger), wait, or give it a
-worktree.
+An explicit execution lane's `active-work.md` header binds `lane:`, `branch:`,
+`checkout:`, `boundary:` (owned paths or areas), and `status:`. The flat lane
+needs these bindings if it uses a nondefault checkout or concurrent work makes
+ownership relevant. Studio continuity records `lane: studio:<slug>`, design
+boundary, and status, without claiming a writable source checkout. Status may
+be `active`, `paused`, `blocked`, or `closed`; it describes work, not native
+process liveness. Closed lanes retain short pointers to their concluding ledger
+entry and remain archived in place.
 
-Registration must not create `work/`.
+**Lane selection.** Select the lane before planning, execution, design resume,
+or compact handoff. An explicit locator or clearly named existing studio/
+effort wins; retain a session's already selected lane when intent still matches.
+A legacy bare gid that uniquely names a group remains valid. A token ambiguous
+between kinds requires clarification. With no selection, exactly one matching
+open boundary selects itself; multiple matching boundaries require a choice;
+no matching execution boundary defaults to flat. Filter by phase: a studio is
+not an execution candidate, and an active execution group does not prevent a
+clearly requested studio from resuming. Creating or selecting a lane does not
+authorize another phase or a second writer in an occupied lane.
 
-Use artifacts as structured working memory, not rigid ceremony. Plan in
-slices, execute in waves, and checkpoint at boundaries. Slices are
-decomposition units; waves are implementation and checkpoint units. Detail the
-current wave enough to execute safely. Sketch later waves only when the current
-code, context, and prior results make them reliable.
+**One checkout per writer.** At most one active coordinating lane or worker
+writes a checkout. Inspect open execution bindings and `git worktree list`
+before claiming `repo_path` or another checkout. An absent ownership record does
+not prove there is no native writer; inspect actual activity before introducing
+concurrent source writers, and publish a lightweight flat binding for existing
+flat execution first. The flat lane may use `repo_path` by default only when no
+other writer owns it. Give concurrent execution its own git worktree outside the
+hub, normally a sibling path under
+`<repo-basename>-worktrees/`. Record its actual branch and checkout and obtain
+native writable access before editing. Never switch or merge inside another
+lane's checkout. If no suitable checkout is available, sequence the work or
+resolve ownership with the user; an existing folder is not a grant of access.
+Read-only design and review may inspect a shared checkout, but recheck git state
+when concurrent edits could invalidate the evidence. Preserve user-owned changes.
 
-The default unit of work is one ungrouped wave. Its **light boundary** costs
-one `build-log.md` entry at acceptance; `active-work.md` only when the wave
-needs continuity before it lands; no `roadmap.md` and no `task-queue.md`; and
-`context-pack.md` only when there is something to resume (pause, compact,
-blocker). A finished ungrouped wave with no open state writes no packet; if one
-exists, it is rewritten to `idle`. Ceremony scales with the boundary, not with
-the project: a small wave inside a large project pays the light boundary.
+### Light Boundary And Groups
 
-Groups bundle related waves under a shared acceptance target and one
-integrating review gate. Entering a group is an explicit planning decision
-(Superpowers Structural Planning), never a default: use a group when multiple
-waves must land before the larger boundary is accepted, when cross-wave
-interaction risk matters, or when the work will run alongside other work on
-the same project. A group has its own lane folder: its boundary in that
-folder's `active-work.md`, its ledger in that folder's `build-log.md`, and its
-own review gate over the integrated cross-wave diff before acceptance. Its
-operating stages are defined under Group Lifecycle.
+The default unit is one ungrouped wave. Its **light boundary** costs one
+`build-log.md` acceptance entry; `active-work.md` only when continuity is useful;
+no roadmap or queue by default; and `context-pack.md` only when something must
+resume. Finished work with no open state creates no packet; an existing packet
+becomes `idle` (or a closed pointer for an explicitly named completed lane).
+When flat work is fully complete, release an existing `active-work.md` ownership
+binding by setting `status: closed` and replacing completed detail with a pointer
+to its acceptance ledger entry. Do not create active work solely to close a fix
+that never needed it. An idle packet alone does not release an ownership binding;
+paused or blocked work retains its binding until completed or safely reassigned.
+A small wave inside a large project stays light. A named lane adds the ownership
+binding it needs, not an implementation group.
+
+Use groups through explicit Structural Planning when multiple waves must land
+before the acceptance target is met or cross-wave interaction needs a dedicated
+integrating review. Detail the current wave; sketch later waves only as far as
+the current code and evidence support. Group lifecycle is defined below.
 
 ### Work Artifact Reference
 
-Create these only under `projects/<project-id>/work/`, never in the registered
-project repo. Use each artifact only when it does a clear job for autonomy,
-continuity, quality, or compact/resume. The windows and the ledger exist per
-lane: at the project level for the flat lane, and inside `work/groups/<gid>/`
-for each group lane.
+All records below stay under the registered project's hub records. Create each
+only for a concrete continuity, quality, or autonomy need.
 
-| Artifact | Purpose | Create or update when |
-| --- | --- | --- |
-| `roadmap.md` | Longer-horizon direction: groups, milestones, their durable order and acceptance status, deferred work, risks, and revisit triggers. | Project direction, group order, milestone sequence, acceptance status, deferred scope, or revisit triggers change. |
-| `active-work.md` | Live group and wave workbench: current goal, group boundary, current wave details, reliable later-wave sketches, slice breakdown, required gates, group review state, acceptance criteria, risks, verification strategy, and open questions. In a group lane its header also binds the lane: `branch:`, `checkout:`, `boundary:` (owned paths or areas), and `status:`. | Current group or wave needs durable continuity before implementation, review, compact, or delayed execution. |
-| `build-log.md` | The single interpretive checkpoint ledger for its lane: concise summaries of what happened, final contracts, the per-wave acceptance commit, review and verification results, risks, and next steps. Not a per-commit changelog or raw transcript — the commit list and diffs derive from git. The project ledger is the seam between lanes (ungrouped-wave entries, planning entries that define groups, group closeout entries, transition entries, milestones); a group ledger holds that group's Entry, wave, review/fix, blocker, compact, and base-sync entries. | A meaningful planning, wave, review/fix, finish, compact, blocker, group, or milestone checkpoint occurs. |
-| `work/groups/<gid>/` | A group lane: the group's own `active-work.md`, `context-pack.md`, `build-log.md`, and optional `task-queue.md`, with the lane binding in the `active-work.md` header. After closeout the windows are rewritten to a short `closed` pointer and the folder remains as the group's archive. | Group Entry; the folder name is the gid fixed at Structural Planning. Never at registration or planning. |
-| `context-pack.md` | The resume packet: the non-derivable state of the current boundary, rewritten in full. Its fields are defined once under Compaction; anything git or the ledger can answer is derived at resume, not stored here. | A resume trigger fires (see Boundary triggers under Artifact Persistence): active work may pause, compact, finish, hit a blocker, reach a milestone, switch projects, or hand off. |
-| `task-queue.md` | Optional durable Ralph execution queue: task ids with status, risk, acceptance criteria, verification, dependencies, expected diff boundary, and explicit group review gate items for multi-wave groups. Holds pending work only; completed items roll off at group closeout. | Native runtime task tracking is insufficient because waves, slices, or group gates must survive the current session or move across agents. |
-| `work/design/<topic>.md` | Lightweight topical design note for work that does not need a full studio. Topical, superseded in place, and preserved if later promoted. | A useful design note deserves durability but not a multi-file, multi-session studio. |
-| `work/design/<studio-slug>/` | Optional full Design Studio. Project and studio READMEs provide navigation; `design.md` owns the integrated design, integer revision, and explicit revision-specific acceptance; optional artifacts emerge with descriptive names. | The user explicitly enters Design Studio and the initiative needs deeper or multi-session design. Reuse the existing initiative folder and never destructively migrate a note or ad hoc folder. |
+| Artifact | Single purpose and owner |
+| --- | --- |
+| Lane `active-work.md` | Current design boundary or execution wave detail, acceptance criteria, owned scope, risks, verification, and lane bindings. Group detail and reliable later-wave sketches when relevant. |
+| Lane `context-pack.md` | The only self-contained resume packet, holding the non-derivable fields defined under Compaction. |
+| Lane `build-log.md` | Concise checkpoint history: outcome, final contracts, per-wave acceptance commit, verification/review verdicts, risks, and next step. Never a raw transcript or per-commit changelog. |
+| Lane `task-queue.md` | Optional durable pending work when native task tracking cannot preserve what must survive. Completed items roll off at closeout. |
+| Project `work/build-log.md` | Flat-lane ledger and seam between independent lanes: significant planning, lane/group closeout, transitions and milestones. Summarize and link local ledgers. |
+| Project `work/roadmap.md` | Long-horizon direction, group/milestone order and acceptance, durable deferred scope and revisit triggers. |
+| `work/design/<topic>.md` | Lightweight topical note, supported without a studio and preserved if later promoted. |
+| Studio `design.md` | Integrated design, integer revision, fixed contracts, freedoms, and explicit revision-specific acceptance. |
+| Design/studio READMEs | Navigation and relationship pointers; never current-state ledgers. |
+| `decisions.md` | Substantial project-level decision rationale, superseded in place. |
+| `memory.md` | Durable facts, preferences and stable conventions. |
+| `project.md` | Repo binding, overview, and user-stated standing policy notes. Never per-action approvals or commit history. |
+| Live project git | Current branch/HEAD/status, raw diffs and commit list in the relevant checkout. |
 
 ### Artifact Recording Economy
 
-Record the least artifact state that preserves continuity. `context-pack.md` is
-the only fully self-contained resume packet; every other artifact stays lean and
-holds only what is intrinsic to its own purpose.
+Sinks such as build logs accumulate concise meaningful history. Windows such as
+active work, queues, and context packs hold current state; condense completed
+work into the ledger and leave a pointer. Topical design and rationale are
+superseded in place. Never prune durable history to make a window smaller.
 
-**Temporal roles.** Most lifecycle problems come from mixing three roles:
+Derive mechanical history from git. Record a per-wave acceptance commit once in
+the lane's ledger, not in every packet or roadmap. Exact source revisions used
+as design evidence or an integration operation's tested base have a different
+purpose: record them with that evidence or operation, and never treat them as
+current HEAD. Other records reference the fact's owner instead of copying it.
 
-- *Sinks* accumulate by design and should grow with the project — `build-log.md`
-  (the chronological ledger), `decisions.md`, and durable `memory.md` facts. Do
-  not prune them; their growth is correct.
-- *Windows* hold only current state — `active-work.md`, `task-queue.md`, and
-  `context-pack.md`. Superseded detail rolls off into a sink at the next
-  boundary; a window that retains completed history has become a second-rate
-  sink.
-- *Topical references* are durable but organized by subject, not time, and are
-  superseded in place — `decisions.md`, lightweight
-  `work/design/<topic>.md` notes, and a studio's canonical `design.md` plus
-  supporting artifacts. READMEs remain navigation rather than mutable state
-  ledgers.
+### Related Work And Changed Assumptions
 
-**Derive, do not duplicate.** Git in the registered project repo is the source of
-truth for the mechanical history axis: raw diffs, the commit list, and current
-branch/HEAD/status, each read in the lane's checkout. Read these live at each
-checkpoint and resume rather than
-trusting a stored value; record an observed commit only in the artifact that
-owns it — `build-log.md`'s per-wave acceptance commit — and do not repeat it
-across the other records (`context-pack.md`, `roadmap.md`, `active-work.md`,
-`task-queue.md`, `project.md`, `memory.md`). Re-recording the
-same commit hash or HEAD across several artifacts is the main cause of
-cross-artifact drift, because each copy ages on its own. Read the cheap
-current-position facts first — `git rev-parse HEAD`, `git status --short`, and
-branch — and take the acceptance commit from `build-log.md`; reach for full diffs
-or history (`git diff`, `git log`) only when the task itself needs them, such as a
-review or drift-check, not to reconstruct breadcrumbs that are already recorded.
-This extends the existing default of leaning on native runtime task tracking for
-short-lived steps — here, lean on git for history.
+Record relationships only when they affect a real decision or work boundary.
+The owning design or active-work record links the other canonical artifact,
+its material revision (and accepted revision when relied on for implementation),
+the assumed contract, and why the relationship matters. Ordinary independent
+fixes need no dependency table. Supporting notes and worker reports do not
+silently become accepted design.
 
-**Fact ownership.** Each fact has one home; other artifacts reference it, they do
-not restate it:
+At start/resume, wave formalization, a shared-contract change, and integration,
+read relevant links and nearby open lane boundaries. Look for semantic as well
+as path overlap: disjoint files may rely on incompatible meanings. Missing
+relationship records do not prove independence. For design synthesis, inspect
+both designs, separate accepted decisions from provisional ideas, expose
+conflicts, and integrate the agreed shared behavior into one authoritative
+artifact with references from its consumers. Preserve useful original material.
 
-| Fact | Single home |
-| --- | --- |
-| Raw diff, commit list, current branch/HEAD/status | git (project repo), read live in the lane's checkout |
-| Per-wave acceptance commit, review verdict, contracts, next step | the lane's `build-log.md`, recorded once at the boundary |
-| Current boundary pointer and the resume packet | the lane's `context-pack.md` |
-| Current wave detail, slice breakdown, acceptance criteria, current scope and non-goals | the lane's `active-work.md` |
-| Group lane binding: branch, checkout, owned boundary, lane status | the group's `active-work.md` header, set at Entry |
-| Long-horizon direction, group/milestone order and acceptance status, milestone labels, durable non-goals | `roadmap.md` |
-| Substantial decision rationale | `decisions.md` (supersede in place) |
-| Repo binding and standing policy notes | `project.md` |
-| Durable facts and stable conventions | `memory.md` |
+A finding that undermines an assumption is a proposal, not an accepted change.
+Record its evidence, affected work, impact (`unaffected`, `needs-revalidation`,
+or `blocked`), and a resolution owner in the originating design or active-work
+record. One coordinating session assembles the recommendation; with delegated
+workers it is the parent. Independent sessions reconcile through the records
+and native messages when available. Do not edit another lane's current-work
+files on its behalf. Each owner reconciles its own boundary against the shared
+resolution. Paused sessions discover material changes on resume.
 
-Per-artifact rules follow from the roles and ownership above:
+Continue unaffected work. Suspend work that relies on an unresolved or stale
+contract. Changes inside accepted implementation freedoms can be resolved in
+execution planning; changes to product intent, a fixed contract, or a core
+premise return upstream for user alignment and, for a studio, explicit revision
+acceptance. Reverify the accepted revision against source before dependent
+execution resumes. Keep the finding and resolution linked in the checkpoint
+ledger; do not make every speculative observation a project-wide blocker.
 
-- `roadmap.md`: long-term direction only. Do not turn it into the current work
-  tracker or checkpoint ledger. It owns durable group and milestone order and
-  acceptance status (pending to accepted); the fine-grained current tracker is
-  `active-work.md` and the checkpoint ledger is `build-log.md`.
-- `active-work.md`: the current group and wave window only. Keep the current wave
-  actionable; sketch later waves only when reliable. In a group lane, make the
-  group header, wave list, required gates, group review state, and acceptance
-  target explicit, and bind the lane in the header — `branch:`, `checkout:`,
-  `boundary:` (owned paths or areas), `status:` (`active` or `closed`) — as
-  bindings set at Entry, not derived state. Do not duplicate the resume packet
-  or chronological log. At group closeout, its completed-wave detail rolls off
-  into the project build-log closeout entry, and the lane's windows are
-  rewritten to a short `closed` pointer (never deleted).
-- `build-log.md`: the single interpretive ledger for its lane. Record concise
-  checkpoint summaries, final contracts, the per-wave acceptance commit, and
-  review and verification results once at each boundary. It is not a per-commit
-  changelog or a raw verification transcript — the commit list and diffs derive
-  from git. A group ledger (`work/groups/<gid>/build-log.md`) holds the group's
-  Entry, per-wave acceptance, review/fix, blocker, compact, and base-sync
-  entries. The project ledger is the seam between lanes: ungrouped-wave
-  entries, planning entries that define groups, group closeout entries,
-  transition entries, and milestones. Give group closeout its own entry in the
-  project ledger; it condenses the group ledger and points back to it.
-- `context-pack.md`: the resume packet of non-derivable state, rewritten in
-  full to reflect only the current boundary (fields under Compaction). Derive
-  git state live; reference `build-log.md` for history rather than replaying it.
-- `task-queue.md`: durable queued waves, slices, or group gate items only.
-  Native runtime task tracking is the default for short-lived in-session steps.
-  Completed items roll off at group closeout; keep only pending work. For
-  multi-wave groups, list the group review gate as an explicit acceptance
-  criterion before the acceptance task.
-- `work/design/<topic>.md`: keep lightweight topical notes supported. If later
-  promoted, preserve the note, integrate useful content into a new or existing
-  studio through discussion, and add relationship or supersession links rather
-  than moving or deleting it.
-- `work/design/<studio-slug>/`: create or reuse only after explicit Design
-  Studio entry. Keep `work/design/README.md` as the project index when present,
-  the studio `README.md` as local navigation, and `design.md` as the sole owner
-  of current integrated design, revision, and acceptance. Optional ledgers and
-  supporting artifacts exist only when useful; do not force category
-  directories.
+### Shared Record Publication
+
+The shared hub checkout needs protection from lost updates even when source
+worktrees are isolated. Publish shared project records and lane ownership bindings cooperatively through
+`./bin/piper-record`; read the current content and digest before preparing a
+replacement outside the hub records. Ordinary edits to an exclusively owned
+lane-local record may use normal file tools. Guard shared indexes, decisions,
+roadmaps and cross-lane ledgers whenever other sessions may contribute; do not
+assume a stale copy is safe just because a session was paused:
+
+```sh
+./bin/piper-record --project projects/<id> read work/roadmap.md
+./bin/piper-record --project projects/<id> replace work/roadmap.md --expected <sha256-or-missing> --content-file <proposal-file>
+./bin/piper-record --project projects/<id> commit --paths work/roadmap.md work/build-log.md --message "Record accepted boundary"
+```
+
+Paths after the command are relative to the registered project-record directory.
+Use the digest returned by `read`, or `missing` for create-if-absent. A stale
+replacement (exit 3) means another writer published first: reread, reconcile both
+contributions, and retry with the new digest. Never force a stale overwrite or
+silently drop the other contribution. Under the same lock, execution
+`active-work.md` claims are checked across flat, group, and named lanes; a
+duplicate canonical checkout claim is rejected (exit 2). Studio records do not
+claim source checkouts and are excluded. Reconcile actual ownership before
+retrying an occupied claim; do not close another lane to bypass the guard.
+The helper validates destinations, serializes cooperating operations, and
+replaces individual files atomically; direct editors can bypass this cooperation,
+so do not describe it as a sandbox or universal lock.
+`piper-integrate` takes the repository integration lock then this same record
+lock through final validation and publication, preventing cooperating ownership
+writes from claiming the target during that operation. Never acquire those locks
+in reverse order or treat a persistent lock file as proof of a live process.
+
+Each file is atomic; a multi-file checkpoint is not a transaction. If interrupted,
+resume must reconcile the ledger, windows, and roadmap before declaring the
+boundary accepted. Use the path-only commit command when a checkpoint warrants
+an artifact commit; inspect and report its exact scope, preserving unrelated
+staged and unstaged changes. Never use `git add -A`, `commit -a`, or an ordinary
+unscoped commit in the shared hub. A commit attention result (exit 4) requires
+inspecting actual HEAD, committed scope, index, and working tree before retrying:
+Git hooks or post-publication inspection can fail after a commit has landed.
+Reconcile that result rather than blindly committing twice. On Git lock
+contention retry; never delete `index.lock`. Registration remains owned by
+`add-project`; do not use record
+publication to create registrations or mutate managed hub surfaces.
 
 ### Artifact Persistence
 
-Piper work artifacts are hub-owned project state. Keep them in
-`projects/<project-id>/work/` by default; do not move them into the registered
-project repo unless the user explicitly asks for a project-local copy.
+Artifact updates are routine when the selected phase authorizes them. Commit
+useful completed or paused continuity at a meaningful checkpoint unless the
+user requested uncommitted records; no separate per-edit or per-checkpoint ask
+is needed. Report hub changes and commit state separately from source changes.
+This rule does not turn registration or an orientation request into a checkpoint.
 
-When `context-pack.md` changes, rewrite it in full so a fresh session can resume
-without transcript archaeology. Its fields are defined once under Compaction;
-do not restate them here or elsewhere.
-
-Artifact updates are normal local assistance while work is active. An artifact
-commit is routine, but the checkpoint decides whether one happens; nothing
-makes artifact commits automatic or changes checkpoint timing. Do not ask after every artifact
-edit. Instead, disclose changed Piper artifacts at checkpoints and ask about a
-Piper artifact commit only when the stopping point or future continuity
-warrants it.
-
-**Boundary triggers.** One list, referenced everywhere else. A checkpoint is
-any of: a wave accepted; a group review, closeout, or milestone; the end of
-formal planning; a material change to active work; a blocker; pause, compact
-preparation, context low, project switch, or hand-off; finish; or the user
-saying pause, save, compact, finish, or commit. During Ralph execution a
-checkpoint appends `build-log.md`, and updates `task-queue.md` only when a
-durable queue is in use. `context-pack.md` is rewritten, and an artifact commit
-considered, only at the resume triggers: group closeout, milestone, material
+**Boundary triggers.** Checkpoint at wave acceptance; group review/closeout or
+milestone; formal planning completion; material active-work change; blocker;
+pause, compact preparation, context low, project switch or handoff; finish; or
+an explicit save/commit request. During execution append the lane ledger at
+these boundaries. Rewrite `context-pack.md` only at resume triggers: material
 active-work change, pause, compact preparation, context low, project switch,
-hand-off, blocker, or finish.
+handoff, blocker, or finish/closeout with remaining state to resume. Update a
+queue only when one exists and pending work changed.
 
-**Checkpoint invariant.** Every checkpoint must leave two things true:
+**Checkpoint invariant.** Windows and ledger agree; a fresh session can resume
+from hub records and live source alone. In execution, current wave and packet
+agree when both exist, the checkout uses its recorded branch, and live HEAD is
+the acceptance commit at an accepted boundary or its descendant during ongoing
+work. Explain rebases, integration, dirty files, and any deviation rather than
+silently trusting a stale record. In design, the packet points to the current
+design boundary and preserves open questions without inventing a source wave.
+Every roadmap acceptance has a corresponding closeout entry and vice versa.
+Related-contract revisions and unresolved impacts are reconciled. Disclose hub
+artifact changes separately and state their actual commit status.
 
-1. The lane's windows and ledger agree on where work is, any divergence is
-   explained rather than silently carried, and a fresh session could resume
-   from the hub records plus live git alone. Concretely: the lane's
-   `active-work.md` current wave matches its `context-pack.md` boundary when
-   both exist; the live HEAD of the lane's checkout equals (at an accepted
-   boundary) or descends from (mid-wave, with uncommitted files noted) the
-   latest acceptance commit in the lane's `build-log.md`, on the lane's
-   recorded branch; the checkout is on that branch; and every roadmap group
-   marked accepted has a closeout entry in the project ledger, and vice versa.
-2. Changed Piper artifacts are disclosed separately from registered project
-   source changes, with their hub commit state stated. An artifact commit,
-   when the checkpoint chooses one, is routine under
-   `automation-policy.md`, kept separate from any project source commit, and
-   path-scoped: the hub checkout is shared by every session, so stage and
-   commit only your lane's paths plus the project-level files you touched —
-   never `git add -A` or `commit -a` in the hub — and mention, never stage,
-   other lanes' uncommitted files. On an `index.lock` collision, retry; never
-   delete the lock.
-
-How much writing that takes depends on the boundary: a light boundary satisfies
-the invariant with one build-log entry and live git; a group closeout needs the
-full roll-off. Record what the invariant requires, not a fixed set of files.
-
-**Reference method** (one way to satisfy the invariant, not a required
-script): report changed Piper artifacts separately from project source
-changes; inspect git state in the project repo and, when artifacts changed, in
-the hub; state whether artifact changes are uncommitted in the hub; decide
-whether this checkpoint warrants an artifact commit; then reconcile the windows
-against the ledger and resolve unexplained mismatches before continuing.
+Satisfy the invariant with the least useful state: a completed ordinary fix
+needs only its acceptance entry and live git; a group needs its integrating
+review and closeout; a paused studio needs its design and resume anchors.
 
 ## Mode Routing
 
@@ -419,8 +379,8 @@ mode that fits:
 - Review Mode: first check whether the work matches the request or active work,
   then check code quality; group reviews inspect the integrated cross-wave
   diff.
-- Finish Mode: report verification, residual risk, changed files, and commit or
-  pull request options without mutating git automatically.
+- Finish Mode: report verification, residual risk and actual commit/integration
+  state; take only actions reached and authorized by the workflow.
 
 Scope tiers are advisory sizing, not artifact rules; artifact creation is
 driven by durable need, and scope only informs how strongly persistence is
@@ -453,7 +413,8 @@ Risk tiers:
 
 Risk tiers are implementation caution, not action classes. Action classes decide
 whether an action needs an ask (`automation-policy.md`); risk tiers decide
-whether Ralph confirms before editing. `exceptional` actions can never be pre-approved
+whether Ralph confirms before editing. A prior explicit instruction or scoped
+waiver already covering that boundary satisfies L2; do not ask again. `exceptional` actions can never be pre-approved
 and require explicit one-off approval each time.
 
 ## Ralph Review Gate
@@ -480,6 +441,13 @@ After the final wave in a group lands, run a group-level review gate over the
 integrated cross-wave diff before the slice, group, or acceptance task is
 marked complete, even if every per-wave gate already passed.
 
+Use the actual native tool surface for delegation. Installed role configs can
+narrow permissions only when the client applies them. If native role selection
+is absent, pass the relevant installed brief explicitly; never invent a role
+selector or claim a sandbox restriction solely from a prompt. Verify observed
+worker permissions or state them as unverified. Review behavior remains read-only
+and broader inherited capabilities do not widen its assignment.
+
 The main session must validate reviewer findings before acting: give each
 finding an explicit verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or
 `false-positive` — before editing any code, then apply only `confirmed-in-scope`
@@ -491,184 +459,124 @@ accepted by the user.
 
 ## Group Lifecycle
 
-The group lifecycle is the operating layer above the wave: it bounds a group and
-carries work from one group to the next, so long-running multi-group work does
-not rely on ad hoc judgment at each boundary. `piper-workflow` owns this
-lifecycle as convergent execution above the wave and operates each stage through
-its existing modes. Within-group execution — waves, slices, and per-wave review
-gates — is covered under Mode Routing and the Ralph Review Gate.
+`piper-workflow` operates groups through four stages. Lane selection and
+ownership are defined under Project Records and apply before every stage.
 
-**Lane selection.** Every entry into Ralph, Superpowers, or compact handoff
-selects one lane first, by one rule: a token that names an existing
-`work/groups/<gid>` folder selects that group lane, and any other token is a
-boundary inside the selected lane; with no token, exactly one candidate lane —
-one group whose header status is `active` while the flat lane has no open
-boundary (no packet, or a packet whose status is `idle`), or the flat lane
-alone — is selected; with more than one candidate, ask, never guess;
-with none, the flat lane. A group is active when its folder exists and its
-header `status:` is not `closed`.
+1. **Entry.** Reverify the group's structural sketch against current code:
+   boundary, acceptance target, premises, and revisit triggers. Create or reuse
+   `work/groups/<gid>/`, record its execution bindings, inspect other open
+   boundaries and related contracts, and obtain an exclusive writable checkout.
+   Path overlap calls for explicit edit ownership or sequencing; semantic
+   overlap calls for a compatible shared contract. Never assume overlap itself
+   is permission to edit another effort. Repair the structural sketch if needed,
+   then formalize the first wave.
+2. **Execution.** Implement waves through Ralph, with verification, drift checks,
+   and per-wave review gates. Commit accepted waves on the assigned branch and
+   record source acceptance once in the group ledger. Authorized workers follow
+   the delegated-work procedure; the parent retains acceptance responsibility.
+3. **Closeout.** Follow `piper-workflow/references/integration.md`: prepare the
+   combined result against an exact base, verify it and run the group review
+   over the integrated cross-wave diff. Resolve findings and commit remaining
+   source. Integration requires a clean, exclusively assigned target checkout
+   and a final check that the tested base and candidate have not changed. Never
+   merge into another lane's checkout. If base moves, resynchronize and repeat
+   affected checks before publication. Where user policy requires a PR, record
+   `integrated: pending-pr`; do not claim local integration happened.
+   After integration (or the explicit pending-PR policy path), publish a project
+   build-log closeout entry condensing and linking the group ledger: acceptance
+   target and verdict; waves; review and accepted debt; resulting contracts;
+   acceptance source commit; tested base and integration result or pending-PR
+   state; deferred scope; and retained worktree locator. Reconcile the roadmap
+   acceptance, then rewrite lane windows to a short `closed` pointer. If source
+   integration succeeded but record publication did not, closeout remains
+   incomplete until records are reconciled; inspect git before retrying.
+4. **Transition.** Check whether actual results change later groups' premises,
+   order, or scope; update the roadmap when needed. Other active execution lanes
+   reconcile related contracts and synchronize with base before their next wave.
+   Handle mechanical conflicts within scope and reverify combined behavior;
+   reopen upstream design when fixed contracts or intent change. Proceed to the
+   next Entry when clear and already authorized; broad goals retain these gates
+   at each group boundary.
 
-A group moves through four stages, each driven by `piper-workflow`:
+Groups are accepted only after their acceptance criteria and integrating review
+hold. Integration state is separately explicit, including `pending-pr`.
+Milestones are roadmap markers, not another lifecycle. A small named execution
+lane follows the same integration safety procedure if it needs to publish into
+base, with review proportional to its boundary rather than a manufactured group.
 
-1. **Entry.** Before the group's first wave, `piper-workflow` re-verifies the
-   group's structural sketch — boundary, acceptance target, and revisit triggers
-   — against the current code, which may have moved since the roadmap was drawn
-   or since a prior group landed. It creates the group lane folder
-   `work/groups/<gid>/`, binds the lane in the `active-work.md` header
-   (`branch:`, `checkout:`, `boundary:`, `status: active`) — taking a worktree
-   when another lane already holds `repo_path` — and reads the other active
-   lanes' headers to surface any overlap between their `boundary:` and this
-   one, for the user to decide; overlap is never a block. It runs Superpowers
-   Structural Planning scoped to this group when the sketch needs repair, then
-   Wave Formalization for the first wave. Repair drift that only reshapes this
-   group here; escalate drift that invalidates the group's premise or changes
-   other groups (see Transition).
-2. **Execution.** `piper-workflow` implements the group's waves through Ralph
-   Mode in the lane's checkout on the lane's branch, with verification, drift
-   checks, and per-wave review gates; wave entries go to the group ledger. A
-   wave that is implemented, verified, drift-checked, and reviewed when its
-   gate applies is a natural commit point for the project source (see commit
-   cadence below).
-3. **Closeout.** After the final wave lands, `piper-workflow` closes the group
-   in this order: sync the group branch with the project's base branch;
-   verify; run the group review gate over the integrated cross-wave diff
-   (`base..group`, in the lane's checkout) and resolve findings; commit any
-   remaining group source not already committed per wave; integrate the group
-   branch into base — a merge that preserves the group's commits by default;
-   if the user chooses a rebase, record old tip → new tip in the closeout
-   entry; where policy forbids a local merge, record `integrated: pending-pr`
-   — then write the group-closeout entry in the **project** `build-log.md`,
-   mark the acceptance target met, and tick the group's status in
-   `roadmap.md`. The closeout entry condenses the group ledger and points back
-   to it: acceptance target and verdict; the wave list with one-line outcomes;
-   the group-gate result, finding verdicts, and any accepted review debt; the
-   contracts or learnings later groups depend on; the group branch, its final
-   acceptance commit, and the integration commit (or `pending-pr`); deferred
-   scope; and the worktree path, which remains (deleting a worktree is
-   `exceptional`). It then **rolls the group off the windows**: the
-   completed-wave detail is condensed into that closeout entry (summarized,
-   not relocated verbatim, so the ledger keeps concise entries), and the
-   lane's `active-work.md`, `context-pack.md`, and `task-queue.md` are
-   rewritten to a short `closed` pointer to it — never deleted — so the folder
-   remains as the group's archive. A group is complete only when its
-   acceptance target is met and the integrating review gate has passed.
-4. **Transition.** Between closeout and the next group's Entry, `piper-workflow`
-   checks whether this group's actual outcome changes the sketches, ordering, or
-   premises of later groups, and carries the captured contracts and learnings
-   forward, recording any reshaped later-group scope or roadmap drift in
-   `roadmap.md`. Lanes still active in parallel sync their branch with base
-   before their next wave — whether a lane is behind is derived
-   (`git log <group>..<base>`), never recorded — and treat merge-conflict edits
-   as expected expansion in their drift check. It proceeds to the next group's
-   Entry when the outcome holds the roadmap, and surfaces the change for
-   re-planning when it materially reshapes later groups or a milestone.
-   Re-planning stays within `piper-workflow` (Superpowers); hand back to
-   `brainstorm` only when the change reopens a genuinely divergent question.
+When planning starts from Design Studio, Superpowers verifies the exact
+`design_artifact` and integer `accepted_revision` against the current metadata
+and live source. A stale revision or invalidated fixed contract returns upstream;
+recorded implementation freedoms remain downstream.
 
-When planning starts from a Design Studio handoff, Superpowers verifies the
-exact `design_artifact` and integer `accepted_revision` against the current
-`design.md` metadata and live source. Choices inside recorded implementation
-freedoms stay downstream. A stale revision or source evidence that invalidates
-a fixed contract or core premise returns to Design Studio rather than being
-silently redesigned in execution planning.
+Source commits at accepted waves and closeout are routine and separate from hub
+artifact commits. Pushes and PRs remain external; deleting retained worktrees
+remains exceptional. Finish reports existing commit and integration state and
+performs only the actions reached and authorized by the workflow.
 
-Advancing through these stages follows normal mode routing: `piper-workflow`
-proceeds when the next stage is clear and authorized, and waits for go-ahead when
-confirmation is required or the next group's direction is unsettled.
-
-Commit cadence rides on these boundaries: per-wave source commits during
-Execution and a group source commit at Closeout, each on the lane's branch in
-the lane's checkout and each routine under `automation-policy`: commit and
-report each completed wave without a per-wave ask. Keep source commits separate from Piper artifact commits, at wave and
-group boundaries, not mid-slice. These are commits only — push and pull requests
-remain `external` actions.
-
-Milestones are roadmap-level markers that a sequence of groups completes a larger
-deliverable; they are not a separate lifecycle. When a group closeout also
-completes a milestone, note it in the closeout entry and mark the milestone met
-in `roadmap.md`.
-
-The lifecycle composes existing `piper-workflow` mechanisms — Superpowers
-Structural Planning and Wave Formalization at Entry, Ralph Mode at Execution, the
-group review gate and build-log closeout entry at Closeout — adding only the
-cross-group steps: entry re-verification, the roadmap acceptance tick,
-carry-forward, and the transition check.
-
-**Legacy layout.** A group whose windows still live in the flat lane moves into
-`work/groups/<gid>/` once, at its next wave or pause boundary: only if the
-folder does not already exist (if it does, reconcile, never overwrite); the
-flat `build-log.md` is a sink and is not split — the new group ledger opens
-with a pointer to the earlier entries; only queue items tagged with the group
-move; the header bindings are added in the same path-scoped hub commit; and a
-legacy group already at Closeout closes out in place.
+**Legacy continuity.** Move an identified legacy group's flat windows to its
+existing group location only at a wave or pause boundary; reconcile rather than
+overwrite a destination. Keep the historical project ledger and open the local
+ledger with a pointer. Move only that group's pending queue items. For a legacy
+studio, migrate only flat windows clearly belonging to that studio into its
+studio folder, leave a flat pointer, and preserve unrelated execution state.
+A legacy group already at closeout may close in place. No bulk destructive
+migration is required.
 
 ## Compaction
 
-At the resume triggers (see Boundary triggers under Artifact Persistence),
-prepare compact-safe state in the selected lane's `context-pack.md`:
-`projects/<id>/work/context-pack.md` for the flat lane,
-`projects/<id>/work/groups/<gid>/context-pack.md` for a group lane. That file
-also carries the handoff fields when pausing or transferring work.
+At resume triggers, rewrite the selected lane's `context-pack.md` in full.
+Use the lane location table under Project Records; a studio's packet stays in
+its studio, a named execution lane's in `work/lanes/<slug>/`. The packet holds
+only non-derivable state:
 
-The packet holds only non-derivable state. Its required fields, defined here
-and nowhere else:
+1. **Goal** of this boundary, one line.
+2. **Boundary**: canonical lane locator, design discussion or execution wave,
+   and status. Execution statuses include `idle`, `mid-wave`, `accepted`,
+   `group-review`, `closeout`, `between-groups`, `blocked`, or `closed`.
+   Design statuses include `exploring`, `paused`, `blocked`, or `concluded`;
+   these do not substitute for canonical design maturity. Include scope when
+   no active-work record carries it and a nondefault branch binding when needed.
+3. **Next exact action**, including the first file to inspect.
+4. **Verification and review state not yet in the ledger**, unresolved findings,
+   drift, and any incomplete integration/publication. Reference recorded
+   results instead of copying them.
+5. **Blockers, risks, and open questions**, including links to changed related
+   assumptions and their resolution owners. Preserve both unaffected work and
+   work awaiting revalidation.
+6. **Stop reason**.
+7. Optional **broad-search triggers**, resume note, transient references, and
+   unresolved delegated-work locators needed for recovery.
 
-1. **Goal** of the current boundary, one line.
-2. **Boundary**: the lane (`flat` or `<gid>`), the wave, and its status — `idle`, `mid-wave`,
-   `accepted`, `group-review`, `closeout`, `between-groups`, `blocked`, or
-   `closed` (a group lane after closeout).
-   Add the scope boundary when no `active-work.md` carries it, and the branch
-   when it is not the repo's default branch.
-3. **Next exact action**, naming the first file to open.
-4. **Verification and review state not yet recorded in `build-log.md`**:
-   unverified claims, open findings with their verdicts, and drift when it is
-   not none.
-5. **Blockers, risks, and open questions.**
-6. **Stop reason.**
-7. Optional: **broad-search triggers**, and a short **resume note** for a human
-   or fresh agent. Transient reference paths go here; durable ones belong in
-   `memory.md`.
+Derive repo binding, live branch/HEAD/status, changed files and commits since
+acceptance, hub commit status, and roadmap acceptance from their owners at
+resume. A stored session/worker handle is only a locator; it is not proof of a
+running process or completed result. Verify native task status when available,
+inspect actual checkout/diff/result state, and never duplicate work solely
+because a wait timed out. If status cannot be observed, report it as unknown
+and preserve ownership before starting another writer.
 
-Derived at resume, never authored into the packet: the repo path
-(`project.md` and the registry); branch, HEAD, and status (live git); files
-changed and commits since the last acceptance commit in `build-log.md` (live
-git); what to inspect first (the changed files, `active-work.md`, and the
-build-log tail); hub artifact commit state (live git in the hub); and group or
-transition state (`roadmap.md` plus the closeout entries). If git or the ledger
-can answer a field, the packet references it rather than copying it. An `idle`
-packet — nothing active, next action "pick the next boundary" — is a few lines.
+Read the old packet before rewriting, preserve every still-relevant
+non-derivable field, and reconcile with source and canonical design records.
+Never regenerate solely from lossy compacted memory. For shared publication use
+`piper-record`; a stale digest requires rereading and reconciliation. No packet
+is required for a completed light boundary with nothing to resume.
 
-Regenerate, do not append. Rewrite `context-pack.md` in full so it reflects only
-the current boundary; never section-edit or append, which is what lets stale
-lower sections — verification, review, stop reason — survive and contradict the
-header. Superseded verification and review history stays in `build-log.md` and is
-referenced, not replayed; git state is derived live rather than copied from a HEAD
-that can age.
+On cold resume, read project binding, memory and relevant decisions, then the
+selected lane's packet, active work, ledger, optional queue, and canonical design
+when present. Inspect live source at the assigned checkout, relevant related-work
+revisions and resolutions, and any worker state before editing. A studio resumes
+its design phase without source edits; an execution lane first revalidates stale
+assumptions. If closeout publication was interrupted, use actual git evidence to
+finish records rather than repeating integration. Read roadmap when long-horizon
+direction matters; expand the source neighborhood for concrete triggers such as
+missing acceptance, stale packets, failing checks, shared contracts, security,
+generated parity, or integrated review.
 
-Cold-resume guard: a full rewrite must first read the existing packet, carry
-forward every still-relevant non-derivable field from it, and reconcile against
-live git before replacing it. Never regenerate purely from freshly compacted,
-lossy working memory — that can drop a still-relevant field.
-
-`/compact` is human-triggered. Ralph may pause and say the state is
-compact-ready when context is low, a milestone just finished, or the next wave
-needs a clean context. Do not claim `/compact` ran unless the user or runtime
-actually ran it.
-
-After compact, start from the designed resume anchors in the selected lane:
-its `context-pack.md`, `active-work.md`, `build-log.md`, optional
-`task-queue.md`, project `project.md`, `memory.md`, and live branch/HEAD/status
-in the lane's checkout; derive the fields listed above before acting on the
-packet. Read `roadmap.md` when
-longer-horizon direction matters, and read optional `decisions.md` only when it
-exists. Then rebuild enough of the active boundary neighborhood to work safely.
-Expand beyond that for concrete triggers such as a stale resume packet, missing
-acceptance criteria, failing verification, generated parity, security or
-permissions behavior, or review scope.
-
-Future runtime-style auto-compact protection could snapshot minimal active
-state to `projects/<id>/work/` immediately before automatic compaction. Keep
-this as future design work, not current hub-lite behavior.
+`/compact` is run by the user or native runtime. Piper prepares compact-safe
+state and may say it is compact-ready; do not claim compaction happened unless
+observed. Hooks are reminders, not a mutating snapshot or ownership enforcement
+layer, and a missing hook never excuses skipping explicit checkpoint work.
 
 ## Project Repos
 

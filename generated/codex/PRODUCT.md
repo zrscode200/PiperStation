@@ -1,7 +1,7 @@
 # Product
 
-Piper Station is a hub-lite workspace for coordinating Codex, Claude Code, and
-OpenCode work across registered project repositories.
+Piper Station is a hub-lite workspace for designing and developing registered
+projects with Codex.
 
 The hub provides one launch point, durable project context, native runtime
 surfaces, a lightweight brainstorm front door, an optional discussion-first

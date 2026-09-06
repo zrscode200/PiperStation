@@ -1,273 +1,102 @@
 # Ralph
 
-Enter Ralph Mode for one scoped wave, explicit slice, or queued task.
+Execute one clear wave, explicit slice, or queued task in the selected execution
+lane. Ralph is Codex prompt behavior, not a shell workflow engine. Read
+`STATION.md` for canonical lane, risk, review, and checkpoint contracts.
 
-The `piper-workflow` skill routes here when the user asks to execute a wave,
-build an explicit slice, run a queued task, or work through active work.
-Determine the selected boundary from the request context, `active-work.md`, or
-the optional durable queue.
+## Execute The Boundary
 
-Ralph is prompt and skill behavior in Codex. It selects the current execution
-boundary, states the diff boundary, implements it, verifies, drift-checks,
-applies the Implementation Review Gate when required or expected, and updates
-compact-safe records when active work records are in use.
+1. Resolve the registered project and read binding, memory, relevant decisions,
+   and the selected lane's existing records. Select via STATION → Lanes; retain
+   a clearly selected effort, ask on real ambiguity, and never select a studio
+   as an execution lane. Read roadmap when group order matters.
+2. Select the requested boundary or current ready wave. A pending group review
+   precedes group acceptance. If the current wave is only a sketch, run Wave
+   Formalization in `references/superpowers.md`, then continue; later sketches
+   do not shrink the current assignment.
+3. Confirm acceptance, expected diff boundary, verification command or meaningful
+   fallback, risk, and necessary slice breakdown. Check exact accepted design
+   revisions and relevant related-work impacts. A stale fixed contract blocks
+   dependent execution until revalidated; unaffected work can proceed.
+4. Verify repo identity, assigned branch, exclusive checkout ownership, actual
+   git state, and native writable access. Preserve unrelated changes. Creating
+   a lane or worktree does not grant sandbox access. Never edit another lane's
+   checkout or use the inherited cwd as an unverified fallback.
+5. State the boundary and scope. L2 needs explicit authorization for that risk
+   boundary; existing covered authorization or a scoped waiver suffices. Stop
+   for L3, unresolved scope/acceptance, missing access, or an external/exceptional
+   action without its required go-ahead.
+6. Implement the boundary, organizing internal slices without mandatory stops.
+   Use `references/coordinated-work.md` if implementation delegation is explicitly
+   authorized or independent efforts share relevant behavior. Native workers
+   have isolated checkouts and bounded ownership; the parent owns integration.
+7. Run meaningful initial verification. Drift-check actual changes against the
+   request and scope. Required in-scope expansion is explained and reverified;
+   out-of-scope changes are isolated for decision without discarding user work.
+8. Apply the review gate below. Give every finding a verdict before review fixes:
+   `confirmed-in-scope`, `confirmed-out-of-scope`, or `false-positive`. Repair
+   confirmed in-scope findings; record follow-up scope and rejected findings
+   with reasons. Reverify fixes proportionally to their behavior and risk.
+9. Commit a completed wave's source on its assigned branch when verification,
+   drift, and review hold. This is routine and separate from hub commits; do not
+   commit mid-slice or push without external authority. Worker reports and clean
+   merges alone never establish acceptance.
+10. For group closeout or another lane's publication into base, read and follow
+    `references/integration.md`. Prepare and verify a complete candidate against
+    an exact base, then use guarded publication into a clean idle target.
+    Revalidation is required if base or candidate moves. Never merge into
+    another open lane's checkout. Preserve explicit `pending-pr` state where
+    user policy forbids local integration.
+11. Publish the lane checkpoint and needed shared closeout records through
+    `piper-record`. Record outcome, acceptance source commit, actual verification
+    and review, drift, resolved/shared contracts, residual risk, and next step
+    once in the ledger. Update active work only when its current boundary changes,
+    and a queue only when one is in use. Follow the light boundary for small work.
+    Fully completed flat work closes any existing active-work ownership binding
+    with `status: closed` and an acceptance-ledger pointer; its packet may be idle.
+    Do not create active work merely to close it. Paused or blocked work retains
+    checkout ownership rather than falsely closing an unfinished boundary.
+12. At resume triggers prepare compact-safe state with
+    `references/compact-handoff.md`. Report source and hub artifact changes and
+    actual commit/integration state separately. Continue through the next safe
+    boundary when the user's goal already authorizes it, retaining all gates.
 
-Ralph is not a shell runner and not a general planner. Use it after a wave,
-explicit slice, or queued task is clear from the user request, the selected
-lane's `active-work.md`, or its optional durable `task-queue.md` (lanes are
-defined in `STATION.md` → Project Records). If the selected wave is still a
-sketch, Ralph formalizes it
-first through the Wave Formalization pass in `references/superpowers.md`;
-open-ended planning stays out of scope. Slices are decomposition units; waves
-are execution and checkpoint units. `external` and `exceptional` actions still
-route through the `automation-policy` skill.
+## Review Gate
 
-## Steps
+Required for S2/S3 waves/groups and queued foundational changes: bootstrap,
+installation/update, registration, generated commands, hooks/settings/config,
+test harnesses, ownership, security or automation policy. Expected for meaningful
+S1 behavior changes; optional for S0/L0, docs-only, or trivial changes. Risk tier
+controls editing caution, not review selection.
 
-1. Read `AGENTS.md` and `STATION.md`. Look up the project in
-   `projects/registry.json` to confirm registration and resolve `repo_path`,
-   then read the relevant `projects/<project-id>/project.md`, `memory.md`, and
-   optional `decisions.md` when it exists.
-2. Select the lane first (`STATION.md` → Group Lifecycle → Lane selection): a
-   token naming an existing `work/groups/<gid>` folder selects that group
-   lane; with no token, exactly one active candidate selects itself, more than
-   one means ask, never guess, and none means the flat lane. Then read the
-   lane's files — `active-work.md`, `build-log.md`, `context-pack.md`, and
-   optional `task-queue.md` — under `projects/<project-id>/work/` for the flat
-   lane or `projects/<project-id>/work/groups/<gid>/` for a group lane, plus
-   `roadmap.md` when group order matters.
-3. Select one execution boundary: the wave, group review, explicit slice, or
-   task matching the user's request if specified, inside the selected lane;
-   otherwise the current boundary from the lane's `active-work.md` or
-   `context-pack.md`; otherwise the top ready item in the lane's optional
-   queue. If the final wave in a group has landed and the
-   group review is pending, select the group review before any acceptance task.
-   Once a group's closeout completes, the next boundary is the
-   next group's Entry: re-verify its sketch per the Group Lifecycle before
-   selecting its first wave.
-4. Confirm the boundary has acceptance criteria, a verification command or
-   fallback, risk tier, and expected diff boundary. For implementation
-   boundaries, confirm enough slice breakdown to execute safely. For group
-   review boundaries, confirm the wave list, integrated diff scope, acceptance
-   target, and current group review state. If the selected implementation wave
-   is still a sketch — missing acceptance criteria, verification, or an
-   expected diff boundary — run the Wave Formalization pass from
-   `references/superpowers.md` to formalize it, then continue. A sketched
-   current wave is a formalization input, not a stop, and later waves being
-   sketches is never a reason to down-scope the selected work.
-5. Verify the lane's checkout — `repo_path` or the lane's recorded worktree —
-   is writable in the active session; if an active group header binds
-   `repo_path`, the flat lane has no checkout of its own (surface per
-   `STATION.md` → One checkout per lane). If it is outside the current Codex
-   sandbox, state that writable access is required (e.g. start Codex with
-   `--add-dir <checkout-path>`) before
-   execution instead of declaring the task Ralph-ready. Source edits there are
-   routine; no further check precedes them.
-6. State the selected wave, group review, explicit slice, or queued task and
-   its expected diff boundary before editing.
-7. Mark the boundary active in the lane's `task-queue.md` only when a durable
-   queue exists.
-8. Stop if the boundary is ambiguous, still lacks verification after Wave
-   Formalization, is `L3`, is outside the approved active work, is `L2`
-   without explicit user confirmation, or requires an `external` or
-   `exceptional` action that has no go-ahead.
-9. Implement only the selected boundary in the lane's checkout. Within a
-   wave, use slices to organize the work; do not turn each internal slice into a
-   mandatory stop unless risk, verification, or drift requires it.
-10. Run the narrowest meaningful initial verification.
-11. Run the Implementation Review Gate based on boundary, scope, and change
-   impact: required for `S2/S3` wave or group boundaries and queued
-   foundational work, expected for meaningful behavior-changing `S1`, optional
-   for `S0/L0`, docs-only, or trivial work. Risk tier controls Ralph
-   implementation confirmation before editing, not review selection or
-   action class. After the final wave in a group lands, sync the group
-   branch with base and re-verify, then run a
-   group-level review gate over the integrated diff before the slice, group, or
-   acceptance task is marked complete, even if every per-wave gate already
-   passed. Per-wave gates inspect one wave; the group gate inspects cross-wave
-   interactions over `base..group` in the lane's checkout. When the group gate
-   passes, complete closeout in the order `STATION.md` → Group Lifecycle
-   defines: integrate the group branch into base (or record
-   `integrated: pending-pr`), write the group-closeout entry in the project
-   `build-log.md`, mark the acceptance target met and tick the group in
-   `roadmap.md`, capture contracts later groups depend on, and roll the
-   group off the windows — condense the group ledger into that closeout entry
-   and rewrite the lane's `active-work.md`, `context-pack.md`, and
-   `task-queue.md` to a short `closed` pointer.
-12. Validate reviewer findings before editing: give each finding an explicit
-    verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or
-    `false-positive` — and do not edit code until every finding has one. Then
-    apply fixes only for `confirmed-in-scope` findings, turn
-    `confirmed-out-of-scope` findings into follow-up notes or queue items, and
-    reverify review-driven fixes with the narrowest meaningful command for the
-    fixed behavior. Run broader verification only when fixes touch shared,
-    risky, or cross-cutting behavior.
-13. Drift-check the diff against the selected boundary, active work, and user
-    request. Once the drift-check passes, commit the wave's project source on
-    the lane's branch — a routine action: commit and report, without a per-wave
-    confirmation, separate from any Piper artifact commit; never commit
-    mid-slice; and do not push or open PRs (`external`). At group closeout, commit any remaining group
-    source.
-14. For boundary bookkeeping, append the lane's `build-log.md` at checkpoint
-    cadence with
-    changed source areas, verification result, review result, drift, risks, and
-    next step. Update `task-queue.md` status only when a durable queue is in
-    use, including explicit group review gate status for multi-wave groups.
-    Update `active-work.md` only when the group boundary, current wave, slice
-    breakdown, requirements, approach, verification strategy, or group review
-    state materially changed.
-15. Satisfy the checkpoint invariant (`STATION.md` → Artifact Persistence) at
-    each boundary trigger and nothing more: report changed Piper artifacts
-    separately from registered project source changes with their hub commit
-    state. During internal slice progress, do not ask to commit artifact
-    updates or update `context-pack.md`. An ungrouped wave pays the
-    light boundary only.
-16. Write a standing policy note in `project.md` only when the user states
-    one (verbatim, dated), never inferred from a go-ahead; use optional
-    `decisions.md` only for substantial decision logs.
-17. If a required or expected review gate was skipped, record review debt and do
-    not continue to a dependent task until it is resolved or explicitly
-    accepted by the user.
-18. Prepare compact-safe state at the resume triggers (`STATION.md` →
-    Artifact Persistence → Boundary triggers).
-19. Continue only if the next boundary is safe and the user asked for
-    continuation.
+Use a reviewer instructed to perform read-only work on actual changed code and
+surrounding behavior, with active work, design contracts, ledger, tests, and
+non-goals as context. Follow `references/coordinated-work.md` → Native Roles And
+Actual Permissions: use a native role selector only when exposed; otherwise pass
+the installed reviewer's behavioral brief explicitly. Verify/report actual worker
+permissions, and never equate a read-only prompt with sandbox enforcement. The
+parent self-verifies findings. A group requires integrated cross-wave review after its
+final wave, even when each individual wave passed. Coordinated workers also need
+verification of their combined behavior; inspect interactions and changed shared
+assumptions, not only worker-local diffs.
 
-Do not push, open PRs, install dependencies, or run external automation unless
-the selected workflow reached that action and the `external` ask (or a standing
-grant) has a go-ahead; commits and worktree changes are routine once the
-workflow reaches them. Delete, force-push, rewrite pushed history,
-deploy to production, or take other exceptional actions only after explicit
-one-off approval through `automation-policy`. Ralph prepares for compaction; it
-does not invoke `/compact` itself.
+A skipped required/expected gate is review debt. Do not proceed to dependent
+acceptance until the gate runs or the user explicitly accepts the debt. A helper
+that cannot run a check honestly reports the limitation; it never substitutes
+invented output or weakened acceptance.
 
-## Drift And Stop Conditions
+## Stops And Recovery
 
-Drift-check the actual diff:
+Stop the affected boundary when repeated attempts produce no meaningful progress,
+the plan's premise fails, scope is wrong, no meaningful verification is available,
+or required records/review cannot be completed. Continue independent useful work
+within the authorized goal. Replan when the problem can be resolved downstream;
+return upstream when it changes a fixed contract or product intent.
 
-- None: actual changes are a subset of expected.
-- Expected expansion: required touching files outside the selected boundary but
-  still clearly in scope; record the file and reason.
-- Out-of-scope work: changes include behavior outside the selected boundary;
-  stop and split or revert that work.
-- Wrong scope: actual changes do not satisfy the task; stop and ask.
+At pause/resume, recover from actual lane records, git, current contract revisions,
+and native task status. Do not start duplicate workers after a wait timeout or
+repeat source publication solely because closeout records are incomplete.
 
-Stop and hand control back when the same verification fails twice without
-meaningful progress, requirements are ambiguous, implementation drifts outside
-the selected boundary, an `L2` boundary lacks confirmation, `L3`
-implementation risk would be required, the next action is `external` or
-`exceptional` without a go-ahead, tests or
-builds cannot run and no fallback exists, active work records cannot be updated
-when needed for continuation, a required review gate cannot run, or the plan
-appears wrong after repeated implementation attempts.
-
-## Review Gate Details
-
-Use the review gate after the selected boundary is implemented and initially
-verified, before marking it complete in durable work records.
-
-For groups, run a separate gate after the final wave lands and before the
-group or slice acceptance task. The reviewer must inspect the integrated
-cross-wave diff and the interactions between waves, not only the last wave's
-diff.
-
-Review gate examples:
-
-- `S0/L0` typo fix or docs wording tweak: gate optional.
-- Meaningful `S1` behavior-changing wave or explicit slice: gate expected.
-- Queued bootstrap, registration, hook/config, or test-harness wave or task:
-  gate required.
-- Dependency install, network, pull request, CI, or other `external` action:
-  route the action through the `automation-policy` ask; choose the gate from scope and
-  impact.
-
-When the gate runs, spawn the `reviewer` subagent (declared in
-`.codex/config.toml`). The reviewer inspects the actual changed code or diff
-and relevant surrounding code first, using the active work record, build log,
-optional task queue, test output, and known non-goals as supporting context.
-The reviewer reports correctness, regression, security, reliability,
-missing-test, convention, and drift findings ordered by severity with file and
-line references when possible.
-
-The main Codex session stays responsible for the work. Validate each reviewer
-finding before acting: record a one-line verdict per finding —
-`confirmed-in-scope`, `confirmed-out-of-scope`, or `false-positive` — before
-editing any code. Apply fixes only for `confirmed-in-scope` findings. Turn
-`confirmed-out-of-scope` findings into follow-up notes or tasks. Briefly record
-why a finding was rejected as a `false-positive` when that helps future readers.
-If a required review gate cannot run, stop and tell the user what is missing
-unless the user explicitly accepts the review debt.
-
-## Compaction Discipline
-
-At each boundary trigger (`STATION.md` → Artifact Persistence), prepare
-compact-safe state before continuing or pausing. Natural stopping points include a completed wave, group closeout,
-queued task, milestone boundary, failed verification stop, blocked task, or
-transition to a larger next boundary.
-
-When active work records are in use:
-
-1. Append `build-log.md` with the current checkpoint, including commands,
-   results, review state, group-level review state when relevant, drift, risks,
-   and next step.
-2. Update `task-queue.md` with the current boundary status only when a durable
-   queue exists.
-3. Rewrite `context-pack.md` in full only when a resume trigger fires
-   (`STATION.md` → Artifact Persistence → Boundary triggers) — regenerate the
-   whole packet to reflect
-   only the current boundary rather than section-editing it, but first read the
-   existing packet and reconcile against it and live git so the rewrite drops
-   nothing still relevant. The packet holds only the non-derivable fields
-   defined once in `STATION.md` → Compaction; derive branch, HEAD, status,
-   changed files, and what to inspect first from live git and the build-log at
-   resume rather than writing them into the packet.
-4. Report artifact files updated in the Piper Station hub and whether they are
-   committed. If the stop is a resume trigger, ask once whether to commit the
-   Piper artifact updates (path-scoped to the lane) — a routine action the
-   checkpoint decides.
-
-If the next boundary is safe and context is not a concern, continue normally.
-If context is low, a milestone just finished, or the next wave needs a clean
-context, pause after updates and tell the user the state is compact-ready and
-they may run `/compact`.
-
-## Post-Compact Resume
-
-After compact, resume from designed anchors first:
-
-- the selected lane's `context-pack.md`, `active-work.md`, `build-log.md`, and
-  optional `task-queue.md` (`work/` for the flat lane, `work/groups/<gid>/`
-  for a group lane)
-- `roadmap.md` when long-horizon direction matters
-- project `project.md` and `memory.md`
-- optional `decisions.md` when present
-- branch, HEAD, and `git status --short` in the lane's checkout
-
-Then rebuild the active boundary neighborhood before editing. Inspect changed
-files, explicitly named files, related tests, configs, docs, generated
-surfaces, and known reference paths. Expand beyond that when there is a
-concrete reason: a stale resume packet, missing acceptance criteria, failing
-verification, unclear coupling, generated parity, security or permissions
-behavior, or review scope. When broad search is needed, state why, bound it to
-the active repo and named reference paths, and exclude dependency, build,
-cache, and `.git` directories.
-
-## Helper Use
-
-- Ralph may use read-only `reviewer` or `verifier` helpers for substantial
-  work.
-- Use `tester` only when explicitly delegating test-layer files, fixtures, or
-  test data for creation or update.
-- Implementation stays with the main session unless the user explicitly asks
-  for `implementer` delegation.
-- Validate all helper findings in the main session before acting on them.
-
-## Output
-
-Report boundary executed, files changed, verification result, review gate
-status and basis, per-finding verdicts, accepted review fixes or rejected
-findings, review debt status, drift result, durable record updates, context
-pack status, artifact changes and persistence status, compaction status, and
-next boundary or stop reason.
-
-Never claim completion without fresh verification output.
+Report the executed boundary, meaningful results and limitations, review and drift
+verdicts, source/hub persistence, integration state, and next action. Never claim
+completion without fresh verification evidence.

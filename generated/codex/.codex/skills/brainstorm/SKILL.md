@@ -38,7 +38,7 @@ artifacts.
   into convergent work).
 
 Convergent work escalates out of brainstorm: use `piper-workflow` (via
-`$piper-workflow` or `/superpowers`, `/ralph`, `/compact-handoff`) for formal
+`$piper-workflow` or the named Superpowers, Ralph and compact handoff procedures) for formal
 planning and Ralph execution, `review` for review gates, and `automation-policy`
 before `external` or `exceptional` actions.
 
@@ -64,11 +64,11 @@ Ground the conversation in the actual project before reasoning about it:
    register it first.
 4. Read `projects/<project-id>/project.md`, `memory.md`, and optional
    `decisions.md` when it exists for the canonical record; read
-   `projects/<project-id>/work/context-pack.md` when it exists, and when
-   `projects/<project-id>/work/groups/` exists, the status line of every
-   active group lane's `context-pack.md`, so orientation sees each lane in
-   flight.
-5. Inspect `repo_path` — which may be checked out on a group lane's branch —
+   relevant existing work and design entry points. Inspect open lane headers
+   and packets only as needed to understand related work (STATION → Lanes).
+   A clearly requested effort does not require choosing among unrelated lanes;
+   stored status is continuity information, not proof of a running session.
+5. Inspect `repo_path` — which may be owned by an execution lane —
    with `git status`, current branch, current HEAD,
    and the files relevant to the request.
 6. If the project repo is outside the current Codex sandbox, note that Codex
@@ -169,7 +169,7 @@ current frame; it does not perform the destination's durable work itself.
 | "start Ralph", "build task X", "execute the queue item", "implement the plan" | `piper-workflow` — Ralph execution |
 | "review this change" or an implemented slice or review gate | `review` |
 | "open a PR", "push", "install", "run CI", or another `external` or `exceptional` action | `automation-policy` |
-| "commit" or a worktree change (routine once the workflow reaches it) | `piper-workflow` — the mode that reaches it (Finish for a commit, group Entry for a worktree) |
+| "commit" or a worktree change (routine once the workflow reaches it) | `piper-workflow` — the mode that reaches it (a meaningful checkpoint for a commit, lane/worker preparation for a worktree) |
 | "pause", "hand off", or "get this compact-ready" | `piper-workflow` — compact handoff |
 
 Wait for go-ahead when the route requires confirmation, risk is `L2`, the

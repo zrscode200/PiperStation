@@ -3,9 +3,16 @@
 Each subdirectory is a registered project ledger. Registration must create only
 `project.md` and `memory.md`.
 
-Registration must not create `work/`. Runtime sessions may create
-`projects/<id>/work/` only when active continuity is useful, and one lane
-folder per group under `projects/<id>/work/groups/<gid>/` only at group Entry.
+Registration must not create `work/`. Create working records only when they
+serve an actual boundary or continuity need. Ordinary execution uses the flat
+`work/` lane. Explicit studios keep independent design continuity under
+`work/design/<slug>/`; group Entry uses `work/groups/<gid>/`. Independent
+execution can use `work/lanes/<slug>/` without requiring a group.
+
+STATION owns lane selection, checkout ownership, related-work publication and
+resume. Native session handles are optional evidence, not proof of liveness.
+Shared record and ownership updates use `bin/piper-record`; registration and
+registry rebuild remain owned by `bin/add-project`.
 
 ## Registry Index
 

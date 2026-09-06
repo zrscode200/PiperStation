@@ -1,221 +1,68 @@
-{{FRONTMATTER}}# Superpowers
+# Superpowers
 
-Enter Superpowers Mode for a registered project.
+Verify a converged direction and formalize bounded execution on a registered
+project. Use brainstorm for open exploration and Design Studio for its explicit
+durable design practice. Superpowers verifies the chosen direction against code;
+it does not silently redesign an upstream fixed contract.
 
-The user invoked this command with: `$ARGUMENTS`
+## Structural Planning
 
-Use Superpowers Mode to verify a direction, define the group or milestone
-structure, and formalize the current wave into Ralph-ready detail before
-substantial implementation. The work runs as two named passes:
+1. Read `AGENTS.md` and relevant `STATION.md` sections. Resolve registry and
+   project binding, memory, relevant decisions, and existing work. Select an
+   execution lane via STATION → Lanes. A studio handoff selects a downstream
+   execution lane; it does not turn studio continuity into a Ralph workbench.
+2. For an ordinary brainstorm brief, verify its assumptions against live code.
+   For a studio handoff read `design_artifact` and integer `accepted_revision: N`.
+   Require `status: accepted-for-planning` and both current metadata revisions
+   equal to N. Read significant supporting artifacts and source evidence. A
+   missing, provisional, superseded, or mismatched revision returns upstream
+   for explicit acceptance and revalidation. Reference the canonical design;
+   do not copy it into execution records.
+3. Inspect actual source, relevant call sites and tests, existing changes, and
+   related open boundaries. Confirm goals, fixed contracts and core premises;
+   implementation freedoms remain downstream. For a material contradiction,
+   record evidence, affected work, impact and resolution owner under STATION's
+   related-work rule. Ask only questions whose answer changes the work.
+4. Classify scope S0–S3 and risk L0–L3. Choose one ungrouped wave by default.
+   Use a group only when related waves share acceptance or cross-wave risk
+   requires an integrating gate. Concurrency alone chooses a named execution
+   lane (`lane:<slug>`), not a group. Keep small work lightweight.
+5. When groups are needed, define each gid, boundary, acceptance target, and
+   revisit triggers; retain later detail as sketches. Create roadmap only when
+   long-horizon direction, order, milestones or deferred scope needs durability.
+   Group folders are created at Entry, not registration or speculative planning.
+6. Bind an exclusive writable checkout before execution. Inspect other writers
+   and related contracts, resolve shared edit ownership, and sequence coupled
+   work when appropriate. If delegation is authorized, use
+   `references/coordinated-work.md` to define bounded worker assignments and
+   isolated checkouts. Preparing a plan does not grant new source or tool access.
 
-- Structural Planning verifies the direction and defines the group or
-  milestone structure.
-- Wave Formalization details the current wave enough to execute safely.
+## Wave Formalization
 
-A full `/superpowers` invocation runs both passes in order. Wave Formalization
-also stands alone: Ralph runs it at a wave boundary when the selected wave is
-still a sketch, without re-running Structural Planning. Structural Planning also
-runs scoped to a single group at that group's Entry, re-verifying its sketch
-against current code before its first wave (see `STATION.md` → Group Lifecycle).
+This pass also runs alone when Ralph receives a sketched current wave.
 
-Use this command for formal planning, not for divergent exploration or general
-repo orientation (those belong to `brainstorm`), implementation, review, or
-automation approval. Natural-language routing reaches this behavior through
-`piper-workflow`; `external` and `exceptional` actions still route through
-`automation-policy`.
+7. Give the current wave testable acceptance criteria, expected source boundary,
+   meaningful verification, review expectations, stop conditions, and useful
+   slice breakdown. Detail only what current evidence supports. Record exact
+   design/revision references and relevant assumed contracts.
+8. Write lane `active-work.md` only when durable continuity or explicit checkout
+   ownership requires it. Group work includes its target, wave list, integrating
+   review, and lane binding. Optional `task-queue.md` is for pending work that
+   must survive beyond native session tasks, with group review before acceptance.
+9. Planning is ready when the selected boundary has an executable scope and
+   verifiable acceptance, source/access/ownership are understood, related
+   assumptions agree, and risk authority is satisfied. Later sketches do not
+   prevent formalizing and executing the current authorized boundary.
 
-## Pass 1: Structural Planning
+## Planning Checkpoint
 
-1. Read `{{INSTRUCTION_DOC}}` and `STATION.md`.
-2. Identify the project id or repo path from `$ARGUMENTS`. Look up the project
-   in `projects/registry.json` to confirm registration and resolve `repo_path`,
-   then read `projects/<project-id>/project.md`, `memory.md`, and optional
-   `decisions.md` when it exists. Then select the lane (`STATION.md` →
-   Group Lifecycle → Lane selection; ask, never guess) — an explicit `<gid>`
-   names a group lane.
-   If upstream provides a Design Studio handoff, require the exact pair:
+Publish meaningful planning outcomes through `piper-record`. Record a concise
+ledger entry when planning changes future work; create a context packet only at
+resume triggers. Commit useful completed or paused continuity per STATION unless
+the user requests otherwise, without repeated artifact-commit asks. Keep hub and
+source commits separate and disclose actual state.
 
-   ```text
-   design_artifact: projects/<project-id>/work/design/<studio-slug>/design.md
-   accepted_revision: N
-   ```
-
-   Resolve and read that current artifact before continuing. Require
-   `status: accepted-for-planning`, integer `revision`, and integer
-   `accepted_revision`, with both metadata revisions equal to the handed-off
-   integer `N`. Read significant supporting artifacts linked by `design.md`.
-   Missing, provisional, superseded, non-integer, or mismatched metadata makes
-   the handoff stale: return to Design Studio for explicit acceptance of the
-   current revision. An ordinary brainstorm brief with no studio remains valid.
-   If `design.md` changes materially after handoff, treat the prior pair as
-   stale. Require explicit acceptance of the current revision, then repeat this
-   metadata and live-source verification before planning resumes.
-3. Verify the chosen upstream direction against the real code in the lane's
-   checkout: confirm the
-   ordinary brief's or accepted design's flagged assumptions, inspect the
-   specific files and call sites the work will touch, and check that acceptance
-   criteria are testable.
-   Open exploration belongs to `brainstorm`; this step grounds the chosen
-   direction, it does not re-open it. For an accepted studio revision, verify
-   its goals, assumptions, fixed contracts, and core premises against live
-   source. Make choices inside recorded implementation freedoms; if a fixed
-   contract or core premise fails, return upstream to Design Studio rather than
-   silently redesigning it here.
-4. Classify scope as `S0`, `S1`, `S2`, or `S3` for sizing only.
-5. Classify risk as `L0`, `L1`, `L2`, or `L3`.
-6. Ask only blocking clarification questions. If you cannot articulate what
-   answer would change the design, do not ask.
-7. Create or update active work files in the selected lane — the flat lane's
-   `projects/<project-id>/work/` or a group lane's `work/groups/<gid>/` — only
-   when they do a clear job: preserve long-horizon direction, stabilize current
-   active work, create durable queued execution, record a checkpoint, or prepare
-   compact/resume continuity.
-8. Define the group or milestone structure: give each in-scope group a
-   lower-kebab `<gid>` (its future lane folder name), a boundary, an
-   acceptance target, and risks or revisit triggers. Update
-   `roadmap.md` only when long-term direction, milestones, deferred work,
-   risks, or revisit triggers change.
-9. Decide explicitly whether the work needs a group: only when multiple waves
-   share one acceptance target, cross-wave interaction risk matters, or the
-   work will run alongside other work on the project. Otherwise keep it one
-   ungrouped wave with a light boundary (`STATION.md` → Project Records). When
-   a group is entered, its lane folder `work/groups/<gid>/` is created at
-   Entry, and the group header in that lane's `active-work.md` carries the
-   goal, wave list, required gates, group review state, acceptance target, and
-   the lane binding (`branch:`, `checkout:`, `boundary:`, `status:`).
-10. Check structural readiness: the structure is complete when every in-scope
-    group has a boundary, an acceptance target, and revisit triggers.
-    Wave-level detail is not part of this bar; later waves and groups may stay
-    sketches and are formalized at their own boundaries.
-11. Close the pass by reporting the structure and stating which wave Wave
-    Formalization will detail next.
-
-## Pass 2: Wave Formalization
-
-Formalize one wave into Ralph-ready detail. Inputs are the group or milestone
-structure from Structural Planning and the current state of the real code.
-This pass stands alone: Ralph runs it at a wave boundary when the selected
-wave is still a sketch.
-
-12. Write `active-work.md` as the live group and wave workbench only when the
-    work needs durable execution continuity. Detail the current wave enough to
-    act safely: acceptance criteria, expected diff boundary, verification,
-    review expectations, stop conditions, and useful slice breakdown. Sketch
-    later waves only when the current code, context, and prior results make
-    them reliable; this economy rule scopes artifact detail, not execution
-    readiness — a sketched wave is formalized through this pass when its
-    boundary arrives. Keep work artifacts in the selected lane under
-    `projects/<project-id>/work/` unless the user explicitly asks for a
-    project-local copy. When input is an
-    accepted studio revision, record its `design_artifact` and exact
-    `accepted_revision` but reference rather than copy the canonical design.
-13. Produce a Ralph-ready `task-queue.md` only when waves, slices, or group
-    gates are clear, verifiable, and must survive the current session or move
-    across agents. For a multi-wave group, list the group review gate as an
-    explicit acceptance criterion before the acceptance task.
-
-## Closeout
-
-14. Append `build-log.md` at formal planning completion when the plan
-    materially changes future execution.
-15. Defer `context-pack.md` unless a resume trigger applies (`STATION.md` →
-    Artifact Persistence → Boundary triggers); when written, it holds only the
-    non-derivable fields defined under Compaction.
-16. At the planning checkpoint, satisfy the checkpoint invariant (`STATION.md`
-    → Artifact Persistence): report changed Piper artifacts separately from
-    source changes and state whether they are uncommitted in the hub.
-17. Offer one Piper artifact commit (path-scoped to the lane) at planning
-    finish only when the changed artifacts matter for future continuity. Do not
-    commit unless the checkpoint decision is made; the commit itself is
-    routine.
-18. Stop before implementation unless the user explicitly asks to proceed.
-
-Registration must not create `projects/<project-id>/work/`; {{RUNTIME_NAME}}
-creates these files only when useful for active work. Keep Superpowers as
-{{RUNTIME_NATIVE}} prompt and command behavior; do not introduce shell lifecycle
-machinery for planning.
-
-## Work Artifacts
-
-Create only under `projects/<project-id>/work/`, and only when useful:
-
-- `roadmap.md`: longer-horizon direction, groups, milestones, deferred work,
-  risks, and revisit triggers.
-- `active-work.md`: live group and wave workbench: group boundary, current wave
-  details, reliable later-wave sketches, slice breakdown, required gates, group
-  review state, risks, verification strategy, and open questions.
-- `build-log.md`: primary durable checkpoint ledger for planning outcomes,
-  implemented contracts, implementation summaries, review and verification
-  results, risks, next steps, and commits.
-- `context-pack.md`: compact/resume and handoff anchor holding only the
-  non-derivable fields defined once in `STATION.md` → Compaction; git state
-  and files to inspect first are derived at resume.
-- `task-queue.md`: optional durable Ralph wave, slice, or group gate list with
-  ids, status, risk, acceptance criteria, verification, and expected diff
-  boundary.
-- `work/groups/<gid>/`: one lane folder per group, created at group Entry,
-  holding that group's own `active-work.md`, `context-pack.md`,
-  `build-log.md`, and optional `task-queue.md`; the project-level files serve
-  the flat lane.
-- `work/design/<topic>.md`: optional lightweight topical design note,
-  superseded in place and preserved during any later promotion.
-- `work/design/<studio-slug>/`: optional full Design Studio after explicit
-  user choice; its two README layers navigate, `design.md` owns the integrated
-  design and revision, and optional artifacts emerge only when useful.
-
-Keep artifacts lean: `context-pack.md` is the only fully self-contained resume
-packet, rewritten in full when updated. Git is the source of truth for branch,
-HEAD, commit, and diff history — derive it live and let the owning artifact record
-what it needs (build-log's acceptance commit) rather than repeating it across
-context-pack, roadmap, active-work, queue, or project records.
-See `STATION.md` for the temporal roles (sinks vs windows vs topical references)
-and fact ownership.
-
-Keep stable facts in `memory.md`, standing policy notes in `project.md`,
-and substantial decision logs in optional `decisions.md`. Registration must not
-create active work artifacts.
-
-## Artifact Persistence
-
-Superpowers is a natural artifact checkpoint. Updating work artifacts is part
-of planning, but committing them is not automatic. At the end of planning,
-summarize the artifact files touched, their role in the next Ralph wave,
-explicit slice, or future session, and whether they remain uncommitted in the
-Piper Station hub.
-Offer a single artifact commit only when the artifact checkpoint matters for
-future continuity; the commit is routine, and the checkpoint decides whether
-it happens.
-
-## Spec Shape
-
-`active-work.md` should include the group or milestone boundary, goals and
-non-goals, current assumptions, current wave details, acceptance criteria,
-expected diff boundary, slice breakdown for the current wave, risks and
-guardrails, verification strategy, review expectations, stop conditions, and
-open questions. When a group exists, include a `Group` section with goal,
-waves, required gates, group review state, acceptance target, and the lane
-binding (`branch:`, `checkout:`, `boundary:`, `status:`). The group
-section is Structural Planning output; current-wave detail is Wave
-Formalization output. Later waves are optional; include only reliable
-sketches, dependencies, and revisit triggers.
-
-## Task Shape
-
-Each queued Ralph wave, slice, or group gate should include id, title, status,
-risk, likely files or areas, acceptance criteria, verification command or
-documented fallback, expected diff boundary, context needed by a fresh session
-or reviewer, and dependencies. Multi-wave groups should include an explicit
-group review gate before the acceptance task.
-
-## Guardrails
-
-- Do not implement while discovering or planning.
-- Do not require Design Studio for ordinary planning. For a studio handoff, do
-  not proceed on a revision mismatch, copy its canonical design into execution
-  records, or redesign a failed fixed contract inside Superpowers.
-- Mark assumptions separately from confirmed facts.
-- Keep plans concrete enough for a fresh {{RUNTIME_SESSION}} to continue cold.
-- Do not store secrets or sensitive raw logs in hub records.
-- Write a standing policy note in `project.md` only at the user's word; use
-  optional `decisions.md` only for substantial decision logs.
-- "Make it better" is not an acceptance criterion; force a testable one.
+Stop before implementation unless the user already asked to proceed. If the goal
+includes execution, move into Ralph after formalization and required authority;
+do not ask again simply because a planning phase ended. Registration never
+creates work records, and planning never makes source edits.

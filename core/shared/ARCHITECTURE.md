@@ -1,7 +1,7 @@
 # Architecture
 
 A generated Piper Station hub contains shared docs, shared project records, and
-one or more runtime surfaces. `projects/` is never overwritten or pruned by
+Codex runtime surfaces. `projects/` is never overwritten or pruned by
 bootstrap.
 
 ## Hub Shape
@@ -15,12 +15,8 @@ piper-station-hub/
   TESTING.md
   SECURITY.md
   automation-policy.md
-  AGENTS.md              # Codex runtime, when installed
-  CLAUDE.md              # Claude Code runtime, when installed
-  opencode.json          # OpenCode runtime, when installed
+  AGENTS.md              # Codex always-on instructions
   .codex/                # Codex skills, command references, config, hooks, agents
-  .claude/               # Claude commands, skills, agents, hooks
-  .opencode/             # OpenCode commands, skills, agents
   .piper/lib/            # shared deterministic helpers
   bin/add-project
   projects/

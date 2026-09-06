@@ -1,7 +1,7 @@
 # Design Studio Artifact Contracts
 
-These contracts organize durable design without creating a second Piper
-Station work-tracking system.
+These contracts organize durable design using the same lane artifact semantics
+as execution, with phase-appropriate continuity and no implementation authority.
 
 ## Filesystem
 
@@ -22,6 +22,9 @@ projects/<project-id>/work/
     <studio-slug>/
       README.md
       design.md
+      active-work.md                  # optional studio boundary
+      context-pack.md                 # optional pause/resume packet
+      build-log.md                    # meaningful studio checkpoints
       working-decisions.md             # optional
       open-questions.md                 # optional
       <descriptive-artifact>.md         # optional
@@ -43,7 +46,7 @@ for the same initiative.
 | New durable design content for an initiative with a studio | Inside that studio folder, never a sibling lightweight note |
 | Session narrative or log | Not durable — git history plus `build-log.md` checkpoints |
 | Raw subagent reports and research dumps | Not persisted — distill findings into `design.md` or a named supporting artifact |
-| Post-compact resume guidance | `context-pack.md`, never a studio file |
+| Post-compact resume guidance | This studio lane's `context-pack.md`, never copied into `design.md` or README |
 | Scratch and tmp work | Session scratch space outside the hub — no `tmp/` inside a studio |
 | Decision rationale | `design.md`, or `working-decisions.md` when split |
 | Longer direction and revisit triggers | `roadmap.md` |
@@ -155,6 +158,17 @@ content into the core sections. The content may add problem-appropriate
 sections for actors, scenarios, flows, responsibilities, interfaces, state,
 data, failure, recovery, authority, security, operations, and evolution.
 
+## Related Designs And Synthesis
+
+Apply STATION → Related Work And Changed Assumptions. Link the canonical artifact,
+material revision, assumed contract and consequence where a relationship affects
+this design. Supporting artifacts remain evidence, not accepted contracts.
+When synthesizing efforts, expose conflicting assumptions and alternative
+resolutions, align with the user, and give shared behavior one canonical owner.
+Record impact and resolution owner for consequential proposals. Each affected
+lane updates its own continuity against the resolution; one session does not
+rewrite another session's current-work packet.
+
 ## Conditional Ledgers
 
 Create `working-decisions.md` only when initiative-local alternatives,
@@ -207,7 +221,7 @@ Each mutable fact has one owner:
 | Integrated design, current revision, and acceptance | studio `design.md` |
 | Detailed initiative-local rationale, when split | `working-decisions.md` |
 | Broader design questions, when split | `open-questions.md` |
-| Current design or execution boundary | the lane's `active-work.md` (the flat lane for studio work) |
+| Current design boundary | the studio lane's `active-work.md` |
 | Meaningful checkpoint history | the lane's `build-log.md` |
 | Full pause, compact, and resume state | the lane's `context-pack.md` |
 | Longer direction and revisit triggers | `roadmap.md`, when useful |
@@ -263,7 +277,9 @@ paused, or handed off. Existing Piper work artifacts own that lifecycle state.
 
 ## Piper Work Tracking
 
-Reuse Piper's existing artifacts:
+The studio is lane `studio:<slug>`. Its standard work records live alongside
+`design.md` under `work/design/<slug>/`, never in the flat lane or a group folder.
+Reuse Piper's existing artifact semantics:
 
 - `active-work.md`: current Design Studio boundary, provisional alignment,
   immediate blockers, next discussion, and explicit `no Ralph group or wave`
@@ -276,8 +292,19 @@ Reuse Piper's existing artifacts:
 - `task-queue.md`: only deliberate durable research, validation, prototype,
   review, or later execution work.
 
-A studio README never replaces `context-pack.md`, and studio files never become
-a parallel work tracker.
+A studio README never replaces `context-pack.md`. Standard lane windows are
+optional, independent continuity, not another design-content authority. A studio
+needs no source checkout binding, Ralph wave, group, or execution queue.
+Use `piper-record` for shared publication; sole-owned studio files may use normal
+file tools. Keep accepted design and open working state
+distinct. Shared indexes and project decisions require rereading and digest-checked
+publication just like other project records. Meaningful checkpoints and hub-only
+commits follow STATION without a separate ask.
+
+Legacy flat packets move only when their boundary clearly belongs to this studio.
+Reconcile existing destination records and preserve unrelated flat work and
+historical project ledger entries; leave navigation pointers. Never bulk-migrate
+or overwrite another initiative for convenience.
 
 ## Piper Workflow Handoff
 

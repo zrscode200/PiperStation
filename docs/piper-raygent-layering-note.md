@@ -1,5 +1,8 @@
 # Piper Station And Raygent Layering Note
 
+Status: historical. This records the earlier multi-runtime design; use
+`docs/capability-matrix.md` and current source for this Codex-only branch.
+
 Status: future architecture note. This records a design direction to revisit;
 it does not change the current bootstrap behavior.
 
