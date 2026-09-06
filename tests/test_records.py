@@ -107,6 +107,28 @@ class RecordTest(unittest.TestCase):
             result = self.write("work/lanes/consumption/active-work.md", content=self.binding(value), code=2)
             self.assertIn("work/groups/ingestion/active-work.md", result["message"])
 
+    def test_reserved_execution_record_case_aliases_cannot_bypass_claim_guard(self):
+        checkout = self.register_checkout()
+        first = "work/lanes/first/active-work.md"
+        self.write(first, content=self.binding(checkout))
+        for path in ("work/lanes/second/ACTIVE-WORK.md", "work/LANES/second/active-work.md",
+                     "work/GROUPS/second/active-work.md", "work/Active-Work.md"):
+            with self.subTest(path=path):
+                result = self.write(path, content=self.binding(checkout), code=2)
+                self.assertIn("canonical lowercase", result["message"])
+                self.assertFalse((self.project / path).exists())
+        self.assertEqual((self.project / first).read_text(), self.binding(checkout))
+
+    def test_own_lane_directory_case_alias_does_not_conflict_with_itself(self):
+        checkout = self.register_checkout()
+        path = "work/groups/owned/active-work.md"
+        initial = self.write(path, content=self.binding(checkout))
+        alias = "work/groups/OWNED/active-work.md"
+        if not (self.project / alias).exists():
+            self.skipTest("Filesystem does not provide case aliases")
+        self.write(alias, expected=initial["digest"], content=self.binding(checkout, "paused"))
+        self.assertEqual((self.project / path).read_text(), self.binding(checkout, "paused"))
+
     def test_own_update_and_closed_release_allow_checkout_reassignment(self):
         checkout = self.register_checkout()
         first, second = "work/groups/first/active-work.md", "work/lanes/second/active-work.md"

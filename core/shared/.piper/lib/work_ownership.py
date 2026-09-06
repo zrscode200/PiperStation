@@ -75,10 +75,16 @@ def registered_repo(project: Path) -> Path:
 
 def is_execution_record(relative: PurePosixPath) -> bool:
     parts = relative.parts
-    return parts == ("work", "active-work.md") or (
-        len(parts) == 4 and parts[0] == "work" and parts[1] in ("groups", "lanes")
-        and parts[3] == "active-work.md"
-    )
+    folded = tuple(part.casefold() for part in parts)
+    flat = folded == ("work", "active-work.md")
+    explicit = (len(parts) == 4 and folded[0] == "work"
+                and folded[1] in ("groups", "lanes") and folded[3] == "active-work.md")
+    if flat or explicit:
+        reserved = (0, 1) if flat else (0, 1, 3)
+        if any(parts[index] != folded[index] for index in reserved):
+            raise OwnershipError("lane-record", "Use the canonical lowercase work/groups/lanes and active-work.md spelling for execution bindings.")
+        return True
+    return False
 
 
 def parse_header(text: str, path: Path) -> dict[str, str]:
@@ -135,7 +141,7 @@ def execution_records(project: Path):
 def ensure_unoccupied(project: Path, repo: Path, target: Path, exclude: Path | None = None) -> None:
     target = target.resolve()
     for record in execution_records(project):
-        if record == exclude:
+        if exclude is not None and same_checkout(record, exclude):
             continue
         fields = parse_header(record_text(record, project), record)
         bound = checkout_binding(fields, record, project, repo)
