@@ -1,7 +1,8 @@
-# Codex prototype: first experiments
+# Codex upgrade: workflow experiments
 
-Status: upgrade and experiments in progress. The first native baseline run is
-complete; larger coordination and resume demonstrations remain pending. Piper
+Status: upgrade implementation committed in `97e40c9` and `242503f`; native
+small-work controls, independent design, design resumption, coordinated
+implementation, fixture integration and fresh execution closeout are complete. Piper
 baseline: `052b7a09a47d17ddb082bf13ab8b73db6feeec7b` on
 `work/piper-station-improvement`.
 
@@ -72,19 +73,21 @@ handling. First inspect their dependencies and determine which work can safely
 proceed independently. Choosing to sequence tightly coupled work is a valid
 result.
 
-Compare independently steered sessions with a main session and explicitly
-delegated workers. Give both arrangements the same starting state, acceptance
-requirements, and evidence. Introduce counterexamples drawn from the later
-integrated review after the initial work appears ready. Observe whether Piper
-identifies the affected assumptions and work, assigns responsibility for the
-resolution, and verifies the combined result before completion.
+Exercise two arrangements at different stages: independently steered design
+sessions, then a coordinating implementation session with explicitly delegated
+workers. This is not a like-for-like comparison of implementation arrangements.
+Introduce counterexamples drawn from the later integrated review during design
+resumption. Observe whether Piper identifies affected assumptions and work,
+assigns responsibility for resolution, and verifies the combined result before
+completion. Record evaluator steering separately from autonomous discoveries.
 
 Include a pause/resume boundary after a material finding. A fresh session must
 recover what remains valid, what needs repair, and the next action from the hub
 records and live source. Do not assume an earlier worker is still running.
 
-Use local tests and fixtures. Databricks setup, live workspaces, deployment, and
-publication are outside this experiment.
+Use local tests and fixtures, including integration into the disposable fixture's
+main branch. Databricks setup, live workspaces, deployment, pushes and pull
+requests are outside this experiment.
 
 ## Method and observations
 
@@ -153,7 +156,9 @@ evidence, not a portable deliverable or a required runtime directory.
 
 The fresh actor ran Codex CLI `0.153.4` against `case1-baseline/hub`, with the
 source outside that hub in `case1-baseline/source`. The baseline project config
-pins `gpt-5.5` and medium reasoning. Invocation used `--ignore-user-config`,
+declares `gpt-5.5` and medium reasoning, but the actual host turn metadata reports
+`gpt-6-astra`, as it also does for the upgraded control. Configuration declarations
+alone do not prove runtime selection. Invocation used `--ignore-user-config`,
 invocation-scoped fixture trust, `--approve-for-me`, and workspace-write access
 to the hub and source through `--add-dir`; it did not bypass the sandbox or hook
 trust. The actor was given the symptom and completion request, not the historical
@@ -197,8 +202,23 @@ behavior works. It sets a regression expectation for the upgraded small-work run
   hooks remain enabled; the helpers cannot promise that arbitrary hooks are inert.
 - A macOS concurrent first-lock-creation race reproduced outside Piper. Separating
   exclusive creation from reopening the stable lock inode resolved that probe.
+- Final review reproduced a case-insensitive execution-record path that bypassed
+  ownership checking. Reserved layout spellings now require their canonical form;
+  filesystem identity also distinguishes an update to one's own lane from a
+  competing checkout claim. The reviewer verified the exact reproducer was fixed.
 
 These are code/test findings, not substitutes for native workflow evidence.
+
+### Repository verification
+
+After the final source fix, all required repository checks passed:
+`./tests/run.sh`, shell syntax checks for both bootstrap entry points and the
+renderer, `python3 scripts/render_templates.py --check`, and `git diff --check`.
+The suite includes 29 record-helper tests and 32 integration-helper tests,
+alongside distribution, contract, lifecycle, package and registration checks.
+Tests use real temporary Git repositories/worktrees for stale publication,
+ownership conflicts, preserved staging, hook side effects, interrupted lock
+ownership, and filesystem aliases. Confirmed Piper review findings are resolved.
 
 ### Independent Mason design sessions
 
@@ -206,13 +226,14 @@ Project Mason's isolated starting fixture passed its 95 execution and setup
 tests. Two new Codex sessions then ran concurrently in `case2-upgrade/hub`,
 against the unchanged source outside it. Both used CLI 0.153.4, strict config
 validation, invocation-scoped hub trust, ignored user config and automatic
-approval review. The captured template still pinned gpt-5.5/medium; the later
-inheritance correction was not silently applied to those running sessions.
+approval review. The captured template still pinned gpt-5.5/medium; actual turn
+metadata reports gpt-6-astra for both sessions. The later inheritance correction
+was not silently applied to those running sessions.
 
 | Studio | Native task | Observed outcome |
 | --- | --- | --- |
 | recovery-continuity | `01a074f9-a343-7773-a3e9-4afbbb0a60e1` | 11 selected baseline tests and four controlled interruption observations; provisional revision 1 with independent pause packet, evidence, and ledger; six records committed as `5107725`. |
-| process-outcomes | See `runs/case2-design-outcomes.jsonl` | 34 selected baseline tests; provisional revision 1, independent pause packet and ledger; checkpoints `1b4220d` and `b7e5ecd`. |
+| process-outcomes | `01a074f9-efea-7473-b09a-48e9217d97b4` | 34 selected baseline tests; provisional revision 1, independent pause packet and ledger; checkpoints `1b4220d` and `b7e5ecd`. |
 
 Both source and hub checkouts finished clean. Source stayed at fixture commit
 `acaeca4713d045fe7e8b8c06f0267ccfe0f84150`; neither studio accepted its design,
@@ -229,12 +250,140 @@ are separate facts. The proposals also explored broader public diagnostic/schema
 changes. Those ideas are unaccepted exploration, not added requirements for the
 bounded implementation replay.
 
-The next fresh session explicitly resumes recovery-continuity, reads the other
-proposal, narrows the experiment to existing public behavior, and receives two
+The next fresh session explicitly resumed recovery-continuity, read the other
+proposal, narrowed the experiment to existing public behavior, and received two
 evaluator counterexamples: retained failed-attempt staging after prior trees
 are placed, and invocation while the caller handles an unrelated exception.
-It requests a fresh read-only reviewer and another pause checkpoint. Its launch
-uses the refreshed configuration with inherited model/effort choices and the
+It requested a fresh read-only reviewer and another pause checkpoint. Its launch
+used the refreshed configuration with inherited model/effort choices and the
 modern `default_permissions = ":workspace"` profile; it does not reuse either
-design conversation. Source implementation, combined review, integration and
-execution resumption remain pending.
+design conversation. Task `01a07501-fec1-7902-a196-e4956b5cc88a` completed with
+provisional revision 2, independently checked four review findings, and committed
+seven related hub records as `c3f8ac1`. Source stayed unchanged. A before/after
+hash comparison confirmed every process-outcomes studio file remained identical.
+Shared navigation points to the new canonical recommendation so its future owner
+can reconcile that studio's consumers.
+
+The host exposed `collaboration.spawn_agent` without a selectable `agent_type`.
+The read-only reviewer assignment succeeded, but that does not establish that
+`reviewer.toml` narrowed its sandbox. The adapter now distinguishes role briefs
+and behavioral requirements from actual native role selection and permissions.
+No native worker handle from an earlier conversation was presumed live.
+
+### Upgraded small-work control
+
+Task `01a07510-20e8-7322-8469-f21b19df5e3c` used the exact baseline prompt and
+the same historical source tree, with its own frozen-dependency environment.
+The modern workspace profile, on-request/automatic approval review and an added
+source directory were explicit invocation choices. Actual baseline and upgraded
+turn metadata both report `gpt-6-astra`.
+
+The actor reproduced the regression before fixing it. Source commit `3f2cd7e`
+changes only `server_graph.py` and its focused tests. Hub commit `d27cd66` changes
+only `work/build-log.md`: one work artifact, as in the baseline; no group, named
+lane, queue, packet or delegation. It used `piper-record` for guarded publication
+and the explicit-path commit, retried a denied hub Git write through approved
+scope, and left all managed template files unchanged. Both checkouts finished
+clean. The actor's 28 tests passed; a separate rerun also passed all 28 tests.
+
+Evidence is in `runs/case1-upgrade-*`, including exact invocation, template
+fingerprints, runtime metadata, result, source diff and independent verification.
+This single control supports preserved lightweight completion and functioning
+guarded publication. It is not a general productivity comparison; the actors
+chose different but valid test cases (baseline 29, upgraded 28).
+
+### Coordinated implementation and combined review
+
+The evaluator explicitly narrowed and authorized a bounded implementation replay
+from the reconciled design, preserving the existing public envelope and native
+signal behavior. It permits private restore evidence and local outcome handling,
+while deferring power-loss guarantees, final breadcrumb deletion, persistent
+process-liveness machinery and broader diagnostic schemas. That steering is an
+experiment decision, not acceptance or deployment in the real Mason project.
+
+Fresh task `01a0750d-f662-7d92-829b-66cc8c202e14` used the inherited Astra model
+and explicit fixture workspace permissions. It published accepted-for-planning
+design revision 3, then created one execution group, `recovery-replay`, with a
+candidate checkout and two isolated worker checkouts outside the hub. Restore
+and runner workers had separate file ownership and fixed shared contracts. The
+coordinator owned the combined regression, source assembly, hub records and
+acceptance. Workers changed only their assigned files; no durable lane was
+created for each worker.
+
+Review and coordinator inspection found four defects despite intermediate test
+passes: selector cleanup masking a runner failure; creating a skills parent
+before refusing invalid restore evidence; hiding a late native signal behind an
+ordinary error; and refusing a complete, provable temporary restore record after
+process death. Each finding was independently checked, assigned back to the
+relevant worker, repaired and reverified. The signal finding explicitly corrected
+an earlier downstream assumption while retaining the accepted native-signal
+contract. Passing separate worker tests did not count as combined acceptance.
+
+Final candidate `c0b8910a768cbfd5b500863908abc0de7ef9b7da` passed all **287 tests**;
+the independent final reviewer passed 170 relevant tests and cleared all four
+findings. Coverage includes actual abrupt process exits during Mason restore and
+private recovery-record publication, conservative refusal of changed or incomplete
+evidence, composed runner/rollback behavior, and isolated SIGTERM/SIGHUP outcomes. These finite
+probes support the bounded contracts, not an every-byte or power-loss guarantee.
+Known-unconfirmed external-writer safety and broader transaction-wrapper interrupt
+masking remain outside this candidate's acceptance. The reviewer performed
+read-only work while inheriting workspace-write capabilities; native sandbox
+narrowing remained unverified.
+
+The coordinator stopped before integration with main still at `acaeca4`, all
+checkouts clean, and both implementation workers plus the reviewer observed
+completed. Hub checkpoint `5927293` contains three group records: ownership,
+an evidence ledger, and a pause packet. Exact tested revisions and the next
+guarded integration command have one ledger owner. Managed template files and
+the unrelated process-outcomes studio were unchanged. The evaluator separately
+checked worker file scope and those preserved hashes. Raw events, prompt, final
+response and the checked result are in `runs/case2-implementation*`.
+
+### Publication/checkpoint gap and fresh resumption
+
+After the coordinator and workers finished, the evaluator refreshed only managed
+Piper files to `242503f` and verified all project records remained identical.
+The evaluator then used `piper-integrate` to publish the exact reviewed candidate
+from `acaeca4` to fixture main. It returned `published`, with target and candidate
+both at `c0b8910`; source and hub stayed clean. Project records remained unchanged,
+so the committed pause packet still said integration was next.
+
+This deliberately simulates publication succeeding before its completion record
+is saved. It does not claim that a process was killed during Git publication;
+the helper suite separately exercises interrupted commands and inherited locks.
+The publication result is retained outside the hub in
+`runs/case2-publication-gap.json`, and was not supplied to the new actor.
+
+Fresh task `01a07535-3f75-7b72-99e2-6afd231bbf33` received the resumption and
+closeout request without prior conversation or a hint that main was already
+published. It independently recognized main at the reviewed candidate and checked
+the fast-forward reflog. It treated the old packet as stale, ran all **287 tests**
+on main, and completed the accepted boundary without another integration or worker
+restart. Historical native handles were unavailable; it inspected retained clean
+results and did not infer that old workers were still running.
+
+Hub closeout `38d96eaf2cdc81b9dc95c8489b1fa5e49205edde` updated only the three
+group records and a project completion entry. The group is closed, its execution
+binding removed, and historical assignments retained in the ledger. The evaluator
+verified all four source checkouts and the hub were clean, main and candidate
+remained at `c0b8910`, all other project records (including both studios) and all
+managed files were unchanged, and main's reflog contained just the original
+snapshot and the single evaluator fast-forward. Invocation, raw events, runtime
+metadata, checked result and final response are in `runs/case2-integration-resume*`.
+
+## Evidence limits and deliberately deferred work
+
+The runs demonstrate lightweight completion, independent design continuity,
+related-work reconciliation, delegated implementation with shared acceptance,
+review-driven repair, guarded local integration and fresh-session closeout after
+a publication/checkpoint gap. Helper tests additionally exercise competing
+ownership claims, stale record/base evidence and interrupted publication locks.
+The experiments required explicit evaluator setup, bounded acceptance and the
+documented counterexamples; they are not a general productivity benchmark.
+
+Further evaluation is deferred for independently steered concurrent implementation,
+broader project/stakeholder exploration, longer unattended work, other Codex client
+versions and enforced native read-only role selection. Cooperation remains scoped
+to one hub; direct writes can bypass helpers, separate hubs do not share ownership,
+and multi-file checkpoints are not database transactions. The Mason exclusions
+above remain project design questions, not hidden Piper implementation debt.

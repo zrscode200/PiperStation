@@ -6,15 +6,17 @@ hub adds continuity and explicit boundaries to the Codex tools actually present
 in a session; it does not run a background scheduler or decide project priorities.
 
 The [experiment record](codex-prototype-experiments.md) separates demonstrated
-behavior from work still being verified. The examples here explain the current
-operating contract. A quoted request selects intent, not a new slash-command API.
+behavior from the limits of those observations. The examples here explain the
+current operating contract. A quoted request selects intent, not a new
+slash-command API.
 
 ## Ordinary work stays small
 
 “Fix the multiline startup summary” selects a small execution boundary. Piper
 checks the producer/consumer contract, changes the source, verifies it, and
 records one useful completion entry. A finished fix needs no group, roadmap,
-queue or resume packet. The lc_factory baseline experiment followed that pattern.
+queue or resume packet. Both lc_factory baseline and upgraded experiments
+followed that pattern.
 
 More structure appears when it serves a real need:
 
@@ -35,8 +37,9 @@ work closes an existing binding, without creating a file solely to close it.
 
 In the Mason experiment, one task explored returning after interrupted restore.
 Another explored how cancellation and cleanup failure should be reported. Each
-studio kept its own provisional design and pause packet. Neither acquired a
-writable source checkout or silently approved implementation.
+studio kept its own provisional design and pause packet. Neither claimed
+execution checkout ownership or changed the registered source; both designs
+remained provisional.
 
 The process-outcomes task discovered the recovery task's published boundary
 during checkpoint. It recorded a specific dependency: preserving an interrupt
@@ -45,8 +48,9 @@ other effort and marked the affected recommendation for revalidation. It did not
 invent a design revision while the other canonical design was still unpublished.
 
 “Continue recovery-continuity and reconcile the process-outcomes proposal” then
-selected a fresh design continuation. The fresh task read both designs, checked
-review findings against source, narrowed the shared recommendation, and gave it
+selected a fresh design continuation. With explicitly narrowed scope and two
+evaluator-supplied counterexamples, the fresh task read both designs, checked
+review findings against source, refined the shared recommendation, and gave it
 one canonical owner. The other studio remained byte-for-byte unchanged. Its next
 owner can read the shared resolution and reconcile its own work.
 
@@ -74,6 +78,14 @@ state. They do not own shared hub records or acceptance. The coordinator inspect
 their work, assembles a candidate, tests interactions and resolves independently
 reviewed findings. A short-lived worker need not become a durable group or lane;
 only unfinished assignments need to survive in the parent's continuity records.
+
+In the bounded Mason replay, two workers implemented restoration and runner
+handling in separate worktrees. The coordinator owned the combined regression
+and assembled their changes. Review and coordinator inspection found four
+defects despite intermediate test passes; the responsible workers repaired them
+before acceptance. The final candidate passed 287 tests, with an independent
+reviewer rerunning 170 relevant tests. The coordinator left three group records,
+including a precise pause packet, with all workers completed and main unchanged.
 
 The active client determines the available delegation API. Where named roles are
 selectable, Piper supplies configured roles. Otherwise the coordinator includes
@@ -115,6 +127,13 @@ not copied into every file as a supposed current HEAD. If publication happened
 before the closeout records were saved, source and hub are temporarily out of
 step. Resume reconciles that fact and finishes the records. It must not merge
 again just because the old packet says integration is next.
+
+The Mason experiment exercised that mismatch deliberately: the evaluator published
+the reviewed candidate and left the pause records unchanged. A fresh session
+recognized the completed fast-forward from Git, passed all 287 tests on main,
+and committed closeout without repeating integration or restarting workers.
+It released the execution binding, retained all worktrees, and left both design
+studios unchanged.
 
 ## Practical limits
 
