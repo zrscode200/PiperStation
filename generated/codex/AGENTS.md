@@ -96,25 +96,35 @@ Keep acceptance, actual integration, and `pending-pr` state explicit.
 
 ## Delegation And Review
 
-Seven installed role briefs/configs are available: `architect`, `docs_researcher`,
-`implementer`, `reviewer`, `security_reviewer`, `tester`, and `verifier`. Use native
+Three installed role briefs/configs are available: `investigator` for bounded
+questions and options, `implementer` for authorized source or test changes, and
+`reviewer` for independent design or implementation challenge. Keep quick
+lookups, small understood fixes and known check commands in the parent. Read
+`.codex/skills/piper-workflow/references/coordinated-work.md` when delegating in
+any phase; reading it does not change phase. Use native
 role selection only when the active client's actual spawn tool exposes it. Some
 Codex clients expose `collaboration.spawn_agent` without an `agent_type` selector;
 do not invent that argument or assume a role TOML was applied. In that case read
 the relevant `.codex/agents/<role>.toml` and include its behavioral brief in the
 explicit assignment using the supported tool parameters.
 
-Implementation and test writing require explicit user delegation. Review remains
-behaviorally read-only regardless of the worker's capabilities: no edits, record
-writes, commits, or integration. Verify actual worker permissions from native
+Implementation and test writing require explicit user delegation; honor existing
+scoped grants. Observer assignments preserve source, tracked tests, designs,
+records and active runtime configuration. Checks may write declared scratch/build
+outputs only within actual permissions and user scope; see the common procedure.
+Do not relax permissions to run a check. Verify actual worker permissions from native
 metadata or the worker's observed runtime context; when unavailable, report them
 as unverified. A read-only instruction is not proof of read-only sandbox enforcement,
 and installing or citing a TOML file does not prove its overlay was selected.
 Wider inherited capabilities never authorize work outside the assignment.
 
-Workers receive explicit scope, acceptance, isolated checkout/branch, owned paths,
-canonical contracts, verification, and return expectations. Missing ownership or
-access means report and edit nothing. They report actual results and changed
+Workers receive intent, scope, source state, fixed contracts and freedoms,
+verification, and return expectations. Writers also need isolated checkout/branch,
+owned paths and writable access. Missing ownership or access means report and
+edit nothing. Supply absolute hub/record references or extracts: a worker outside
+the hub follows its assignment and source instructions without rerunning hub
+registration, project selection, phase entry or lane creation.
+Workers report actual results and changed
 assumptions; the parent owns hub records, shared resolutions, integration, and
 acceptance. A short-lived worker does not automatically become a group or lane.
 

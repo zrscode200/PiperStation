@@ -63,6 +63,11 @@ lane. Ralph is Codex prompt behavior, not a shell workflow engine. Read
 
 ## Review Gate
 
+Run known verification commands directly. Delegate a bounded failure analysis
+or independent test-design question when separate reasoning helps; a long test
+command alone does not require an LLM worker. Test-writing workers use the
+implementer role with explicitly authorized test-only ownership.
+
 Required for S2/S3 waves/groups and queued foundational changes: bootstrap,
 installation/update, registration, generated commands, hooks/settings/config,
 test harnesses, ownership, security or automation policy. Expected for meaningful
@@ -75,6 +80,10 @@ non-goals as context. Follow `references/coordinated-work.md` → Native Roles A
 Actual Permissions: use a native role selector only when exposed; otherwise pass
 the installed reviewer's behavioral brief explicitly. Verify/report actual worker
 permissions, and never equate a read-only prompt with sandbox enforcement. The
+same procedure's Source-Preserving Verification section governs permitted
+scratch/build output and unavailable checks; never widen a reviewer's permissions
+or change source/snapshots to make a check pass. Distinguish independently run
+checks from supplied parent evidence. The
 parent self-verifies findings. A group requires integrated cross-wave review after its
 final wave, even when each individual wave passed. Coordinated workers also need
 verification of their combined behavior; inspect interactions and changed shared

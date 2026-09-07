@@ -1,9 +1,10 @@
 # Subagent design: three roles, explicit assignments
 
-Status: **proposed for review**, revision 1, September 7, 2026.
+Status: **implemented and validated**, revision 1, September 7, 2026.
 Branch: `codex/subagent-design`, based on `2db0e58`.
-This is a source-repository design proposal. It does not change installed Piper
-behavior or accept this design for implementation.
+The user accepted this design for implementation. The source distribution now
+implements the three-role surface. See [validation evidence](subagent-experiments.md)
+for fresh Codex results, capability limits and installed-hub rollout.
 
 ## The experience we want
 
@@ -12,7 +13,7 @@ unfinished work coherent as a project grows. Subagents contribute bounded work
 to that conversation. The main session remains responsible for synthesis,
 questions that need the developer, shared records and acceptance.
 
-The proposal is to keep three reusable roles: **investigator, implementer and
+The design keeps three reusable roles: **investigator, implementer and
 reviewer**. Architecture, security, documentation research and test design become
 explicit focuses within assignments. A role can have several instances when
 separate questions justify them; a task can use none.
@@ -54,13 +55,13 @@ passed 287 tests; a fresh session later reconciled completed publication with
 a stale pause packet. These results do not validate all seven custom roles or
 establish that delegation is always faster than working in one session.
 
-Three current design weaknesses motivate this proposal:
+Three weaknesses in the seven-role baseline motivated this design:
 
-1. [Brainstorm](../core/skills/brainstorm/SKILL.md) asks the architect to generate
-   design options, while the [architect brief](../adapters/codex/.codex/agents/architect.toml)
-   restricts it to architecture review. Investigation also too readily calls
+1. Baseline brainstorm asked the architect to generate
+   design options, while the former `architect` brief
+   restricted it to architecture review. Investigation also too readily called
    for both architecture and documentation helpers.
-2. The [verifier](../adapters/codex/.codex/agents/verifier.toml) refuses checks
+2. The former `verifier` refused checks
    requiring writable state. Ordinary test fixtures, caches and build outputs
    can require writes without changing the implementation being examined.
 3. Seven installed configurations are not seven demonstrated native role
@@ -328,10 +329,10 @@ and source link in the parent design.
 
 ## Source changes and rollout
 
-This document is a proposal in `docs/`, not a new runtime procedure. If adopted,
-implement it within the existing ownership model:
+This document records the accepted design. Runtime procedures stay in the
+existing ownership model:
 
-| Source | Planned change |
+| Source | Implementation |
 | --- | --- |
 | `core/shared/STATION.md` | Canonical role responsibilities, authorization boundaries and review/continuity rules. |
 | `core/skills/brainstorm/` and `core/skills/design-studio/` | Conditional investigation and proposal challenge; remove the architecture-review/exploration contradiction. |
@@ -363,7 +364,8 @@ preferred unless compatibility evidence shows a real need for aliases.
 ## Validation before claiming the new design works
 
 The seven-role experiments are baseline evidence. The following checks are
-proposed acceptance criteria, not completed results for this design:
+acceptance criteria. See the [implementation evidence](subagent-experiments.md)
+for completed cases and the limits of current coverage:
 
 | Case | Evidence required |
 | --- | --- |
@@ -387,9 +389,9 @@ Judge usefulness by decision quality, defects found, correctness, preserved
 context, user intervention and artifact cost. Count avoidable launches and wait
 time; fewer role definitions alone do not establish lower runtime cost.
 
-## Choices to review
+## Accepted choices
 
-The recommended design makes four choices:
+The accepted design makes four choices:
 
 1. Three reusable roles, with focused assignments and optional separate instances.
 2. Preserve explicit authorization for writable delegation, honoring standing
@@ -405,5 +407,5 @@ explicit security/architecture questions, not another hidden catalog of required
 personas. Retaining seven thin roles is a reasonable alternative only if tests
 show that their names reliably improve selection or results. A single generic
 worker is simpler to configure, but makes independent challenge and source-write
-authority too easy to blur. The proposed three-role split preserves those
+authority too easy to blur. The three-role split preserves those
 distinctions while leaving the workload-specific expertise in the assignment.

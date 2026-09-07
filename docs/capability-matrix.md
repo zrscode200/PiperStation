@@ -57,7 +57,10 @@ Piper therefore uses configured role selection only when the actual client expos
 it. Otherwise it passes the relevant installed role brief explicitly and reports
 actual worker permissions as observed or unverified. Read-only review behavior
 remains required; a prompt is not sandbox enforcement. TOML configs remain
-installed for clients that support their native selection.
+installed for clients that support their native selection. The subsequent
+[three-role evaluations](subagent-experiments.md) exercised investigator,
+implementer and reviewer briefs, including source-preserving temporary-fixture
+checks; they still do not establish native role-overlay enforcement.
 
 Registration validates hub records and optional repo-marker destinations before
 writing, then rechecks under the shared publication lock. `--hub-only` leaves
@@ -73,6 +76,15 @@ is nested inside another repository. This is required for scoped hub checkpoint
 commits: an enclosing repository is never used as the hub's commit destination.
 
 ## Updating an existing hub
+
+The managed role set is `investigator`, `implementer` and `reviewer`. Refreshing
+a seven-role Codex hub retires the managed architect, docs-researcher,
+security-reviewer, tester and verifier files. It preserves project records,
+retained assignments, source workspaces and unmanaged files. Map old assignments
+using the [accepted design](subagent-design.md); an old name or handle is
+historical context, not evidence that its worker stopped. Resolve actual
+ownership before reassignment. Refresh at an idle boundary after affected
+sessions checkpoint and no active worker depends on the old instructions.
 
 For a Codex-only hub, run:
 

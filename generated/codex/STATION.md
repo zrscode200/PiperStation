@@ -28,6 +28,30 @@ session owns a lane at a time; native workers remain under their parent's
 responsibility. A lane is durable working context, not a native session or a
 claim that a recorded session is still running.
 
+## Delegated Roles
+
+Piper uses three bounded helper roles. An `investigator` answers a concrete
+question with evidence, options and uncertainty, including before a direction
+is accepted. An `implementer` makes explicitly authorized scoped source or test
+changes in its assigned isolated checkout. A `reviewer` independently challenges
+a specific provisional design or exact implementation candidate and reports
+findings and limits; it does not repair or accept the result. Architecture,
+security, documentation and test design are explicit assignment focuses.
+
+Delegate when separate context or independent work improves the result. Keep
+small understood work and known check commands in the main session. Honor
+existing scoped grants for writable delegation; without a grant, the parent
+can perform already-authorized implementation itself. The main session owns
+the user conversation, synthesis, shared records, candidate assembly, integration
+and acceptance. Workers do not recursively delegate or acquire lanes by default.
+
+Use `.codex/skills/piper-workflow/references/coordinated-work.md` for assignment,
+worker entry, dispatch evidence, source-preserving checks and recovery in any
+phase. Observers preserve source, canonical designs and records; bounded test
+output must fit actual permissions and any stricter user policy. Installed role
+configuration is not proof of effective activation or enforced permissions.
+Optional helper availability does not change required independent review gates.
+
 ## Instruction Precedence
 
 Use this order when instructions overlap:
@@ -446,7 +470,8 @@ narrow permissions only when the client applies them. If native role selection
 is absent, pass the relevant installed brief explicitly; never invent a role
 selector or claim a sandbox restriction solely from a prompt. Verify observed
 worker permissions or state them as unverified. Review behavior remains read-only
-and broader inherited capabilities do not widen its assignment.
+with the bounded check-output rules in the coordinated-work procedure;
+broader inherited capabilities do not widen its assignment.
 
 The main session must validate reviewer findings before acting: give each
 finding an explicit verdict — `confirmed-in-scope`, `confirmed-out-of-scope`, or

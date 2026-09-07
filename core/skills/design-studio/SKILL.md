@@ -104,6 +104,15 @@ Use the method reference adaptively:
    reversibility, and evolution where relevant.
 6. Discuss the synthesis with the user and record it after alignment.
 
+Use an `investigator` when a substantial bounded question benefits from separate
+context or parallel research, and a `reviewer` for independent challenge of a
+particular provisional design. Supply the specific architecture, security or
+other focus; keep quick questions in the main session. Follow
+`../piper-workflow/references/coordinated-work.md` for assignments, source and
+verification boundaries. Reading that procedure does not enter execution.
+The main session synthesizes results with the user and owns design publication
+and acceptance; helpers do not create an implementation handoff.
+
 When the question relates to another studio or implementation effort, read its
 canonical records and distinguish tentative ideas from accepted contracts. Use
 STATION → Related Work And Changed Assumptions to record consequential

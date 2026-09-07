@@ -1,8 +1,55 @@
 # Coordinated Work
 
-Read for related independent sessions or authorized delegation. Ordinary
+Read for related independent sessions or delegation in any phase. Reading this
+procedure does not enter implementation or authorize additional actions. Ordinary
 single-session fixes do not need worker plans or relationship registers.
 `STATION.md` owns lanes, related-work semantics, and shared publication.
+
+## Choose Useful Work
+
+Use an `investigator` for a substantial bounded question whose separate context
+or parallel investigation helps the decision. It can explore code, official
+documentation, prior art, or architectural alternatives before a direction is
+accepted. Use an `implementer` for authorized scoped source changes, including
+test-only work. Use a `reviewer` to independently challenge a particular design
+or implementation candidate. Give architecture or security questions an explicit
+focus in the assignment; the role title alone does not supply that focus.
+
+Handle quick lookups, small understood fixes, and known test commands directly.
+Delegate failure analysis or independent test design when the reasoning warrants
+it. Required independent review remains a gate even when optional delegation is
+not useful. An unavailable optional helper does not block parent work; an
+unavailable required reviewer is review debt, not successful self-review.
+
+The main session keeps the product conversation, synthesis, questions for the
+user, shared publication, candidate assembly and acceptance. Honor existing
+scoped delegation grants without per-worker approval asks. Without a writable
+delegation grant, perform authorized implementation in the parent; do not ask
+just to optimize the worker roster. A worker does not recursively delegate.
+
+## Assignment And Worker Entry
+
+Give each worker enough context to act without inheriting the whole conversation:
+
+- the bounded question or outcome, current phase, and why separate work helps;
+- relevant user intent, acceptance or decision criteria, non-goals, fixed
+  contracts and freedoms; a design under review may still be provisional;
+- project identity, exact checkout/source state, and absolute hub/record
+  locations or relevant extracts, including the design revision when applicable;
+- allowed actions, tools, output locations, and verification expectations;
+- what to return, when to report a changed premise or missing context, and the
+  boundary at which to stop. Source writers also need the bindings below.
+
+Use ordinary language, not a mandatory new form or artifact. Supply the selected
+role brief and applicable common boundaries when the client does not load them.
+Prefer a fresh reviewer context with requirements and evidence, without the
+author's full deliberation or an expected verdict.
+
+A worker often starts outside the hub. It follows applicable source instructions
+and the supplied assignment; it does not rerun hub registration, project
+selection, phase entry, or lane creation. Never assume `STATION.md` or relative
+project records exist in the worker's source checkout. Missing context is a gap
+to report to the parent, not permission to invent records or expand the task.
 
 ## Native Roles And Actual Permissions
 
@@ -18,6 +65,37 @@ read-only review does not enforce a read-only sandbox. The review assignment
 still forbids source/record edits, commits and integration even if the worker
 inherits broader capabilities. Report whether narrowing was observed or only
 instructed, without treating unavailable role selection as authority to write.
+
+Distinguish an installed role, instructions actually supplied at dispatch,
+returned work that satisfies the assignment, and enforced runtime permissions.
+Repeating a role name proves none of the latter. In the existing parent ledger,
+retain material dispatch evidence: role and focus, native selection or explicit
+brief path/revision, observed permissions or unknown, source/result identity,
+and limitations. Do not add a worker registry or log every small tool action.
+
+## Source-Preserving Verification
+
+Investigators and reviewers preserve project source, tracked tests, canonical
+designs, hub records, and active runtime configuration. Their assignments can
+allow existing checks or disposable probes with declared scratch/build output
+locations, within actual native permissions. Stricter user read-only policies
+still apply. This does not authorize snapshot/golden updates, dependency
+installation, repairs, commits, integration, or external/exceptional actions.
+
+Keep native read-only narrowing when the client applies it. If a check needs
+unavailable scratch access, report the limitation; do not relax permissions,
+change runtime configuration, or switch to a writable role to evade the boundary.
+The parent may run the check within its own authority or prepare an appropriately
+permitted disposable validation environment. Attribute supplied evidence to the
+parent; do not claim the reviewer independently executed it.
+
+For checks that write inside a repository, prefer an isolated validation copy
+or worktree outside the hub. Inspect source state before and after; preserve
+unexpected writes and report them rather than resetting away evidence. Record
+the commands, actual source identity and relevant limitations. Assigned edits to
+a project's configuration can be implementer output, including Piper templates;
+this never authorizes modifying the active worker's configuration or installed
+hub to bypass an assignment boundary.
 
 ## Independent Sessions
 
@@ -62,8 +140,7 @@ Before spawning a source-writing worker:
    references, prohibited changes, verification, and return requirements.
 4. State whether the worker should commit its own completed source. A worker
    never integrates into base, publishes hub records, spawns additional workers,
-   or takes external/exceptional actions unless separately explicitly delegated
-   and permitted by the parent workflow. Keep exceptional actions in the parent.
+   or takes external/exceptional actions. Those remain in the parent workflow.
 
 A worker missing checkout, ownership, acceptance, or access reports the gap and
 edits nothing. No worker writes its inherited parent checkout as a fallback.

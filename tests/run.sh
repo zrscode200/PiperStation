@@ -109,13 +109,9 @@ codex_hub="$TMP_ROOT/codex-hub"
 assert_file "$codex_hub/AGENTS.md"
 assert_file "$codex_hub/STATION.md"
 assert_file "$codex_hub/.codex/config.toml"
-assert_file "$codex_hub/.codex/agents/architect.toml"
-assert_file "$codex_hub/.codex/agents/docs-researcher.toml"
+assert_file "$codex_hub/.codex/agents/investigator.toml"
 assert_file "$codex_hub/.codex/agents/implementer.toml"
 assert_file "$codex_hub/.codex/agents/reviewer.toml"
-assert_file "$codex_hub/.codex/agents/security-reviewer.toml"
-assert_file "$codex_hub/.codex/agents/tester.toml"
-assert_file "$codex_hub/.codex/agents/verifier.toml"
 assert_file "$codex_hub/.codex/hooks/session-context.sh"
 assert_file "$codex_hub/.codex/hooks/pre-compact-protection.sh"
 assert_file "$codex_hub/.codex/hooks/post-compact-resume.sh"
@@ -154,7 +150,7 @@ assert_not_exists "$codex_hub/.claude"
 assert_not_exists "$codex_hub/.mcp.json"
 assert_not_exists "$codex_hub/.piper/plugin"
 assert_not_contains "$codex_hub/AGENTS.md" "Codex and OpenCode work"
-assert_file_count "$codex_hub/.codex/agents" "*.toml" 7
+assert_file_count "$codex_hub/.codex/agents" "*.toml" 3
 assert_file_count "$codex_hub/.codex/skills/piper-workflow/references" "*.md" 5
 assert_file_count "$codex_hub/.codex/skills/brainstorm/references" "*.md" 1
 assert_file_count "$codex_hub/.codex/skills/design-studio/references" "*.md" 2
@@ -203,13 +199,9 @@ assert_contains "$codex_hub/.codex/hooks.json" '"startup|resume|compact"'
 assert_not_contains "$codex_hub/.codex/hooks.json" '"Stop"'
 assert_not_contains "$codex_hub/.codex/hooks.json" '"PreToolUse"'
 assert_not_contains "$codex_hub/.codex/hooks.json" '"PermissionRequest"'
-assert_contains "$codex_hub/.codex/config.toml" '[agents.architect]'
-assert_contains "$codex_hub/.codex/config.toml" '[agents.docs_researcher]'
+assert_contains "$codex_hub/.codex/config.toml" '[agents.investigator]'
 assert_contains "$codex_hub/.codex/config.toml" '[agents.implementer]'
 assert_contains "$codex_hub/.codex/config.toml" '[agents.reviewer]'
-assert_contains "$codex_hub/.codex/config.toml" '[agents.security_reviewer]'
-assert_contains "$codex_hub/.codex/config.toml" '[agents.tester]'
-assert_contains "$codex_hub/.codex/config.toml" '[agents.verifier]'
 # Hook behavior, lane discovery, and canonical instruction contracts are checked
 # with parsed output and complete normalized prose in test_distribution.py.
 

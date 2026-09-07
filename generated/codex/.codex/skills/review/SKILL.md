@@ -37,6 +37,13 @@ include those instructions in the explicit assignment through supported paramete
 Do not invent `agent_type` or claim the role's sandbox overlay was applied. Verify
 actual native worker permissions when observable; otherwise report them as
 unverified. Behavioral read-only scope remains binding with broader capabilities.
+Use `../piper-workflow/references/coordinated-work.md` for the common assignment
+and source-preserving verification rules, including declared scratch/build
+outputs within actual permissions. Never change source, snapshots or permissions
+to obtain a passing check. Attribute parent-run checks separately from checks
+the reviewer actually executed. The same reviewer role can challenge a
+provisional design within brainstorm or Design Studio without entering this
+implementation-review route.
 The main session must validate each finding before acting: give each finding an explicit verdict
 — `confirmed-in-scope`, `confirmed-out-of-scope`, or `false-positive` — before
 editing any code, then apply only `confirmed-in-scope` fixes, turn

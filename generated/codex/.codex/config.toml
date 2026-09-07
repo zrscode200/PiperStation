@@ -8,26 +8,14 @@ experimental_compact_prompt_file = "compact-prompt.md"
 [features]
 hooks = true
 
-[agents.architect]
-config_file = "./agents/architect.toml"
-
-[agents.docs_researcher]
-config_file = "./agents/docs-researcher.toml"
+[agents.investigator]
+config_file = "./agents/investigator.toml"
 
 [agents.implementer]
 config_file = "./agents/implementer.toml"
 
 [agents.reviewer]
 config_file = "./agents/reviewer.toml"
-
-[agents.security_reviewer]
-config_file = "./agents/security-reviewer.toml"
-
-[agents.tester]
-config_file = "./agents/tester.toml"
-
-[agents.verifier]
-config_file = "./agents/verifier.toml"
 
 [[skills.config]]
 path = "./skills/brainstorm"

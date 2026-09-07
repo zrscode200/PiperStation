@@ -6,6 +6,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import time
@@ -106,6 +107,58 @@ assert (hub / "local-note.md").read_text() == "unmanaged hub note\n"
 manifest_data = json.loads((hub / ".piper/hub-manifest.json").read_text())
 assert manifest_data["runtimes"] == ["codex"]
 assert not any(p.startswith("projects/") for p in manifest_data["managed_files"])
+
+def check_role_migration():
+    # The distribution owns three roles. Custom unmanaged roles and old assignment
+    # records must survive a refresh from the previous seven-role installation.
+    hub = TMP / "role-migration"
+    subprocess.run([str(BOOTSTRAP), str(hub)], check=True, stdout=subprocess.DEVNULL)
+    manifest_data = json.loads((hub / ".piper/hub-manifest.json").read_text())
+    role_names = {"investigator", "implementer", "reviewer"}
+    role_dir = hub / ".codex/agents"
+    assert {p.stem for p in role_dir.glob("*.toml")} == role_names
+    declared = set(re.findall(r"^\[agents\.([^]]+)\]$", (hub / ".codex/config.toml").read_text(), re.M))
+    assert declared == role_names
+    for name in role_names:
+        assert f'config_file = "./agents/{name}.toml"' in (hub / ".codex/config.toml").read_text()
+        assert f'name = "{name}"' in (role_dir / f"{name}.toml").read_text()
+
+    retired = ("architect", "docs-researcher", "security-reviewer", "tester", "verifier")
+    for name in retired:
+        relative = f".codex/agents/{name}.toml"
+        (hub / relative).write_text(f'name = "{name.replace("-", "_")}"\n# old managed role\n')
+        manifest_data["managed_files"].append(relative)
+    (role_dir / "investigator.toml").unlink()
+    manifest_data["managed_files"].remove(".codex/agents/investigator.toml")
+    (hub / ".codex/config.toml").write_text("\n".join(
+        f'[agents.{name.replace("-", "_")}]\nconfig_file = "./agents/{name}.toml"'
+        for name in (*retired, "implementer", "reviewer")))
+    (hub / ".piper/hub-manifest.json").write_text(json.dumps(manifest_data))
+    (role_dir / "custom-local.toml").write_text('name = "custom_local"\n# user-owned role\n')
+    retained = hub / "projects/example/work/lanes/paused/context-pack.md"
+    retained.parent.mkdir(parents=True)
+    retained.write_text("Paused tester assignment; native handle is historical.\nKeep checkout and dirty source; resolve ownership before reassignment.\n")
+    custom_before = (role_dir / "custom-local.toml").read_bytes()
+    source = TMP / "retained-source"
+    source.mkdir()
+    (source / "partial.py").write_text("# unfinished user source\n")
+    (hub / "projects/example/project.md").write_text(f"# Retained project\n- Path: `{source}`\n")
+    project_before = snapshot(hub / "projects")
+    source_before = snapshot(source)
+    before = snapshot(hub)
+    subprocess.run([str(BOOTSTRAP), "--dry-run", str(hub)], check=True, stdout=subprocess.DEVNULL)
+    assert snapshot(hub) == before, "role-upgrade dry run mutated the hub"
+    subprocess.run([str(BOOTSTRAP), str(hub)], check=True, stdout=subprocess.DEVNULL)
+    assert snapshot(hub / "projects") == project_before
+    assert snapshot(source) == source_before
+    assert (role_dir / "custom-local.toml").read_bytes() == custom_before
+    assert {p.stem for p in role_dir.glob("*.toml")} == role_names | {"custom-local"}
+    assert (hub / ".codex/config.toml").read_bytes() == (ROOT / "generated/codex/.codex/config.toml").read_bytes()
+    manifest_data = json.loads((hub / ".piper/hub-manifest.json").read_text())
+    assert {Path(p).stem for p in manifest_data["managed_files"] if p.startswith(".codex/agents/")} == role_names
+
+
+check_role_migration()
 
 # Even an old manifest using alternate spelling cannot own project records.
 for relative in ("./projects/legacy.md", "Projects/legacy.md"):
@@ -440,7 +493,6 @@ requires("AGENTS.md",
     "Never make an unscoped hub commit.",
     "A saved handle or status note is not proof of liveness or completion",
     "Complete explicit checkpoints even if hooks are unavailable.",
-    "Seven installed role briefs/configs are available",
     "Use native role selection only when the active client's actual spawn tool exposes it.",
     "do not invent that argument or assume a role TOML was applied.",
     "include its behavioral brief in the explicit assignment using the supported tool parameters.",
@@ -536,7 +588,7 @@ requires(".codex/agents/reviewer.toml",
     "First check acceptance, scope, non-goals, changed assumptions and missing work; then correctness",
     "cross-wave/cross-worker behavior and related contracts",
     "State actual observed source identities and verification limits.",
-    "Do not edit files, update records, commit, integrate, spawn workers")
+    "Do not repair findings or accept the result.")
 requires(".codex/compact-prompt.md",
     "canonical lane locator (`flat`, `studio:<slug>`, `group:<gid>`, or `lane:<slug>`)",
     "The summary is supplemental recall",

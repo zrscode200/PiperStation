@@ -87,6 +87,20 @@ before acceptance. The final candidate passed 287 tests, with an independent
 reviewer rerunning 170 relevant tests. The coordinator left three group records,
 including a precise pause packet, with all workers completed and main unchanged.
 
+The three roles are investigator, implementer and reviewer. Investigation can
+produce options before a design is accepted; review can challenge a provisional
+design as well as an implementation. Architecture, security and test design
+become explicit assignment focuses. Known check commands run directly; a
+test-writing helper is an implementer with test-only ownership. The main session
+keeps the conversation and acceptance. See the [role design](subagent-design.md).
+
+Workers starting in a source checkout receive absolute hub/record references or
+relevant extracts and do not repeat registration or phase entry. Observer checks
+may use declared scratch/build output within actual permissions while preserving
+source, tracked tests and canonical records. If native restrictions prevent a
+check, the parent can supply evidence within its own authority; that is reported
+separately from checks the reviewer actually ran.
+
 The active client determines the available delegation API. Where named roles are
 selectable, Piper supplies configured roles. Otherwise the coordinator includes
 the relevant role brief in an assignment using supported tool parameters.

@@ -29,6 +29,7 @@ source ownership. See [Codex prototype experiments](docs/codex-prototype-experim
 for real-project cases and evidence, [working across Codex tasks](docs/codex-workflows.md)
 for practical workflows, and [TESTING.md](TESTING.md) for verification.
 
-The [subagent design proposal](docs/subagent-design.md) on this branch describes
-three reusable roles, activation evidence, and verification boundaries. It is
-proposed for review; the installed runtime behavior is unchanged.
+Piper uses three helper roles: investigator, implementer and reviewer. The
+[accepted subagent design](docs/subagent-design.md) explains their assignments,
+activation evidence, verification boundaries and upgrade mapping. See
+[three-role validation](docs/subagent-experiments.md) for observed behavior and limits.

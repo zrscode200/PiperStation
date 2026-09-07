@@ -36,6 +36,8 @@ artifacts.
 
 - `references/add-project.md` — register a repo in the hub ledger (the hinge
   into convergent work).
+- `../piper-workflow/references/coordinated-work.md` — conditional delegation,
+  assignments and verification boundaries; reading it does not enter execution.
 
 Convergent work escalates out of brainstorm: use `piper-workflow` (via
 `$piper-workflow` or the named Superpowers, Ralph and compact handoff procedures) for formal
@@ -86,11 +88,13 @@ Apply the moves the request needs to raise the quality of the decision:
   on consistent axes — complexity, risk, reversibility, blast radius, effort,
   and fit with existing patterns. Do not collapse to the first plausible plan.
 - **Investigate.** Ground options in what exists: how the relevant code works
-  today and prior art. Spawn the read-only `architect` subagent for design and
-  boundary exploration and `docs_researcher` for prior art and official docs
-  (both declared in `.codex/config.toml`). This is exploration to *generate*
-  options, not verification of a chosen one — that verification is
-  `piper-workflow`'s job at the convergent boundary.
+  today and prior art. Handle quick questions directly. Use an `investigator`
+  for a substantial bounded question when separate context or parallel research
+  helps; give it the architectural, documentation, or other focus needed.
+  It may generate options before a direction is accepted. A `reviewer` can
+  independently challenge a particular provisional proposal. Follow the common
+  coordinated-work procedure; neither helper accepts the design, publishes
+  records, or turns exploration into implementation.
 
 ## Optional Design Studio
 
