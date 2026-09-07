@@ -28,3 +28,7 @@ Read [PRODUCT.md](PRODUCT.md) for scope and [ARCHITECTURE.md](ARCHITECTURE.md) f
 source ownership. See [Codex prototype experiments](docs/codex-prototype-experiments.md)
 for real-project cases and evidence, [working across Codex tasks](docs/codex-workflows.md)
 for practical workflows, and [TESTING.md](TESTING.md) for verification.
+
+The [subagent design proposal](docs/subagent-design.md) on this branch describes
+three reusable roles, activation evidence, and verification boundaries. It is
+proposed for review; the installed runtime behavior is unchanged.
