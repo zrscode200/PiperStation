@@ -89,9 +89,11 @@ Apply the moves the request needs to raise the quality of the decision:
   and fit with existing patterns. Do not collapse to the first plausible plan.
 - **Investigate.** Ground options in what exists: how the relevant code works
   today and prior art. Handle quick questions directly. Use an `investigator`
-  for a substantial bounded question when separate context or parallel research
-  helps; give it the architectural, documentation, or other focus needed.
-  It may generate options before a direction is accepted. A `reviewer` can
+  for a substantial bounded question or problem area when separate context or
+  parallel research helps; give it the architectural, documentation, or other focus needed.
+  Learning goals and project constraints can guide research before a preferred
+  solution exists. Outside evidence may expand the options; ask how its
+  assumptions apply here and what evidence challenges them. A `reviewer` can
   independently challenge a particular provisional proposal. Follow the common
   coordinated-work procedure; neither helper accepts the design, publishes
   records, or turns exploration into implementation.

@@ -94,6 +94,14 @@ become explicit assignment focuses. Known check commands run directly; a
 test-writing helper is an implementer with test-only ownership. The main session
 keeps the conversation and acceptance. See the [role design](subagent-design.md).
 
+Design research can begin with a bounded problem area and learning goals before
+a preferred solution exists. The investigator can study prior art, original
+implementations, research and adjacent approaches, then explain the evidence,
+counterexamples and fit with the project's users and constraints. Design Studio's
+[research practice](../core/skills/design-studio/references/studio-method.md#research-to-expand-the-options)
+helps frame that assignment and its return point. Useful findings feed the main
+conversation; no separate researcher role or mandatory research artifact is needed.
+
 Workers starting in a source checkout receive absolute hub/record references or
 relevant extracts and do not repeat registration or phase entry. Observer checks
 may use declared scratch/build output within actual permissions while preserving

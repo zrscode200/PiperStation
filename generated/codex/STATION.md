@@ -30,10 +30,12 @@ claim that a recorded session is still running.
 
 ## Delegated Roles
 
-Piper uses three bounded helper roles. An `investigator` answers a concrete
-question with evidence, options and uncertainty, including before a direction
-is accepted. An `implementer` makes explicitly authorized scoped source or test
-changes in its assigned isolated checkout. A `reviewer` independently challenges
+Piper uses three bounded helper roles. An `investigator` examines a concrete
+question or bounded problem area, drawing on the project and outside research
+to return evidence, applicable options and uncertainty. Learning goals can guide
+it before a preferred direction exists. An `implementer` makes explicitly
+authorized scoped source or test changes in its assigned isolated checkout.
+A `reviewer` independently challenges
 a specific provisional design or exact implementation candidate and reports
 findings and limits; it does not repair or accept the result. Architecture,
 security, documentation and test design are explicit assignment focuses.

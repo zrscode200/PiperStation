@@ -96,7 +96,8 @@ Use the method reference adaptively:
 
 1. Frame the current design boundary and separate facts, assumptions, goals,
    constraints, and non-goals.
-2. Investigate live source or prior art when evidence would change the design.
+2. Investigate live source and research outside approaches when evidence would
+   change the design or expand the available options.
 3. Explore credible alternatives where a real choice exists.
 4. Make the design concrete with the representation appropriate to the
    problem.
@@ -104,10 +105,13 @@ Use the method reference adaptively:
    reversibility, and evolution where relevant.
 6. Discuss the synthesis with the user and record it after alignment.
 
-Use an `investigator` when a substantial bounded question benefits from separate
-context or parallel research, and a `reviewer` for independent challenge of a
-particular provisional design. Supply the specific architecture, security or
-other focus; keep quick questions in the main session. Follow
+Use an `investigator` when a substantial bounded question or problem area benefits
+from separate context or parallel research, and a `reviewer` for independent
+challenge of a particular provisional design. Supply the specific architecture, security or
+other focus; keep quick questions in the main session. For exploratory research,
+use `references/studio-method.md` → Research To Expand The Options: frame learning
+goals before selecting a solution, and request evidence quality, counterevidence
+and applicability to this project's users and constraints. Follow
 `../piper-workflow/references/coordinated-work.md` for assignments, source and
 verification boundaries. Reading that procedure does not enter execution.
 The main session synthesizes results with the user and owns design publication

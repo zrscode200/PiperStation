@@ -7,11 +7,13 @@ single-session fixes do not need worker plans or relationship registers.
 
 ## Choose Useful Work
 
-Use an `investigator` for a substantial bounded question whose separate context
-or parallel investigation helps the decision. It can explore code, official
-documentation, prior art, or architectural alternatives before a direction is
-accepted. Use an `implementer` for authorized scoped source changes, including
-test-only work. Use a `reviewer` to independently challenge a particular design
+Use an `investigator` for a substantial bounded question or problem area whose
+separate context or parallel investigation helps the decision. It can explore
+code, official documentation, prior art, or architectural alternatives before a direction is
+accepted. Learning goals and project constraints can frame exploratory research
+before a preferred solution exists; findings explain evidence quality,
+counterevidence and applicability to the project. Use an `implementer` for
+authorized scoped source changes, including test-only work. Use a `reviewer` to independently challenge a particular design
 or implementation candidate. Give architecture or security questions an explicit
 focus in the assignment; the role title alone does not supply that focus.
 
@@ -31,7 +33,8 @@ just to optimize the worker roster. A worker does not recursively delegate.
 
 Give each worker enough context to act without inheriting the whole conversation:
 
-- the bounded question or outcome, current phase, and why separate work helps;
+- the bounded question or problem area, intended outcome or learning goals,
+  current phase, and why separate work helps;
 - relevant user intent, acceptance or decision criteria, non-goals, fixed
   contracts and freedoms; a design under review may still be provisional;
 - project identity, exact checkout/source state, and absolute hub/record

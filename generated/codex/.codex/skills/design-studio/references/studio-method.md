@@ -32,6 +32,40 @@ needed and the action is routine or has a recorded go-ahead. Record
 findings and implications; do not confuse research material with current design
 authority.
 
+## Research To Expand The Options
+
+Use research when an unfamiliar domain, uncertain feasibility, or approaches
+beyond the current repository could materially change the design. Start with a
+bounded problem area and learning goals; a preferred solution is not required.
+Handle quick questions directly and use an `investigator` when separate context
+or parallel investigation would help the discussion.
+
+Frame the assignment with the relevant users or scenarios, project constraints,
+known facts, assumptions still open to challenge, and what we need to learn.
+Set useful breadth and a return point. For example, a coordination question may
+need alternative ownership and recovery models plus their failure cases, before
+we know which mechanism fits our project. The common coordinated-work procedure
+owns assignment and action boundaries.
+
+Ask for findings that help the next design conversation:
+
+- Credible approaches from relevant prior art, original implementations,
+  documentation or research, including useful ideas from adjacent domains.
+- Evidence quality: primary source anchors, relevant dates or versions,
+  documented behavior versus claims or inference, and contradictory evidence.
+- Applicability: the assumptions behind each approach, how our users and
+  constraints differ, and what could be adopted, adapted or rejected.
+- Implications for the alternatives, remaining uncertainty, and what evidence
+  would change the recommendation. Missing access or inconclusive evidence
+  remains a stated limit.
+
+Stop the inquiry when it can materially advance the discussion, or return to
+the parent when further progress requires new scope or unavailable evidence.
+Let the question determine the output's size and form; no source quota, required
+research document, or automatic design acceptance. The main session synthesizes
+findings with the user and preserves useful evidence through the existing studio
+artifact and checkpoint rules.
+
 ## Diverge Where A Real Choice Exists
 
 Generate multiple credible approaches when their tradeoffs matter. Compare
