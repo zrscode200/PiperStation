@@ -37,8 +37,10 @@ packet, active work, ledger, optional queue and canonical design. Derive live
 repo path, branch/HEAD/status, changes since acceptance, and hub commit status
 from their owners. Recover the exact next action and relevant source neighborhood.
 
-Reconcile changed canonical revisions before dependent execution; studio resume
-stays in the design phase. Verify native worker status and actual results before
+Reconcile changed canonical revisions, adopted details and later relevant evidence
+assessments before dependent execution. Use ordinary hub acceptance history to
+establish accepted content when supporting files changed without a revision bump.
+Studio resume stays in the design phase. Verify native worker status and actual results before
 restarting or reassigning work. If a handle cannot be observed, resolve ownership
 without inventing liveness. If integration happened but records are incomplete,
 inspect git and finish publication instead of repeating the merge.

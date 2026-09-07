@@ -16,8 +16,11 @@ lane. Ralph is Codex prompt behavior, not a shell workflow engine. Read
    do not shrink the current assignment.
 3. Confirm acceptance, expected diff boundary, verification command or meaningful
    fallback, risk, and necessary slice breakdown. Check exact accepted design
-   revisions and relevant related-work impacts. A stale fixed contract blocks
-   dependent execution until revalidated; unaffected work can proceed.
+   revisions, explicitly adopted details and relevant later evidence or
+   related-work impacts. Check later adopted-content edits against the ordinary
+   acceptance checkpoint; an unchanged overview revision is insufficient.
+   A stale fixed contract blocks dependent execution until revalidated;
+   unaffected work can proceed.
 4. Verify repo identity, assigned branch, exclusive checkout ownership, actual
    git state, and native writable access. Preserve unrelated changes. Creating
    a lane or worktree does not grant sandbox access. Never edit another lane's

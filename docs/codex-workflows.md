@@ -33,6 +33,28 @@ Piper asks when the intended boundary is ambiguous, not merely because other
 work exists in the hub. A paused execution binding remains reserved. Completed
 work closes an existing binding, without creating a file solely to close it.
 
+## A design can grow without a new document taxonomy
+
+One studio folder holds one initiative across sessions. Its `design.md` keeps
+the overview and can explicitly adopt a detailed document or diagram as part
+of the design. Other links can explain evidence or alternatives without turning
+them into requirements. Descriptive filenames are flexible; no new artifact
+types or relationship-label fields are required.
+
+Acceptance reviews the overview and adopted details together, recording them in
+the existing ledger and scoped hub commit. A later task can recover that accepted
+content from ordinary Git history and inspect subsequent changes, even if a
+supporting contract changed without a revision bump. There is no separate
+snapshot receipt or acceptance stage. `piper-record commit` also publishes
+supported design assets under `work/design/`; Markdown mutation commands retain
+their existing scope.
+
+Consequential research preserves observation time, source/version and relevant
+conditions. Later reassessments explain changed applicability and affected
+decisions without erasing earlier observations. An edit date alone does not
+prove revalidation. The [design artifact update](design-artifact-evolution.md)
+describes the contract and its verification scope.
+
 ## Two designs can develop independently
 
 In the Mason experiment, one task explored returning after interrupted restore.

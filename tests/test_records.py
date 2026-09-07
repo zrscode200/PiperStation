@@ -312,6 +312,137 @@ class RecordTest(unittest.TestCase):
         self.assertEqual(self.git("show", "HEAD:projects/example/work/[a].md"), b"chosen\n")
         self.assertEqual(self.git("diff", "--cached", "--name-only").strip(), b"projects/example/work/a.md")
 
+    def test_design_checkpoint_preserves_binary_assets_and_other_studio_index(self):
+        other = self.project / "work/design/other/design.md"
+        other.parent.mkdir(parents=True)
+        other.write_text("base\n")
+        self.init_git()
+        other.write_text("staged\n")
+        self.git("add", "projects/example/work/design/other/design.md")
+        other.write_text("unstaged\n")
+        indexed = self.git("ls-files", "--stage")
+        studio = self.project / "work/design/recovery"
+        studio.mkdir()
+        artifacts = {
+            "design.md": b"revision: 1\naccepted_revision: 1\nContract: [states](states.json).\n",
+            "states.json": b'{"failure": "stop"}\n',
+            "flow.svg": b'<svg xmlns="http://www.w3.org/2000/svg"/>\n',
+            # Non-UTF-8 bytes must be preserved, not decoded as a Markdown record.
+            "preview.png": b"\x89PNG\r\n\x1a\n\xff\x00",
+            "build-log.md": b"User accepted revision 1 and the adopted states contract.\n",
+        }
+        for name, data in artifacts.items():
+            (studio / name).write_bytes(data)
+        paths = ["work/design/recovery/" + name for name in artifacts]
+        result = self.run_record("commit", "--paths", *paths, "--message", "Accept recovery revision 1")
+        for name, data in artifacts.items():
+            path = "work/design/recovery/" + name
+            self.assertEqual(self.git("show", f"{result['head']}:projects/example/{path}"), data)
+            self.assertEqual(result["committed_digests"][path], hashlib.sha256(data).hexdigest())
+        self.assertEqual(self.git("diff", "--cached", "--name-only").strip(),
+                         b"projects/example/work/design/other/design.md")
+        self.assertEqual(self.git("show", ":projects/example/work/design/other/design.md"), b"staged\n")
+        self.assertEqual(other.read_text(), "unstaged\n")
+        self.assertTrue(all(entry in self.git("ls-files", "--stage").splitlines()
+                            for entry in indexed.splitlines()))
+
+    def test_ordinary_acceptance_history_recovers_details_after_later_edits(self):
+        self.init_git()
+        studio = self.project / "work/design/recovery"
+        studio.mkdir(parents=True)
+        design = "work/design/recovery/design.md"
+        evidence = "work/design/recovery/probe.md"
+        detail = "work/design/recovery/states.mmd"
+        ledger = "work/design/recovery/build-log.md"
+        self.write(design, content="revision: 1\naccepted_revision: 1\nContract: [states](states.mmd).\n")
+        self.write(evidence, content="2026-09-01: observed stop on failure at source A.\n")
+        self.write(ledger, content="2026-09-02: user accepted revision 1, using probe.md.\n")
+        (self.project / detail).write_text("stateDiagram-v2\n  Failed --> Stopped\n")
+        accepted = self.run_record("commit", "--paths", design, evidence, detail, ledger,
+                                   "--message", "Accept recovery revision 1")["head"]
+        observation = (self.project / evidence).read_bytes()
+        original = (self.project / detail).read_bytes()
+        (self.project / evidence).write_bytes(observation + b"2026-09-03: source B changes retry; revalidate recovery.\n")
+        (self.project / detail).write_text("stateDiagram-v2\n  Failed --> Retrying\n")
+        self.run_record("commit", "--paths", evidence, detail, "--message", "Record later investigation")
+        # Ordinary Git reveals changed supporting content even with the same
+        # overview revision. This verifies recovery, not model judgment of drift.
+        self.assertEqual(self.git("diff", "--name-only", accepted, "HEAD", "--",
+                                 "projects/example/" + design), b"")
+        self.assertIn(("projects/example/" + detail).encode(),
+                      self.git("diff", "--name-only", accepted, "HEAD"))
+        self.assertEqual(self.git("show", f"{accepted}:projects/example/{detail}"), original)
+        self.assertEqual(self.git("show", f"{accepted}:projects/example/{evidence}"), observation)
+        self.assertTrue((self.project / evidence).read_bytes().startswith(observation))
+
+    def test_invalid_design_asset_selection_does_not_stage_valid_record(self):
+        self.init_git()
+        self.write()
+        studio = self.project / "work/design/recovery"
+        studio.mkdir(parents=True)
+        outside = self.root / "outside.png"
+        outside.write_bytes(b"external\xff")
+        (studio / "link.png").symlink_to(outside)
+        (studio / "alias").symlink_to(self.root, target_is_directory=True)
+        (studio / "directory.png").mkdir()
+        os.mkfifo(studio / "fifo.png")
+        (studio / "executable.svg").write_text("<svg/>\n")
+        (studio / "executable.svg").chmod(0o755)
+        (studio / "prototype.py").write_text("print('source stays outside')\n")
+        (self.project / "work/preview.png").write_bytes(b"wrong area")
+        (studio / ".private").mkdir()
+        (studio / ".private/preview.png").write_bytes(b"hidden")
+        before = self.git("ls-files", "--stage")
+        head = self.git("rev-parse", "HEAD")
+        for path in ("work/preview.png", "work/design/recovery/link.png",
+                     "work/design/recovery/alias/outside.png", "work/design/recovery/directory.png",
+                     "work/design/recovery/fifo.png", "work/design/recovery/executable.svg",
+                     "work/design/recovery/prototype.py", "work/design/recovery/missing.png",
+                     "work/design/recovery/.private/preview.png", "work/design/../preview.png",
+                     "../../STATION.md", str(outside)):
+            with self.subTest(path=path):
+                self.run_record("commit", "--paths", "memory.md", path, "--message", "Invalid", expected=2)
+                self.assertEqual(self.git("ls-files", "--stage"), before)
+                self.assertEqual(self.git("rev-parse", "HEAD"), head)
+        self.assertEqual(outside.read_bytes(), b"external\xff")
+
+    def test_design_assets_do_not_expand_markdown_mutation_commands(self):
+        asset = self.project / "work/design/recovery/flow.svg"
+        asset.parent.mkdir(parents=True)
+        asset.write_bytes(b"<svg/>\n")
+        self.run_record("read", "work/design/recovery/flow.svg", expected=2)
+        self.write("work/design/recovery/flow.svg", content="replacement\n", code=2)
+        self.assertEqual(asset.read_bytes(), b"<svg/>\n")
+
+    def test_hook_mutating_selected_binary_asset_reports_actual_commit(self):
+        self.init_git()
+        asset = self.project / "work/design/recovery/preview.png"
+        asset.parent.mkdir(parents=True)
+        asset.write_bytes(b"\xfforiginal\x00")
+        hook = self.hub / ".git/hooks/pre-commit"
+        hook.write_text("#!/bin/sh\nprintf 'changed' > projects/example/work/design/recovery/preview.png\n"
+                        "git add -- projects/example/work/design/recovery/preview.png\n")
+        hook.chmod(0o755)
+        result = self.run_record("commit", "--paths", "work/design/recovery/preview.png",
+                                 "--message", "Hook changed asset", expected=4)
+        self.assertEqual(result["status"], "committed-needs-attention")
+        self.assertEqual(self.git("show", f"{result['head']}:projects/example/work/design/recovery/preview.png"),
+                         b"changed")
+
+    def test_hook_changing_only_asset_mode_is_reported_after_commit(self):
+        self.init_git()
+        path = "projects/example/work/design/recovery/flow.svg"
+        asset = self.hub / path
+        asset.parent.mkdir(parents=True)
+        asset.write_text("<svg/>\n")
+        hook = self.hub / ".git/hooks/pre-commit"
+        hook.write_text(f"#!/bin/sh\nchmod +x {path}\ngit add -- {path}\n")
+        hook.chmod(0o755)
+        result = self.run_record("commit", "--paths", "work/design/recovery/flow.svg",
+                                 "--message", "Hook changed mode", expected=4)
+        self.assertEqual(result["status"], "committed-needs-attention")
+        self.assertEqual(result["invalid_asset_modes"], [path])
+
     def test_commit_rejects_inherited_parent_repo_without_mutation(self):
         subprocess.run(["git", "init", "-q", str(self.root)], env=self.env, check=True)
         self.write()

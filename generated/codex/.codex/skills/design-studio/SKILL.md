@@ -137,7 +137,7 @@ universal topic, aspect, research, probe, or prototype categories.
 
 At a meaningful design boundary:
 
-- reconcile `design.md` and material revision;
+- reconcile `design.md`, any explicitly adopted details, and material revision;
 - update navigation only when artifacts, relationships, or reading paths change;
 - use this studio's `active-work.md` only when its current design boundary needs
   continuity; record `lane: studio:<slug>` and no Ralph group or wave;
@@ -153,15 +153,17 @@ a stale digest requires reconciliation. Do not update every artifact after every
 exchange. Legacy flat continuity moves only when clearly owned by this studio;
 preserve unrelated execution state and link the earlier project ledger.
 
-On resume, read the studio's actual packet and canonical design, inspect relevant
-live source and changed related records, and continue design without source edits.
+On resume, read the studio's actual packet, canonical design and adopted details,
+inspect relevant live source, later evidence assessments and changed related
+records, and continue design without source edits.
 A clearly selected studio is not blocked by other open execution lanes.
 
 ## Revision, Acceptance, And Handoff
 
 `design.md` owns the current integer revision and design maturity.
 
-- Material changes to the integrated design increment `revision`.
+- Material changes to the integrated design, including adopted details or their
+  scope, increment `revision`.
 - Editorial or navigation-only changes do not.
 - Only an explicit user signal may set `status: accepted-for-planning` and
   `accepted_revision` to the current revision.
@@ -206,7 +208,8 @@ complete.
 - Do not create empty optional artifacts in anticipation of future work.
 - Do not treat supporting material as accepted design unless `design.md`
   integrates or adopts it.
-- Keep design content in `design.md` and continuity in the studio lane's
+- Keep integrated direction and adoption scope in `design.md`; detailed contracts
+  may live in explicitly adopted artifacts. Keep continuity in the studio lane's
   standard work records; READMEs never duplicate the packet or ledger.
 - Do not turn design subjects into implementation groups or waves.
 - Do not copy project source or executable prototypes into the hub.

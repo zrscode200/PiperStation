@@ -14,8 +14,11 @@ it does not silently redesign an upstream fixed contract.
 2. For an ordinary brainstorm brief, verify its assumptions against live code.
    For a studio handoff read `design_artifact` and integer `accepted_revision: N`.
    Require `status: accepted-for-planning` and both current metadata revisions
-   equal to N. Read significant supporting artifacts and source evidence. A
-   missing, provisional, superseded, or mismatched revision returns upstream
+   equal to N. Read significant supporting artifacts and source evidence.
+   Include explicitly adopted details; compare them with the ordinary hub
+   acceptance checkpoint to detect unrecorded contract changes, and inspect
+   later relevant evidence assessments. Resolve ambiguous accepted content
+   before dependent work. A missing, provisional, superseded, or mismatched revision returns upstream
    for explicit acceptance and revalidation. Reference the canonical design;
    do not copy it into execution records.
 3. Inspect actual source, relevant call sites and tests, existing changes, and

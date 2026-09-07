@@ -40,8 +40,12 @@ accepted_revision: N
 ```
 
 Verify current `status: accepted-for-planning`, integer `revision`, and integer
-`accepted_revision`, both equal to handed-off `N`. Read linked evidence and
-verify fixed contracts and premises against live source. A missing, provisional,
+`accepted_revision`, both equal to handed-off `N`. Read explicitly adopted details
+and relevant linked evidence; verify fixed contracts and premises against live
+source. Use the ordinary hub acceptance checkpoint to check later adopted-content
+edits, even when the overview's revision is unchanged, and inspect subsequent
+relevant evidence assessments. Resolve ambiguous accepted content before relying
+on it; a material change needs renewed acceptance. A missing, provisional,
 superseded, or changed revision is stale; obtain explicit acceptance and reverify
 before relying on it. Record the pair rather than copying canonical design.
 Choices within implementation freedoms remain downstream; do not silently

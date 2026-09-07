@@ -22,6 +22,11 @@ and base. A worker-local pass or clean merge does not establish integration
 correctness. Read the lane's `context-pack.md` when resume
 state affects the review.
 
+For a studio-derived implementation, include the design's explicitly adopted
+details and relevant later evidence assessments. Check suspected contract drift
+against the ordinary hub acceptance checkpoint, even when the overview's revision
+matches. A research link alone is not an adopted requirement.
+
 Do not use this skill for general repo orientation, planning, implementation,
 or automation approval. Route orientation to `brainstorm`, execution planning and implementation to
 `piper-workflow`, and studio design back to `design-studio` as appropriate. Route automation approval

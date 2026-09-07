@@ -122,6 +122,15 @@ checkpoint history. Update it when the artifact map or reading paths change.
 ## Canonical Design
 
 `design.md` is required and owns the current integrated design and revision.
+It may explicitly adopt detailed documents or visuals without duplicating their
+content. State the scope in ordinary prose beside the link, for example:
+"The recovery contract is defined in [recovery-states.md](recovery-states.md)."
+Adopt focused artifacts, or identify the exact section when a file mixes settled
+and exploratory content. A bare link does not adopt its contents. No relationship
+labels, artifact registry, or additional metadata schema is required.
+When adopting outside material, retain the actual design obligations locally;
+a mutable external link alone cannot identify accepted content.
+
 Start it with:
 
 ```yaml
@@ -162,7 +171,8 @@ data, failure, recovery, authority, security, operations, and evolution.
 
 Apply STATION → Related Work And Changed Assumptions. Link the canonical artifact,
 material revision, assumed contract and consequence where a relationship affects
-this design. Supporting artifacts remain evidence, not accepted contracts.
+this design. Read any explicitly adopted details as part of that design;
+other supporting material does not become an accepted contract through linkage.
 When synthesizing efforts, expose conflicting assumptions and alternative
 resolutions, align with the user, and give shared behavior one canonical owner.
 Record impact and resolution owner for consequential proposals. Each affected
@@ -201,8 +211,28 @@ studio README at creation and explain its role. Supporting material never
 silently becomes current design authority.
 
 Executable prototypes belong in an authorized registered or scratch repository,
-not the hub. The studio may record a locator, findings, limits, and design
-implications.
+not the hub. Retain relevant source/version locators, conditions, commands,
+findings, limits, and design implications for consequential experiments. A
+temporary path alone is not durable evidence of how to reproduce a result.
+
+### Evidence Over Time
+
+For evidence that affects a decision, preserve what was observed, when, against
+which source/version or conditions, and which decision relies on it. Distinguish
+observation or retrieval time from a source's publication/event date and the
+artifact's `updated` edit date. Use dates when sufficient, time and timezone when
+ordering matters; leave unknowns explicit rather than infer them from file dates.
+
+When later evidence changes the conclusion or its applicability, add a dated
+reassessment beside or linked to the original finding: what changed, why, and
+the affected decision or work. Preserve the earlier observation and explain
+corrections. A concise current conclusion may point to that history. Age alone
+does not invalidate evidence, and a recent edit does not prove revalidation.
+
+Keep these details in the evidence's existing home, inline or in a supporting
+artifact. Link meaningful adoption, contradiction, revalidation or supersession
+from the ordinary checkpoint ledger; keep mundane edit history in Git. No
+mandatory research template, per-sketch tracking, or background monitoring.
 
 ## Exceptional Archive
 
@@ -218,7 +248,9 @@ Each mutable fact has one owner:
 | --- | --- |
 | Available project design work and entry points | `work/design/README.md` |
 | Studio files and navigation | studio `README.md` |
-| Integrated design, current revision, and acceptance | studio `design.md` |
+| Integrated design, adopted detail scope, current revision, and acceptance | studio `design.md` |
+| Adopted detailed contracts | The artifacts or sections explicitly adopted by `design.md` |
+| Observations and later applicability assessments | Their original design section or supporting artifact |
 | Detailed initiative-local rationale, when split | `working-decisions.md` |
 | Broader design questions, when split | `open-questions.md` |
 | Current design boundary | the studio lane's `active-work.md` |
@@ -231,8 +263,11 @@ Each mutable fact has one owner:
 | Project binding and standing policy notes | project `project.md` |
 | Branch, HEAD, commit list, and raw diff | live project git |
 
-If records disagree, `design.md` wins for design content and revision,
-`active-work.md` for the current boundary, `context-pack.md` for cold resume,
+`design.md` owns the integrated direction, adoption scope, and revision; adopted
+details own their declared contracts. Resolve a contradiction between them before
+relying on the affected contract; do not silently discard an adopted detail.
+For continuity disagreements, `active-work.md` wins for the current boundary,
+`context-pack.md` for cold resume,
 and `build-log.md` for checkpoint history. READMEs remain navigation.
 
 ## Create, Reuse, And Slugs
@@ -255,7 +290,7 @@ supersession links. Never silently move or delete the original.
 
 - Begin a new studio at `revision: 1`.
 - Increment the integer revision for a material change to the integrated
-  design.
+  design, including an adopted detail or its adoption scope.
 - Do not increment for editorial fixes or navigation-only changes.
 - Writing or revising content does not imply user acceptance.
 - Only an explicit user signal may set:
@@ -274,6 +309,21 @@ supersession links. Never silently move or delete the original.
 
 Design maturity does not duplicate whether the studio is currently active,
 paused, or handed off. Existing Piper work artifacts own that lifecycle state.
+
+At acceptance, review the overview and its adopted details together. Record the
+accepted revision and relevant evidence in the ordinary `build-log.md` entry,
+and include the reviewed local files in that same scoped hub checkpoint. Git
+then preserves what was accepted, including adopted visuals and specifications.
+Inspect the commit result; do not claim persistence if it failed or omitted a
+required file. Unless the user requested uncommitted records, use the existing
+checkpoint operation without an extra approval, snapshot receipt, or second
+commit merely to record the first commit's ID.
+
+A later handoff may cite that ordinary acceptance commit when it helps identify
+the accepted content. Otherwise find the revision's acceptance entry in hub Git
+history; newest HEAD or a revision number alone is not proof that later supporting
+edits were accepted. Research may accumulate without changing accepted obligations;
+record changed premises under STATION's related-work rules when they affect work.
 
 ## Piper Work Tracking
 
@@ -324,8 +374,13 @@ studio pauses or concludes without a handoff pair. Piper Workflow may still
 proceed from ordinary brainstorm direction — a studio is never a blocker.
 The unaccepted design remains reference material, not a verified input.
 
-Piper Workflow reads linked supporting artifacts, verifies the accepted
-revision against live source, and references rather than copies the design.
+Piper Workflow reads explicitly adopted details and relevant supporting evidence,
+verifies the accepted revision against live source, and references rather than
+copies the design. Compare adopted content with the ordinary acceptance checkpoint
+when checking for later edits, including edits that failed to bump the overview's
+revision. Inspect subsequent relevant findings and reassessments too: historical
+acceptance does not establish that its evidence still applies. If accepted scope
+or content cannot be established, resolve that uncertainty before dependent work.
 Choices inside implementation freedoms stay downstream. If source verification
 invalidates a fixed contract or core premise, return upstream to Design Studio.
 

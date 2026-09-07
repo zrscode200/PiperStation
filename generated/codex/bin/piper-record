@@ -34,19 +34,32 @@ class RecordError(Exception):
     pass
 
 
+# Publication formats, not new artifact types. Executable prototypes and copied
+# source remain outside the hub; extension checks are not a content sandbox.
+DESIGN_ASSET_SUFFIXES = frozenset({
+    ".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".pdf",
+    ".mmd", ".dot", ".json", ".yaml", ".yml", ".csv", ".txt",
+})
+
+
 def emit(**fields):
     print(json.dumps(fields, ensure_ascii=False))
 
 
-def record_path(value):
+def record_path(value, *, allow_assets=False):
     path = PurePosixPath(value)
     if path.is_absolute() or not value or value != str(path):
         raise RecordError("Record paths must be literal, project-relative paths.")
     if any(part in (".", "..") or part.startswith(".") or any(ord(c) < 32 for c in part)
            for part in path.parts):
         raise RecordError("Hidden, traversal, and control-character paths are not records.")
-    if value not in ("project.md", "memory.md", "decisions.md") and not (
-            len(path.parts) > 1 and path.parts[0] == "work" and path.suffix == ".md"):
+    markdown = value in ("project.md", "memory.md", "decisions.md") or (
+        len(path.parts) > 1 and path.parts[0] == "work" and path.suffix == ".md")
+    asset = (allow_assets and len(path.parts) > 2 and path.parts[:2] == ("work", "design")
+             and path.suffix in DESIGN_ASSET_SUFFIXES)
+    if not (markdown or asset):
+        if allow_assets:
+            raise RecordError("Choose a Markdown record or a supported design asset under work/design/; see commit --help.")
         raise RecordError("Choose project.md, memory.md, decisions.md, or a Markdown record under work/.")
     return path
 
@@ -69,7 +82,7 @@ def directory(root, parts=(), create=False):
         os.close(fd)
 
 
-def read_at(root, relative):
+def read_at(root, relative, *, text=True):
     try:
         with directory(root, relative.parts[:-1]) as parent:
             fd = os.open(relative.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent)
@@ -80,7 +93,8 @@ def read_at(root, relative):
                 data = stream.read()
     except FileNotFoundError:
         return dict(digest="missing", content=None), None
-    return dict(digest=hashlib.sha256(data).hexdigest(), content=data.decode("utf-8")), stat.S_IMODE(mode)
+    return dict(digest=hashlib.sha256(data).hexdigest(),
+                content=data.decode("utf-8") if text else None), stat.S_IMODE(mode)
 
 
 def project_root(value):
@@ -253,7 +267,7 @@ def commit(project, hub, paths, message, lock_fd):
     top = checked_git(hub, "rev-parse", "--show-toplevel").strip()
     if Path(top).resolve() != hub:
         raise RecordError("Commit requires the hub's own Git root; it must not use a parent repository.")
-    relative = [record_path(value) for value in paths]
+    relative = [record_path(value, allow_assets=True) for value in paths]
     selected = [str(project.relative_to(hub) / str(path)) for path in relative]
     if len(set(selected)) != len(selected):
         raise RecordError("Each selected record must appear once.")
@@ -264,9 +278,12 @@ def commit(project, hub, paths, message, lock_fd):
     new = []
     proposal_digests = {}
     for path, name in zip(relative, selected):
-        current, _ = read_at(project, path)
+        is_asset = path.suffix != ".md"
+        current, mode = read_at(project, path, text=not is_asset)
         if current["digest"] == "missing":
             raise RecordError("Selected records must exist; deletion is an explicit maintenance operation.")
+        if is_asset and mode & 0o111:
+            raise RecordError("Design assets must not have executable permissions; prototypes belong outside the hub.")
         if git(hub, "ls-files", "--error-unmatch", "--", name).returncode:
             new.append(name)
         proposal_digests[str(path)] = current["digest"]
@@ -310,15 +327,23 @@ def inspect_commit(project, hub, relative, selected, proposal_digests, result,
         changed = checked_git(hub, "ls-tree", "-r", "--name-only", "-z", after).split("\0")
         expected_parent = len(checked_git(hub, "rev-list", "--parents", "-n", "1", after).split()) == 1
     unexpected = sorted(set(filter(None, changed)) - set(selected))
+    assets = [name for path, name in zip(relative, selected) if path.suffix != ".md"]
+    invalid_assets = []
+    if assets:
+        entries = checked_git(hub, "ls-tree", "-z", after, "--", *assets)
+        modes = {entry.split("\t", 1)[1]: entry.split(" ", 1)[0]
+                 for entry in entries.split("\0") if entry}
+        invalid_assets = [name for name in assets if modes.get(name) != "100644"]
     committed_digests = {}
     for path, name in zip(relative, selected):
         blob = git(hub, "show", f"{after}:{name}", binary=True)
         committed_digests[str(path)] = hashlib.sha256(blob.stdout).hexdigest() if blob.returncode == 0 else "missing"
     remaining = checked_git(hub, "status", "--porcelain=v1", "--", *selected).strip()
-    attention = bool(result.returncode or unexpected or not expected_parent or remaining
+    attention = bool(result.returncode or unexpected or invalid_assets or not expected_parent or remaining
                      or proposal_digests != committed_digests or unrelated_files or unrelated_index)
     emit(status="committed-needs-attention" if attention else "committed", head=after,
          previous_head=before, paths=selected, unexpected_paths=unexpected,
+         invalid_asset_modes=invalid_assets,
          committed_digests=committed_digests, remaining_status=remaining,
          unrelated_worktree_changes=unrelated_files, unrelated_index_changes=unrelated_index,
          message=result.stderr.strip() or result.stdout.strip())
@@ -336,7 +361,9 @@ def main():
     write.add_argument("path")
     write.add_argument("--expected", required=True)
     write.add_argument("--content-file", required=True)
-    save = sub.add_parser("commit", help="Commit only explicitly named hub records, preserving other staged work.")
+    save = sub.add_parser("commit", help="Commit only explicitly named hub records and design assets, preserving other staged work.",
+                          description="Commit Markdown records and non-executable assets under work/design/. "
+                          "Supported asset extensions: " + ", ".join(sorted(DESIGN_ASSET_SUFFIXES)) + ".")
     save.add_argument("--paths", required=True, nargs="+")
     save.add_argument("--message", required=True)
     args = parser.parse_args()

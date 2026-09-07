@@ -38,7 +38,8 @@ Give each worker enough context to act without inheriting the whole conversation
 - relevant user intent, acceptance or decision criteria, non-goals, fixed
   contracts and freedoms; a design under review may still be provisional;
 - project identity, exact checkout/source state, and absolute hub/record
-  locations or relevant extracts, including the design revision when applicable;
+  locations or relevant extracts, including the design revision, adopted details
+  and consequential later evidence assessments when applicable;
 - allowed actions, tools, output locations, and verification expectations;
 - what to return, when to report a changed premise or missing context, and the
   boundary at which to stop. Source writers also need the bindings below.

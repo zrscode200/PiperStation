@@ -248,7 +248,7 @@ only for a concrete continuity, quality, or autonomy need.
 | Project `work/build-log.md` | Flat-lane ledger and seam between independent lanes: significant planning, lane/group closeout, transitions and milestones. Summarize and link local ledgers. |
 | Project `work/roadmap.md` | Long-horizon direction, group/milestone order and acceptance, durable deferred scope and revisit triggers. |
 | `work/design/<topic>.md` | Lightweight topical note, supported without a studio and preserved if later promoted. |
-| Studio `design.md` | Integrated design, integer revision, fixed contracts, freedoms, and explicit revision-specific acceptance. |
+| Studio `design.md` | Integrated design, explicitly adopted detail scope, integer revision, fixed contracts, freedoms, and explicit revision-specific acceptance. |
 | Design/studio READMEs | Navigation and relationship pointers; never current-state ledgers. |
 | `decisions.md` | Substantial project-level decision rationale, superseded in place. |
 | `memory.md` | Durable facts, preferences and stable conventions. |
@@ -267,6 +267,13 @@ the lane's ledger, not in every packet or roadmap. Exact source revisions used
 as design evidence or an integration operation's tested base have a different
 purpose: record them with that evidence or operation, and never treat them as
 current HEAD. Other records reference the fact's owner instead of copying it.
+
+Design evidence retains consequential observations and dated reassessments in
+its existing artifact, with links from decisions and meaningful checkpoints.
+Preserve what was known when a choice was made and what later changed its
+applicability. An artifact edit date is not an observation or revalidation date.
+Design Studio's artifact-contracts reference owns the detailed evidence and
+adoption rules; no extra artifact types or tracking registry are required.
 
 ### Related Work And Changed Assumptions
 
@@ -347,6 +354,12 @@ Reconcile that result rather than blindly committing twice. On Git lock
 contention retry; never delete `index.lock`. Registration remains owned by
 `add-project`; do not use record
 publication to create registrations or mutate managed hub surfaces.
+
+`read` and `replace` handle Markdown records. Scoped `commit` also accepts
+non-executable design assets under `work/design/`: images, PDFs, diagram text,
+and data specifications in its supported formats (see `commit --help`). Include
+adopted assets alongside the overview at acceptance; publication does not grant
+source-copying, prototype execution, or cross-lane edit authority.
 
 ### Artifact Persistence
 
@@ -533,7 +546,11 @@ base, with review proportional to its boundary rather than a manufactured group.
 
 When planning starts from Design Studio, Superpowers verifies the exact
 `design_artifact` and integer `accepted_revision` against the current metadata
-and live source. A stale revision or invalidated fixed contract returns upstream;
+and live source, including explicitly adopted details and subsequent relevant
+evidence. Ordinary hub acceptance checkpoints preserve the reviewed files and
+ledger entry together; there is no separate snapshot receipt. Compare adopted
+content with that checkpoint when checking later edits, even if the overview's
+revision was not bumped. A stale revision or invalidated fixed contract returns upstream;
 recorded implementation freedoms remain downstream.
 
 Source commits at accepted waves and closeout are routine and separate from hub
@@ -591,7 +608,8 @@ is required for a completed light boundary with nothing to resume.
 
 On cold resume, read project binding, memory and relevant decisions, then the
 selected lane's packet, active work, ledger, optional queue, and canonical design
-when present. Inspect live source at the assigned checkout, relevant related-work
+when present, including adopted details and later relevant evidence assessments.
+Inspect live source at the assigned checkout, relevant related-work
 revisions and resolutions, and any worker state before editing. A studio resumes
 its design phase without source edits; an execution lane first revalidates stale
 assumptions. If closeout publication was interrupted, use actual git evidence to

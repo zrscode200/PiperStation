@@ -64,7 +64,10 @@ the parent when further progress requires new scope or unavailable evidence.
 Let the question determine the output's size and form; no source quota, required
 research document, or automatic design acceptance. The main session synthesizes
 findings with the user and preserves useful evidence through the existing studio
-artifact and checkpoint rules.
+artifact and checkpoint rules. Preserve observation time, source context and
+decision impact for consequential findings; later reassessments explain changed
+applicability without erasing the earlier result. See artifact-contracts.md →
+Evidence Over Time for recording ownership and temporal distinctions.
 
 ## Diverge Where A Real Choice Exists
 
@@ -97,7 +100,9 @@ Choose representations that reduce ambiguity:
 - evaluation cases and representative payloads.
 
 Artifacts emerge from the question. Their filenames should describe their
-content rather than place them into universal categories.
+content rather than place them into universal categories. Keep the overview
+readable by explicitly adopting detailed contracts where useful; linking research
+or alternatives does not adopt them. No classification pass is required.
 
 ## Pressure-Test The Synthesis
 
@@ -133,6 +138,9 @@ In `design.md`, distinguish:
 - rejected alternatives and their rationale.
 
 Only the user can accept a revision for Piper Workflow planning.
+Present the adopted details with the overview so acceptance has a clear scope.
+Use the ordinary checkpoint to retain the reviewed files and acceptance entry,
+following artifact-contracts.md → Revision And Acceptance.
 
 ## Checkpoint At Meaningful Boundaries
 
