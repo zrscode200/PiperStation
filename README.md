@@ -1,35 +1,47 @@
-# Piper Station for Codex
+# Piper Station
 
 Piper Station is a central workspace for one developer designing, building,
-reviewing, and returning to projects with Codex. Registered project source stays
-in its own repository; the hub preserves project understanding and work records.
+reviewing and returning to projects with Codex, Claude Code CLI or GitHub
+Copilot CLI. Registered source stays in its repository; the hub preserves
+project understanding and work records shared by its enabled runtimes.
 
-This repository is the source distribution. It renders Codex instructions,
-skills, agent roles, hooks, and deterministic helpers into `generated/codex`.
+This repository is the source distribution. It renders shared Piper behavior
+and native adapters into `generated/`.
 
 ```sh
+# New hub, defaulting to Codex
 ./bootstrap/init.sh --git-init /path/to/hub
+
+# Any supported runtime or combination
+./bootstrap/init.sh --runtime claude --git-init /path/to/claude-hub
+./bootstrap/init.sh --runtime copilot --git-init /path/to/copilot-hub
+./bootstrap/init.sh --runtime codex,claude,copilot --git-init /path/to/shared-hub
+
 ./bootstrap/add-project.sh --hub /path/to/hub --repo /path/to/project --project-id my-project
 ```
 
-Python 3 and a POSIX shell are required. Git is required for project registration
-and `--git-init`. Use `--dry-run` to inspect planned changes. Existing callers may
-continue to pass `--runtime codex`. `--git-init` creates the hub’s own Git root,
-including when the hub is inside an existing repository; checkpoint commits
-then remain local to the hub.
+Python 3, a POSIX shell and Git are required. Use `--dry-run` to inspect changes.
+`--git-init` creates the hub's own Git root even under an existing repository,
+so hub checkpoint commits cannot land in an enclosing project repository.
 
-Bootstrap refreshes managed hub files outside `projects/` and preserves all
-hub-owned project records. This branch supports Codex only. It refuses mixed or
-retired-runtime hubs before writing; see [Codex wiring and migration](docs/capability-matrix.md)
-for the supported upgrade path. Removing runtime support here never uninstalls
-anything from an existing hub.
+At the hub, launch `codex`, `./bin/piper-claude`, or `copilot`. The thin Claude
+launcher selects the hub and its hook settings, then execs the native CLI with
+all supplied arguments. Bare `claude` still loads instructions, skills and roles,
+but omits Piper lifecycle hooks. Explicit loading prevents Copilot from also
+executing Claude's hooks. See [runtime wiring and differences](docs/capability-matrix.md).
 
-Read [PRODUCT.md](PRODUCT.md) for scope and [ARCHITECTURE.md](ARCHITECTURE.md) for
-source ownership. See [Codex prototype experiments](docs/codex-prototype-experiments.md)
-for real-project cases and evidence, [working across Codex tasks](docs/codex-workflows.md)
-for practical workflows, and [TESTING.md](TESTING.md) for verification.
+A refresh retains previously enabled supported runtimes. Passing `--runtime`
+adds adapters; it never disables another installed runtime. Refresh at an idle
+boundary after affected sessions checkpoint. Managed files are updated and stale
+managed files retired; project records, source workspaces and unmanaged content
+are preserved. Unsupported old runtime surfaces require explicit migration.
 
-Piper uses three helper roles: investigator, implementer and reviewer. The
-[accepted subagent design](docs/subagent-design.md) explains their assignments,
-activation evidence, verification boundaries and upgrade mapping. See
-[three-role validation](docs/subagent-experiments.md) for observed behavior and limits.
+Read [PRODUCT.md](PRODUCT.md), [ARCHITECTURE.md](ARCHITECTURE.md) and
+[TESTING.md](TESTING.md) for scope, ownership and verification. Piper provides
+three bounded roles: investigator, implementer and reviewer. Their shared
+behavior follows the [subagent design](docs/subagent-design.md); native tool and
+permission differences are documented in the runtime matrix.
+
+Historical [Codex workflow evaluations](docs/codex-prototype-experiments.md) and
+[three-role evaluations](docs/subagent-experiments.md) remain evidence for their
+recorded versions and runtime. They do not establish Claude/Copilot behavior.

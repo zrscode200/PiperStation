@@ -1,9 +1,9 @@
 ---
 name: brainstorm
-description: "Codex front door for Piper Station project work — explore, understand, decide, or explicitly register rather than execute. Trigger via $brainstorm or by stating the intent. Use to orient, frame, compare, investigate, optionally suggest Design Studio for deeper durable design, and route deterministic registration. Stays read-only except explicit registration through the helper; hands to design-studio only after explicit user choice and to piper-workflow when work converges."
+description: "Piper front door for Piper Station project work — explore, understand, decide, or explicitly register rather than execute. Trigger by naming brainstorm or stating the intent. Use to orient, frame, compare, investigate, optionally suggest Design Studio for deeper durable design, and route deterministic registration. Stays read-only except explicit registration through the helper; hands to design-studio only after explicit user choice and to piper-workflow when work converges."
 ---
 
-# Brainstorm (Codex)
+# Brainstorm
 
 Brainstorm is where you decide what is worth doing before the convergence engine
 commits. The rest of Piper Station — registration, active work records, Ralph,
@@ -17,9 +17,9 @@ ordinary brainstorm, but are not ready for execution planning. The
 `design-studio` skill is that optional deeper path inside Piper's divergent
 movement. Ordinary brainstorm may still hand directly to `piper-workflow`.
 
-Codex CLI does not surface `.codex/commands/` as slash commands; this skill is
-the natural-language entry for the divergent phase. Trigger via `$brainstorm ...`
-or by stating the intent directly. Read `AGENTS.md` and `STATION.md` first, then
+This skill is the natural-language entry for the divergent phase. Name
+brainstorm or state the intent directly; `RUNTIMES.md` describes native skill
+invocation for the active CLI. Read `AGENTS.md` and `STATION.md` first, then
 orient using the steps below; load `references/add-project.md` when the user
 wants to register.
 
@@ -73,8 +73,8 @@ Ground the conversation in the actual project before reasoning about it:
 5. Inspect `repo_path` — which may be owned by an execution lane —
    with `git status`, current branch, current HEAD,
    and the files relevant to the request.
-6. If the project repo is outside the current Codex sandbox, note that Codex
-   must be started with `--add-dir <checkout-path>` before any later editing.
+6. If the project repo is outside the active CLI's writable workspace, obtain
+   native access before later editing; use the controls in `RUNTIMES.md`.
    Treat uncommitted changes as user-owned unless the user says otherwise.
 
 ## Divergent Toolkit

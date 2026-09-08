@@ -1,16 +1,22 @@
 # Testing
 
-Run `./tests/run.sh` after changing render, bootstrap, registration, or adapter
-behavior. It checks Codex instruction contracts, wiring, bootstrap and refresh,
-registration ownership, rejected migrations without mutation, and render
-freshness. Python 3, a POSIX shell, and Git are required; it uses disposable
-local directories and does not need network access.
+Run `./tests/run.sh` after changes to behavior, rendering, bootstrap, registration
+or adapters. It covers shared instruction contracts and helper behavior plus
+fresh installs of all seven supported runtime combinations, incremental adapter
+enablement, refresh and legacy supported-role migration, collision rejection,
+record preservation, native hook payload/output fixtures, launcher argument
+handling and observer tool restrictions. It uses disposable local directories,
+requires Python 3, a POSIX shell and Git, and needs no network or model access.
 
-The source verification commands are listed in `AGENTS.md`. Static instruction
-checks establish what is distributed, not what an agent actually does. Record
-fresh-session workflow evidence separately in
-`docs/codex-prototype-experiments.md`, `docs/subagent-experiments.md` and their
-linked run records. This source repository does not activate the hub workflow:
-behavioral evaluations explicitly create disposable hubs and registered source
-fixtures. Label those runs as evaluations when reporting their workers and work;
-keep original project workspaces unchanged.
+Run the remaining source checks from `AGENTS.md`: shell syntax, render freshness
+and `git diff --check`. Static/generated checks establish what is distributed;
+executing hook commands against synthetic input tests serialization, not native
+CLI discovery or model judgment. The launcher test uses a stub native binary.
+
+Native evaluations use disposable hubs and source fixtures, clearly labeled as
+evaluations. Preserve user projects and host configuration, obtain any required
+external authority, and report runtime versions, actual loaded instructions,
+skills/roles, permissions, hook behavior, commands/results and unavailable checks.
+Do not relax permissions to run a probe or reuse earlier Codex results as evidence
+for another runtime. The shared source instructions are in `AGENTS.md` and the
+runtime contracts/known limitations in `docs/capability-matrix.md`.

@@ -1,0 +1,60 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3",
+            "timeout": 10,
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.piper/lib/lifecycle.py",
+              "--runtime",
+              "claude",
+              "--event",
+              "session-start"
+            ]
+          }
+        ],
+        "matcher": "startup|resume|clear|compact|fork"
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3",
+            "timeout": 10,
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.piper/lib/lifecycle.py",
+              "--runtime",
+              "claude",
+              "--event",
+              "pre-compact"
+            ]
+          }
+        ],
+        "matcher": "manual|auto"
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3",
+            "timeout": 10,
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.piper/lib/lifecycle.py",
+              "--runtime",
+              "claude",
+              "--event",
+              "post-compact"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

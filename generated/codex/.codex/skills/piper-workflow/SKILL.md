@@ -93,4 +93,4 @@ revisions, partial publication, and actual worker status before continuing.
 Do not create a daemon, global queue, session registry, or copied source tree.
 Registration remains the narrow `add-project` helper. Record publication and
 verified integration helpers protect concrete operations; planning, scope,
-coordination, and acceptance remain Codex reasoning and native task behavior.
+coordination, and acceptance remain agent reasoning and native task behavior.

@@ -1,6 +1,6 @@
-# Piper Station Agent Instructions (Codex)
+# Piper Station Agent Instructions
 
-This is the central Codex hub for registered projects. Treat it as coordination
+This is the central Piper hub for registered projects. Treat it as coordination
 context; project source stays in its registered repository or assigned worktrees,
 and durable Piper records stay under `projects/<id>/`.
 
@@ -26,9 +26,11 @@ and durable Piper records stay under `projects/<id>/`.
 
 ## Discover Procedures Progressively
 
-Skills live in `.codex/skills/`. Codex uses skills and natural language, not a
-custom `.codex/commands/` slash-command directory. Trigger `$brainstorm`,
-`$design-studio`, or `$piper-workflow`, or state the matching intent.
+Read `RUNTIMES.md` for the active CLI's skill directory, invocation syntax,
+role files, lifecycle support and workspace-access options. Skills and natural
+language select the phase; use brainstorm, design-studio or piper-workflow by
+name. Codex also accepts `$brainstorm`, `$design-studio` and `$piper-workflow`;
+Claude Code and Copilot CLI expose slash skill invocation.
 
 - Brainstorm's registration procedure: `brainstorm/references/add-project.md`.
 - Workflow procedures: `piper-workflow/references/superpowers.md`, `ralph.md`,
@@ -64,8 +66,8 @@ navigation and canonical design retains revision/acceptance ownership.
 Each source writer needs an exclusive assigned checkout and branch. Inspect open
 bindings and worktrees before claiming one. Concurrent implementation workers need
 separate worktrees; never assume native subagents receive them automatically.
-Verify native writable access, including `--add-dir <checkout-path>` when launching
-Codex CLI outside existing workspace roots. Registration and worktree creation do
+Verify native writable access, using the active CLI's documented workspace controls (including
+`--add-dir <checkout-path>` where supported). Registration and worktree creation do
 not grant access. Do not switch branches, merge, or discard in another lane's
 checkout. Read-only source observation does not reserve a writable checkout.
 
@@ -99,14 +101,13 @@ Keep acceptance, actual integration, and `pending-pr` state explicit.
 Three installed role briefs/configs are available: `investigator` for bounded
 questions and options, `implementer` for authorized source or test changes, and
 `reviewer` for independent design or implementation challenge. Keep quick
-lookups, small understood fixes and known check commands in the parent. Read
-`.codex/skills/piper-workflow/references/coordinated-work.md` when delegating in
-any phase; reading it does not change phase. Use native
+lookups, small understood fixes and known check commands in the parent. Read the active skill's
+`piper-workflow/references/coordinated-work.md` when delegating in any phase; reading it does not change phase. Use native
 role selection only when the active client's actual spawn tool exposes it. Some
 Codex clients expose `collaboration.spawn_agent` without an `agent_type` selector;
-do not invent that argument or assume a role TOML was applied. In that case read
-the relevant `.codex/agents/<role>.toml` and include its behavioral brief in the
-explicit assignment using the supported tool parameters.
+do not invent that argument or assume a role TOML was applied. In that case locate
+the active runtime's role file through `RUNTIMES.md` and include its behavioral
+brief in the explicit assignment using the supported tool parameters.
 
 Implementation and test writing require explicit user delegation; honor existing
 scoped grants. Observer assignments preserve source, tracked tests, designs,

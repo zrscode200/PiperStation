@@ -1,7 +1,7 @@
 # Ralph
 
 Execute one clear wave, explicit slice, or queued task in the selected execution
-lane. Ralph is Codex prompt behavior, not a shell workflow engine. Read
+lane. Ralph is agent prompt behavior, not a shell workflow engine. Read
 `STATION.md` for canonical lane, risk, review, and checkpoint contracts.
 
 ## Execute The Boundary

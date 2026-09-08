@@ -1,0 +1,243 @@
+#!/usr/bin/env python3
+"""Publish one already tested integration candidate; never build that candidate.
+
+The caller owns design authority, review, tests, and exclusive checkout access.
+This helper serializes cooperating publishers and takes piper-record's hub lock
+while revalidating ownership and publishing. Direct Git/filesystem operations
+can bypass these locks and must not act on the target during publication.
+Persistent lock files are never removed: flock ownership ends with the last
+holding process, including the Git child if this helper dies.
+"""
+from __future__ import annotations
+
+import argparse
+import fcntl
+import json
+import math
+import os
+from pathlib import Path
+import re
+import runpy
+import stat
+import subprocess
+import sys
+import time
+
+sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / ".piper/lib"))
+from work_ownership import OwnershipError, ensure_unoccupied, registered_repo
+
+
+class Conflict(Exception):
+    def __init__(self, code: str, message: str):
+        self.code = code
+        super().__init__(message)
+
+
+def git(checkout: Path, *args: str, check: bool = True, lock_fds=()):
+    # An inherited GIT_DIR/INDEX_FILE/etc must not redirect a -C operation.
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update(GIT_TERMINAL_PROMPT="0", GIT_OPTIONAL_LOCKS="0")
+    result = subprocess.run(
+        ["git", "-c", "submodule.recurse=false", "-C", str(checkout), *args],
+        text=True, errors="replace", stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env,
+        pass_fds=lock_fds,
+    )
+    if check and result.returncode:
+        raise Conflict("git-error", f"Git failed in {checkout}: {result.stderr.strip() or result.stdout.strip()}")
+    return result
+
+
+def rooted_path(value: str, label: str) -> Path:
+    path = Path(value).expanduser().absolute()
+    if path.is_symlink():
+        raise Conflict("unsafe-path", f"{label} must not be a symlink: {path}")
+    try:
+        return path.resolve(strict=True)
+    except OSError as exc:
+        raise Conflict("invalid-path", f"Cannot open {label} {path}: {exc}") from exc
+
+
+def registration(project_arg: str) -> tuple[Path, Path]:
+    raw = Path(project_arg).expanduser().absolute()
+    if raw.parent.is_symlink():
+        raise Conflict("unsafe-path", "The projects directory must not be a symlink.")
+    project = rooted_path(project_arg, "project directory")
+    if project.parent.name != "projects" or not project.is_dir():
+        raise Conflict("registration", "--project must name a registered hub projects/<id> directory.")
+    station = project.parent.parent / "STATION.md"
+    if not station.is_file() or station.is_symlink():
+        raise Conflict("registration", f"Missing regular hub STATION.md beside {project.parent}")
+    return project, registered_repo(project)
+
+
+def checkout_info(path: Path) -> Path:
+    if not path.is_dir():
+        raise Conflict("invalid-checkout", f"Expected a checkout directory: {path}")
+    top = Path(git(path, "rev-parse", "--show-toplevel").stdout.strip()).resolve()
+    if top != path:
+        raise Conflict("invalid-checkout", f"Use the checkout root {top}, not {path}.")
+    common = git(path, "rev-parse", "--git-common-dir").stdout.strip()
+    return (path / common).resolve(strict=True)
+
+
+def ensure_clean(path: Path, label: str) -> None:
+    dirty = git(path, "status", "--porcelain=v1", "--untracked-files=all", "--ignore-submodules=none").stdout
+    if dirty:
+        raise Conflict("dirty-checkout", f"{label} checkout is not clean: {path}. Preserve and reconcile its changes before publication.")
+    for marker in ("MERGE_HEAD", "CHERRY_PICK_HEAD", "REVERT_HEAD", "rebase-merge", "rebase-apply", "sequencer", "BISECT_LOG"):
+        gitpath = Path(git(path, "rev-parse", "--git-path", marker).stdout.strip())
+        if not gitpath.is_absolute():
+            gitpath = path / gitpath
+        if gitpath.exists():
+            raise Conflict("operation-in-progress", f"{label} has an unfinished Git operation ({marker}): {path}.")
+
+
+def head(path: Path) -> str:
+    return git(path, "rev-parse", "--verify", "HEAD").stdout.strip()
+
+
+def ancestor(path: Path, before: str, after: str) -> bool:
+    result = git(path, "merge-base", "--is-ancestor", before, after, check=False)
+    if result.returncode not in (0, 1):
+        raise Conflict("git-error", f"Cannot compare integration ancestry: {result.stderr.strip()}")
+    return result.returncode == 0
+
+
+def validate(args, expected_common: Path | None = None):
+    project, repo = registration(args.project)
+    target = rooted_path(args.target_checkout, "target checkout")
+    candidate = rooted_path(args.verified_checkout, "verified checkout")
+    hub = project.parent.parent
+    for label, checkout in (("Registered", repo), ("Target", target), ("Verified", candidate)):
+        if checkout == hub or hub in checkout.parents:
+            raise Conflict("source-inside-hub", f"{label} source checkout is inside the hub: {checkout}. Keep project source and worktrees outside {hub}.")
+    common = checkout_info(repo)
+    if expected_common is not None and common != expected_common:
+        raise Conflict("registration-changed", "Registered repository changed while waiting; inspect the binding and start again.")
+    if checkout_info(target) != common or checkout_info(candidate) != common:
+        raise Conflict("wrong-repository", "Target and verified checkout must be worktrees of the registered repository (same Git common directory).")
+    if target == candidate:
+        raise Conflict("invalid-checkout", "Prepare and verify the candidate in a separate checkout from the publication target.")
+    for name, oid in (("expected-base", args.expected_base), ("verified-head", args.verified_head)):
+        if not re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", oid):
+            raise Conflict("invalid-oid", f"--{name} must be a full lowercase commit OID, not a branch or abbreviation.")
+        resolved = git(repo, "rev-parse", "--verify", oid + "^{commit}", check=False)
+        if resolved.returncode or resolved.stdout.strip() != oid:
+            raise Conflict("invalid-oid", f"--{name} does not name an existing commit in the registered repository.")
+    if git(repo, "check-ref-format", "refs/heads/" + args.base, check=False).returncode or args.base.startswith("-"):
+        raise Conflict("invalid-branch", "--base must name a local branch.")
+    branch = git(target, "symbolic-ref", "--quiet", "HEAD", check=False).stdout.strip()
+    if branch != "refs/heads/" + args.base:
+        raise Conflict("wrong-branch", f"Target must already be on {args.base}; inspect it without switching or discarding work.")
+    worktrees = git(repo, "worktree", "list", "--porcelain", "-z").stdout.split("\0\0")
+    for entry in worktrees:
+        fields = dict(item.split(" ", 1) for item in entry.split("\0") if " " in item)
+        if fields.get("branch") == branch and Path(fields["worktree"]).resolve() != target:
+            raise Conflict("branch-occupied", f"Base branch is also checked out in {fields['worktree']}. Resolve that duplicate ownership before publishing.")
+    if head(target) != args.expected_base:
+        raise Conflict("stale-base", "Base has advanced or differs from --expected-base. Rebuild the candidate against current base, repeat review/tests, and pass the new verified OIDs.")
+    if head(candidate) != args.verified_head:
+        raise Conflict("candidate-mismatch", "Verified checkout HEAD differs from --verified-head. Reconcile and verify its current state before publishing.")
+    if not ancestor(repo, args.expected_base, args.verified_head):
+        raise Conflict("candidate-outdated", "Candidate does not contain expected base. Synchronize it with base and repeat review/tests before publication.")
+    ensure_clean(candidate, "Verified")
+    ensure_clean(target, "Target")
+    ensure_unoccupied(project, repo, target)
+    return project, repo, target, candidate, common
+
+
+def publish(args):
+    project, _, _, _, common = validate(args)
+    hub = project.parent.parent
+    record_support = runpy.run_path(str(Path(__file__).resolve().with_name("piper-record")))
+    lockpath = common / "piper-integration.lock"
+    # Exclusive creation followed by a non-creating reopen avoids a macOS
+    # O_CREAT|O_NOFOLLOW first-open race between cooperating publishers.
+    try:
+        descriptor = os.open(lockpath, os.O_CREAT | os.O_EXCL | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+    except FileExistsError:
+        descriptor = os.open(lockpath, os.O_RDWR | os.O_NOFOLLOW)
+    try:
+        info = os.fstat(descriptor)
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+            raise Conflict("unsafe-lock", f"Integration lock must be a regular unshared file: {lockpath}")
+        deadline = time.monotonic() + args.lock_timeout
+        while True:
+            try:
+                fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError:
+                if time.monotonic() >= deadline:
+                    raise Conflict("integration-busy", f"Another integration holds {lockpath}. Wait for that operation; never delete the lock file.")
+                time.sleep(min(0.05, max(0, deadline - time.monotonic())))
+        # Fixed lock order: repository publication, then hub record publication.
+        # piper-record never takes the repository integration lock. Ownership
+        # publication cannot slip between our final validation and Git mutation.
+        try:
+            with record_support["locked"](hub, max(0, deadline - time.monotonic())) as record_fd:
+                current_project, _, target, _, _ = validate(args, common)
+                if current_project != project:
+                    raise Conflict("registration-changed", "Hub project location changed while waiting; inspect it before restarting integration.")
+                result = git(target, "merge", "--ff-only", "--no-edit", "--no-autostash", "--no-overwrite-ignore", args.verified_head, check=False, lock_fds=(descriptor, record_fd))
+                try:
+                    return inspect_publication(args, target, result)
+                except (Conflict, OSError, UnicodeError) as exc:
+                    return {"status": "publication-needs-attention", "verified_head": args.verified_head,
+                            "actual_head": None, "candidate_landed": None, "target_checkout": str(target),
+                            "message": f"Publication was attempted, but its final state could not be inspected: {exc}. Inspect live Git state before retrying; do not claim acceptance."}, 3
+        except record_support["RecordError"] as exc:
+            raise Conflict("hub-record-lock", str(exc)) from exc
+    finally:
+        # Do not explicitly unlock: a still-running Git child retains the flock
+        # if its parent is killed. Closing the last inherited fd releases it.
+        os.close(descriptor)
+
+
+def inspect_publication(args, target: Path, result):
+    actual = head(target)
+    landed = ancestor(target, args.verified_head, actual)
+    output = {"base": args.base, "expected_base": args.expected_base,
+              "verified_head": args.verified_head, "actual_head": actual,
+              "candidate_landed": landed, "target_checkout": str(target)}
+    if landed:
+        output["published_oid"] = actual
+    attention = []
+    if result.returncode:
+        attention.append(f"git merge exited {result.returncode}: {result.stderr.strip() or result.stdout.strip()}")
+    if actual != args.verified_head:
+        attention.append("Target HEAD is not the exact verified candidate.")
+    if git(target, "symbolic-ref", "--quiet", "HEAD", check=False).stdout.strip() != "refs/heads/" + args.base:
+        attention.append("Target branch changed during publication.")
+    try:
+        ensure_clean(target, "Published target")
+    except Conflict as exc:
+        attention.append(str(exc))
+    if attention:
+        output.update(status="published-needs-attention" if landed else "publication-needs-attention",
+                      message=" ".join(attention) + " Inspect live Git state before any retry; do not repeat integration or claim acceptance from this result.")
+        return output, 3
+    output["status"] = "published"
+    return output, 0
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for option in ("project", "target-checkout", "base", "expected-base", "verified-checkout", "verified-head"):
+        parser.add_argument("--" + option, required=True)
+    parser.add_argument("--lock-timeout", type=float, default=30, help="seconds to wait for a cooperating publisher (default: 30)")
+    args = parser.parse_args()
+    try:
+        if not math.isfinite(args.lock_timeout) or args.lock_timeout < 0:
+            raise Conflict("invalid-timeout", "--lock-timeout must be a finite non-negative number of seconds.")
+        result, code = publish(args)
+    except (Conflict, OwnershipError) as exc:
+        result, code = {"status": "conflict", "code": exc.code, "message": str(exc)}, 2
+    except (OSError, UnicodeError) as exc:
+        result, code = {"status": "conflict", "code": "filesystem-error", "message": str(exc)}, 2
+    print(json.dumps(result, sort_keys=True))
+    return code
+
+
+if __name__ == "__main__":
+    sys.exit(main())

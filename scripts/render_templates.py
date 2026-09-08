@@ -10,8 +10,10 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-# This branch distributes one Codex hub. The output subdirectory stays stable
-# so existing Codex bootstrap callers do not need a path migration.
+RUNTIMES = ("codex", "claude", "copilot")
+# Claude and Copilot both discover .claude/skills. Identical shared output at
+# one path prevents duplicate same-name skills when both adapters are installed.
+SKILL_DIRS = {"codex": ".codex/skills", "claude": ".claude/skills", "copilot": ".claude/skills"}
 COMMAND_OWNING_SKILL = {
     "add-project.md": "brainstorm",
     "superpowers.md": "piper-workflow",
@@ -56,33 +58,45 @@ def render_text(text: str) -> str:
     return text
 
 
-def render_behavior(out: Path) -> None:
+def render_behavior(out: Path, runtime: str) -> None:
     for skill in SKILLS:
         src_root = ROOT / "core/skills" / skill
+        installed_name = "piper-review" if skill == "review" and runtime != "codex" else skill
         for src in sorted(src_root.rglob("*")):
             if src.is_file():
-                dst = out / ".codex/skills" / skill / src.relative_to(src_root)
-                write(dst, render_text(src.read_text(encoding="utf-8")))
+                dst = out / SKILL_DIRS[runtime] / installed_name / src.relative_to(src_root)
+                text = render_text(src.read_text(encoding="utf-8"))
+                if src.name == "SKILL.md" and installed_name != skill:
+                    text = text.replace("name: review\n", "name: piper-review\n", 1)
+                write(dst, text)
     for command, skill in COMMAND_OWNING_SKILL.items():
         src = ROOT / "core/commands" / command
-        dst = out / ".codex/skills" / skill / "references" / command
+        dst = out / SKILL_DIRS[runtime] / skill / "references" / command
         if dst.exists():
             raise ValueError(f"procedure has two source owners: {dst.relative_to(out)}")
         write(dst, render_text(src.read_text(encoding="utf-8")))
 
 
-def render_codex(out_root: Path) -> None:
-    out = out_root / "codex"
+def render_runtime(runtime: str, out_root: Path) -> None:
+    out = out_root / runtime
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
     copy_tree(ROOT / "core/shared", out)
-    render_behavior(out)
-    adapter = ROOT / "adapters/codex"
+    render_behavior(out, runtime)
+    adapter = ROOT / "adapters" / runtime
     for src in adapter.rglob("*"):
         if src.is_file() and (out / src.relative_to(adapter)).exists():
             raise ValueError(f"adapter shadows core behavior: {src.relative_to(adapter)}")
-    copy_tree(adapter, out)
+    for src in adapter.rglob("*"):
+        if not src.is_file():
+            continue
+        content = src.read_text(encoding="utf-8")
+        if "{{ROLE_BRIEF}}" in content:
+            role = src.name.split(".", 1)[0]
+            brief = (ROOT / "core/roles" / (role + ".md")).read_text(encoding="utf-8").rstrip()
+            content = content.replace("{{ROLE_BRIEF}}", brief)
+        write(out / src.relative_to(adapter), content, stat.S_IMODE(src.stat().st_mode))
 
 
 def render_all(out_root: Path) -> None:
@@ -96,7 +110,8 @@ def render_all(out_root: Path) -> None:
             shutil.rmtree(child)
         else:
             child.unlink()
-    render_codex(out_root)
+    for runtime in RUNTIMES:
+        render_runtime(runtime, out_root)
 
 
 def compare_dirs(left: Path, right: Path) -> list[str]:

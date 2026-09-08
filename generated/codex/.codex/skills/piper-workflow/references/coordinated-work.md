@@ -59,7 +59,7 @@ to report to the parent, not permission to invent records or expand the task.
 
 Inspect the active spawn tool's supported parameters. Where native role selection
 is exposed, select the matching installed role. Where it is absent, read the
-matching `.codex/agents/<role>.toml` and pass its behavioral brief explicitly with
+matching native role file (located through `RUNTIMES.md`) and pass its behavioral brief explicitly with
 the assignment; never manufacture an `agent_type` parameter or imply that naming
 a role applied its configuration. Keep scope and authorization unchanged.
 
@@ -138,7 +138,7 @@ Before spawning a source-writing worker:
 2. Prepare a separate project worktree outside the hub, on a distinct branch,
    based on the source state the assignment needs. Confirm branch, clean initial
    status, repo identity, and writable native workspace access. Do not assume a
-   Codex subagent automatically receives a separate checkout or writable access.
+   native subagent automatically receives a separate checkout or writable access.
 3. Give the worker the project/parent lane, goal and acceptance, assigned checkout
    and branch, owned files/areas, fixed contracts with canonical revision
    references, prohibited changes, verification, and return requirements.

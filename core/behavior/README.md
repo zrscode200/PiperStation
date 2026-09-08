@@ -1,8 +1,8 @@
-# Piper Behavior Core
+# Shared Piper behavior
 
-This folder describes ownership of Piper behavior: routing, Ralph iteration,
-review gates, compact handoff, project work records, and memory/decision policy.
+`core/` is the canonical source for Piper skills, procedures, roles and shared
+hub instructions. Update it for behavior that every runtime must receive.
+`adapters/codex`, `adapters/claude` and `adapters/copilot` hold native configuration
+and wiring. Adapters must not shadow shared skills or procedures.
 
-Update `core/` for Piper behavior. Use `adapters/codex/` for Codex configuration,
-hooks, agent mechanics, and its always-on summary. Core skills and procedures
-have one source each and cannot be overridden by the adapter.
+Render through `scripts/render_templates.py`; never edit `generated/` directly.

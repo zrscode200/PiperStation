@@ -177,7 +177,7 @@ assert_not_contains "$codex_hub/.codex/skills/piper-workflow/references/superpow
 assert_contains "$codex_hub/.codex/skills/brainstorm/SKILL.md" "references/add-project.md"
 assert_contains "$codex_hub/.codex/skills/brainstorm/SKILL.md" "Orient"
 assert_contains "$codex_hub/.codex/skills/brainstorm/SKILL.md" "projects/registry.json"
-assert_contains "$codex_hub/.codex/skills/brainstorm/SKILL.md" "Brainstorm (Codex)"
+assert_contains "$codex_hub/.codex/skills/brainstorm/SKILL.md" "# Brainstorm"
 assert_contains "$codex_hub/.codex/skills/brainstorm/SKILL.md" "Divergent Toolkit"
 assert_contains "$codex_hub/.codex/skills/brainstorm/SKILL.md" "rather than execute"
 assert_not_contains "$codex_hub/AGENTS.md" "Permission profiles"
@@ -320,13 +320,14 @@ assert_not_exists "$refresh_hub/.codex/hooks/old-managed.sh"
 assert_not_exists "$refresh_hub/.piper/plugin"
 assert_contains "$refresh_hub/projects/kept/work/decisions.md" "accepted decision"
 
-for choice in claude opencode deepagent codex,claude codex,bad; do
+for choice in opencode deepagent codex,bad copilot,bad; do
   invalid_hub="$TMP_ROOT/invalid-$choice"
   if "$BOOTSTRAP" --runtime "$choice" "$invalid_hub" > "$TMP_ROOT/invalid-runtime.log" 2>&1; then fail "bootstrap should reject unsupported runtime"; fi
   assert_contains "$TMP_ROOT/invalid-runtime.log" "unsupported runtime"
   assert_not_exists "$invalid_hub"
 done
 python3 "$ROOT/tests/test_distribution.py" "$ROOT" "$TMP_ROOT"
+python3 "$ROOT/tests/test_runtimes.py" "$ROOT" "$TMP_ROOT"
 python3 "$ROOT/tests/test_records.py"
 python3 "$ROOT/tests/test_integration.py"
 

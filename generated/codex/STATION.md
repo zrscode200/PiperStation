@@ -1,7 +1,7 @@
 # Piper Station Hub
 
 This directory is a Piper Station hub-lite workspace. It coordinates assisted
-development across registered project repositories through Codex. Project
+development across registered project repositories through supported agent CLIs. Project
 records stay shared under `projects/`; source remains in registered repositories.
 
 ## Required Behavior
@@ -22,7 +22,8 @@ records stay shared under `projects/`; source remains in registered repositories
 
 ## Runtime Surface
 
-Codex loads `AGENTS.md`, skills, roles, and lifecycle reminders from `.codex/`.
+Read `RUNTIMES.md` for native instructions, skills, roles, lifecycle reminders
+and workspace access in the active CLI. `AGENTS.md` summarizes shared behavior.
 Several sessions may use the same hub and project. One active coordinating
 session owns a lane at a time; native workers remain under their parent's
 responsibility. A lane is durable working context, not a native session or a
@@ -47,7 +48,7 @@ can perform already-authorized implementation itself. The main session owns
 the user conversation, synthesis, shared records, candidate assembly, integration
 and acceptance. Workers do not recursively delegate or acquire lanes by default.
 
-Use `.codex/skills/piper-workflow/references/coordinated-work.md` for assignment,
+Use the active runtime's `piper-workflow/references/coordinated-work.md` for assignment,
 worker entry, dispatch evidence, source-preserving checks and recovery in any
 phase. Observers preserve source, canonical designs and records; bounded test
 output must fit actual permissions and any stricter user policy. Installed role
@@ -62,7 +63,7 @@ Use this order when instructions overlap:
    ownership, dispatch boundaries, work artifacts, compaction, and Ralph gates.
 2. `automation-policy.md` defines action classes (routine, `external`,
    `exceptional`), the boundary asks, and standing policy notes.
-3. `AGENTS.md` is the always-on Codex summary of the shared behavior.
+3. `AGENTS.md` is the shared summary; native entry files load or point to it.
 4. Skills route intent and provide consequence-specific operating checklists.
    They point back to the canonical docs instead of redefining global policy.
 5. Commands and reference files provide procedure bodies for explicit actions.
@@ -89,8 +90,8 @@ movement: brainstorm may suggest it, and the user may invoke it directly, but
 entry and durable studio artifacts require an explicit user choice.
 `piper-workflow` owns convergent execution once a direction is set. Skills and
 natural-language requests select the route; named Superpowers, Ralph and compact
-handoff procedures live in skill references. They are not installed as custom
-Codex slash commands. Roles, hooks and docs support the selected route.
+handoff procedures live in skill references. Runtime-specific invocation
+syntax is documented in `RUNTIMES.md`. Roles, hooks and docs support the selected route.
 
 The boundary between them is the same verb, different intent: `brainstorm`
 explores to *generate* a direction; `piper-workflow` (Superpowers) verifies that

@@ -10,7 +10,7 @@ When active work records are in use, record important evidence in the lane's
 pass/fail result, known gaps, and re-verification after review-driven fixes.
 
 For Design Studio instruction changes, protect the contract in the generated
-Codex surfaces. Cover at least: lightweight brainstorm without a studio,
+surfaces for every supported runtime and supported combination. Cover at least: lightweight brainstorm without a studio,
 suggested studio with explicit opt-in, direct studio invocation, emergent
 descriptively named artifacts, multi-session resume through existing Piper
 owners, conclusion without execution, exact accepted-revision handoff, and a

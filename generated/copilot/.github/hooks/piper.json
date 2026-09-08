@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "python3 \"$COPILOT_PROJECT_DIR/.piper/lib/lifecycle.py\" --runtime copilot --event session-start",
+        "timeoutSec": 10
+      }
+    ],
+    "preCompact": [
+      {
+        "type": "command",
+        "bash": "python3 \"$COPILOT_PROJECT_DIR/.piper/lib/lifecycle.py\" --runtime copilot --event pre-compact",
+        "timeoutSec": 10
+      }
+    ]
+  }
+}

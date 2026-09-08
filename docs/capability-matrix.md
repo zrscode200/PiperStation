@@ -1,120 +1,136 @@
-# Codex distribution and wiring
+# Runtime distribution and native wiring
 
-This development branch supports Codex only. Other runtimes remain available
-in repository history; no adapters or installable templates for them are
-maintained here.
+Piper supports `codex`, `claude` (Claude Code CLI) and `copilot` (GitHub Copilot
+CLI), individually or together. All receive the current shared workflow:
+brainstorm and optional Design Studio, accepted revisions/adopted details and
+later evidence, planning/Ralph/review, independent lanes, exclusive source
+checkouts, three bounded roles, protected records/integration, action boundaries
+and durable resume. Native capabilities remain distinct.
 
-| Surface | Source owner | Installed path |
-| --- | --- | --- |
-| Always-on summary | `adapters/codex/AGENTS.md` | `AGENTS.md` |
-| Operating contract and project record ownership | `core/shared/` | Hub root docs and initial `projects/` skeleton |
-| Intent routing and skill behavior | `core/skills/` | `.codex/skills/<skill>/` |
-| Explicit procedure bodies | `core/commands/` | Owning skill's `references/` directory |
-| Native settings and role declarations (client-dependent selection) | `adapters/codex/.codex/config.toml` | `.codex/config.toml` |
-| Delegated role instructions | `adapters/codex/.codex/agents/` | `.codex/agents/` |
-| Lifecycle reminders and compaction guidance | `adapters/codex/.codex/` | `.codex/hooks.json`, `.codex/hooks/`, `.codex/compact-prompt.md` |
-| Registration | `core/shared/.piper/lib/bootstrap/` | `bin/add-project` invokes the launcher, which shares the `piper-record` publication lock around the shell implementation |
+| Surface | Codex | Claude Code CLI | Copilot CLI |
+| --- | --- | --- | --- |
+| Entry | `codex` | `./bin/piper-claude` | `copilot` |
+| Shared summary | `AGENTS.md` | `CLAUDE.md` imports `AGENTS.md` | `AGENTS.md`, plus `.github/copilot-instructions.md` pointer |
+| Skills | `.codex/skills` | `.claude/skills` | `.claude/skills`, a supported discovery path |
+| Explicit review skill | `$review` | `/piper-review` | `/piper-review` |
+| Three native role profiles | `.codex/agents/*.toml` | `.claude/agents/*.md` | `.github/agents/*.agent.md` |
+| Observer tools | read-only sandbox requested when overlay applies | read/search/web only | read/search/web only |
+| Startup/resume context | native SessionStart JSON | native SessionStart nested additionalContext | native sessionStart top-level additionalContext |
+| Compaction | native hooks and compact prompt | PreCompact reminder; SessionStart restores context after compaction | preCompact notification only; no documented postCompact equivalent |
 
-Codex does not auto-surface `.codex/commands` as slash commands; skills route to
-procedure references. The renderer rejects any adapter that shadows a core
-output, so a behavioral fix has one source owner.
+The renderer rejects adapter files that shadow core output, embeds common
+`core/roles` briefs into native wrappers and produces identical shared files in
+every output. The installer rejects conflicting overlap before writing. Shared
+record formats and deterministic helpers are never forked by runtime.
 
-Installed configuration remains subject to the active Codex client's trust,
-workspace permissions, and supported native features. Generated-file checks
-verify wiring and syntax; fresh Codex runs supply behavior evidence. Native
-memory is not the canonical project ledger.
+## Discovery and lifecycle isolation
 
-## Runtime defaults and user choices
+Claude and Copilot discover `.claude/skills`, so their templates intentionally
+use the same paths and bytes. This avoids installing duplicate same-name skills.
+The `/piper-review` name avoids built-in review command ambiguity. Copilot's
+`.github/agents` profiles take precedence over `.claude/agents` at the same
+project level; inspect the loaded profile rather than relying on personal/project
+precedence, about which current documentation differs.
 
-Piper installs behavior and native hook/skill/role wiring. It does not pin the
-root or worker model, reasoning effort, review model, memory enablement, thread
-count, or delegation depth. Project configuration outranks user/profile defaults,
-so those pins would silently replace the user's choices. Current custom-role
-model/effort settings can even override explicit spawn choices; omitting them
-allows native inheritance. See the official [configuration precedence](https://learn.chatgpt.com/docs/config-file/config-basic#configuration-precedence)
-and [subagent configuration](https://learn.chatgpt.com/docs/agent-configuration/subagents).
+Copilot reads both `CLAUDE.md` and `AGENTS.md` and can also read Claude hook
+settings. The root summary is therefore runtime-neutral, with native details
+in `RUNTIMES.md` scoped to the active CLI. Claude hook settings stay outside its
+automatically discovered settings files, at `.piper/runtime/claude-settings.json`.
+The thin `bin/piper-claude` helper changes to the hub and execs the native
+`claude --settings <absolute-file>` with user arguments unchanged. It does not
+manage authentication, sessions, permissions or models. Bare `claude` loads
+Piper instructions/skills/roles but omits these lifecycle hooks; use the launcher
+for full wiring. A user-supplied `--settings` argument follows native precedence.
 
-Root sandbox/approval settings and writable-worker sandbox overrides are also
-omitted: permissions come from the user or host, and a missing workspace grant
-must be reported rather than expanded. Read-only helper role configs retain explicit narrowing for clients that apply
-those overlays; declared config alone does not prove a worker used it. Native hooks still require trust. Memory remains optional
-supplemental recall; `projects/` records are the durable authority. The official
-[config reference](https://learn.chatgpt.com/docs/config-file/config-reference)
-describes memory choices, supported agent settings, and permission profiles.
+Copilot uses `.github/hooks/piper.json` independently. The explicit separation
+avoids relying on undocumented tolerance for the other CLI's output schema or
+on environment-variable guesses about which client invoked a hook. User-added
+Claude settings/hooks remain user-owned and may still be read by Copilot.
+Claude hooks use native exec-form arguments so hub paths need no shell quoting.
+Copilot 1.0.34 uses a shell command with a quoted project-directory environment
+variable; its installed hook schema does not yet support exec-form arguments.
 
-The pre-change pinned configuration successfully started the initial strict
-Codex CLI 0.153.4 design experiments. Removing its defaults is a usability and
-inheritance correction, not a claim that those experiments failed to start.
-A subsequent native cold-resume probe using `default_permissions = ":workspace"`
-inherited the selected `gpt-6-astra` model and workspace-write permissions. Its
-exposed `collaboration.spawn_agent` tool had no `agent_type` parameter. The fresh
-review worker received an explicit read-only assignment, but that does not prove
-`reviewer.toml` or its sandbox overlay was invoked. This establishes the observed
-parent configuration and a behavioral review path; custom read-only role overlay
-compatibility remains unproven in that client.
+All hooks are read-only reminders. They neither persist a packet nor assert
+that a checkpoint happened. Copilot's documented preCompact event does not
+process output; explicit checkpoint/resume instructions therefore remain the
+reliable cross-runtime procedure. No fabricated postCompact event or compaction
+blocking policy is installed.
 
-Piper therefore uses configured role selection only when the actual client exposes
-it. Otherwise it passes the relevant installed role brief explicitly and reports
-actual worker permissions as observed or unverified. Read-only review behavior
-remains required; a prompt is not sandbox enforcement. TOML configs remain
-installed for clients that support their native selection. The subsequent
-[three-role evaluations](subagent-experiments.md) exercised investigator,
-implementer and reviewer briefs, including source-preserving temporary-fixture
-checks; they still do not establish native role-overlay enforcement.
+## Permissions and native choices
 
-Registration validates hub records and optional repo-marker destinations before
-writing, then rechecks under the shared publication lock. `--hub-only` leaves
-repo markers alone. Hub, project-record and marker symlinks are not followed by
-registration; choose canonical paths or hub-only registration as appropriate.
-Git metadata and `.piper/locks/` are operational state and can never be removed
-through a stale template manifest, including case aliases on macOS. Project
-records remain hub-owned even if an old manifest uses `./projects/` or a
-differently cased spelling.
+Piper does not pin models, reasoning effort, root permissions, sandbox bypass,
+trust or authentication. Claude/Copilot observer profiles restrict tools to
+reading, searching and web research; shell-based checks must be parent-run or
+reported unavailable. Implementers have editing/shell tools but need explicit
+Piper source ownership and native access. These tool allowlists are not an OS
+sandbox. Codex role sandbox narrowing remains conditional on the client actually
+selecting/applying its overlay. Report observed permissions or mark them unknown.
 
-`--git-init` creates or preserves the hub's own Git root, including when the hub
-is nested inside another repository. This is required for scoped hub checkpoint
-commits: an enclosing repository is never used as the hub's commit destination.
+All three CLI surfaces document `--add-dir`; verify effective access at runtime.
+Claude normally does not load CLAUDE.md from added directories. Copilot may load
+trusted skills/agents there. Workers receive absolute hub/source/record references
+and must not infer their assignment from an inherited directory or role name.
 
-## Updating an existing hub
-
-The managed role set is `investigator`, `implementer` and `reviewer`. Refreshing
-a seven-role Codex hub retires the managed architect, docs-researcher,
-security-reviewer, tester and verifier files. It preserves project records,
-retained assignments, source workspaces and unmanaged files. Map old assignments
-using the [accepted design](subagent-design.md); an old name or handle is
-historical context, not evidence that its worker stopped. Resolve actual
-ownership before reassignment. Refresh at an idle boundary after affected
-sessions checkpoint and no active worker depends on the old instructions.
-
-For a Codex-only hub, run:
+## Installation and refresh
 
 ```sh
-./bootstrap/init.sh --dry-run /path/to/hub
-./bootstrap/init.sh /path/to/hub
+./bootstrap/init.sh --runtime codex,claude,copilot --dry-run /path/to/hub
+./bootstrap/init.sh --runtime codex,claude,copilot /path/to/hub
 ```
 
-The legacy `--runtime codex` argument remains valid. Other names and runtime
-combinations are rejected before creating or modifying the target. Bootstrap
-requires Python 3 to validate the existing manifest and destination paths.
+New installations default to Codex. An existing supported runtime set is retained
+on refresh; `--runtime` adds to that set. All enabled adapters are refreshed
+together so shared policy cannot advance while leaving an old supported adapter
+active. Disabling/removing a runtime is a deliberate migration, not an installer
+side effect. Refresh only at an idle, checkpointed boundary.
 
-A hub containing `.claude/`, `CLAUDE.md`, `.opencode/`, `opencode.json`, or
-`.deepagents/`, or a manifest naming retired runtimes or their managed files,
-is refused before any writes. `--force` does not bypass this check. This avoids
-silently replacing shared policy while leaving old runtime instructions active.
+The installer preserves `projects/`, source checkouts and unmanaged files. It
+preflights manifests, symlink/path collisions, operational Git/lock paths and
+runtime compatibility before mutation. Overlapping templates must have identical
+bytes and modes. Conflicting unmanaged files, including roles and skills, are
+refused before mutation. Existing files can be adopted only when their bytes and
+modes already match the template. `--force` is a legacy no-op.
 
-To retain existing runtime workflows, leave that hub on its current release
-and create a separate Codex hub. Register projects there with `--hub-only` when
-you want to preserve existing repo marker bindings. Copying useful project
-records is a deliberate migration: inspect repo paths, active lane checkouts,
-shared decisions, and resume state before treating imported records as current.
-Do not run two hubs as concurrent owners of the same active lane checkout.
+A legacy managed Claude settings file is retired during refresh in favor of the
+explicit hook settings/launcher; stale managed role files are also retired.
+User-owned settings.local.json, custom roles and retained work records remain.
+Supported older Codex/Claude manifests can upgrade together. OpenCode, Deep
+Agents and unknown runtimes require explicit migration; no adapter for them is
+added by this change. Preserve original hubs while inspecting any imported
+project bindings, active checkouts and worker status.
 
-For an in-place migration, first stop sessions using the hub and commit or back
-up its records. Explicitly remove retired runtime surfaces and their manifest
-entries, then run the Codex dry-run and refresh. Keep `projects/` and the source
-repositories intact. This installer does not perform that destructive migration
-or infer permission to remove user configuration.
+`--git-init` creates the hub's own Git root, including under another repository.
+Registration retains `--hub-only` and its shared publication lock. No runtime
+adapter expands checkout permissions or changes a registered source repository.
 
-Historical `docs/artifact-redundancy-map.md`, `docs/dispatch-refactor-notes.md`,
-and `docs/piper-raygent-layering-note.md` describe earlier designs, not currently
-supported runtime surfaces.
+## Evidence and limits — 2026-09-08
+
+Official native contracts were retrieved on 2026-09-08. Local Claude
+`--version`/`--help` reported **2.1.260**. Installed Copilot package metadata
+reports **1.0.34**, build **18e1ba7**; its `--version`/`--help` could not run in
+this sandbox (`SecItemCopyMatching -50`). No credential access or permission
+relaxation was attempted. Static inspection confirmed Copilot consumes top-level
+SessionStart additionalContext and sets both Claude/Copilot project-directory
+environment variables.
+
+The source suite exercises generated wiring, all runtime combinations, refresh,
+record preservation, native hook command serialization with synthetic payloads,
+launcher arguments using a stub binary and role restrictions. These checks do
+not establish native model discovery, trust, role selection or end-to-end model
+behavior. No live Claude/Copilot model evaluation has yet been performed for
+this change. Existing [Codex-only observations](codex-distribution-history.md),
+[workflow experiments](codex-prototype-experiments.md) and
+[role experiments](subagent-experiments.md) retain their original scope.
+
+Primary references:
+
+- [Claude instructions and memory](https://code.claude.com/docs/en/memory)
+- [Claude skills](https://code.claude.com/docs/en/skills)
+- [Claude subagents](https://code.claude.com/docs/en/sub-agents)
+- [Claude hooks](https://code.claude.com/docs/en/hooks)
+- [Claude CLI settings option](https://code.claude.com/docs/en/cli-reference)
+- [Copilot custom instructions](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions)
+- [Copilot skills](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-skills)
+- [Copilot custom agents](https://docs.github.com/en/copilot/reference/custom-agents-configuration)
+- [Copilot hooks](https://docs.github.com/en/copilot/reference/hooks-reference)
+- [Copilot CLI reference](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference)

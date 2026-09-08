@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+# Only selects Piper hook settings and the hub working directory. All model,
+# permission, login and session behavior remains with the native CLI.
+set -eu
+PIPER_CLAUDE_HUB=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd -P)
+cd "$PIPER_CLAUDE_HUB"
+exec claude --settings "$PIPER_CLAUDE_HUB/.piper/runtime/claude-settings.json" "$@"

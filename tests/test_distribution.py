@@ -39,7 +39,7 @@ def rejects_without_mutation(hub: Path, message: str, *args: str) -> None:
     assert snapshot(hub) == before, "rejected bootstrap changed existing hub"
 
 
-for index, surface in enumerate((".claude/settings.json", "CLAUDE.md", ".opencode/agents/reviewer.md", "opencode.json", ".deepagents/AGENTS.md")):
+for index, surface in enumerate((".opencode/agents/reviewer.md", "opencode.json", ".deepagents/AGENTS.md")):
     hub = TMP / f"legacy-surface-{index}"
     path = hub / surface
     path.parent.mkdir(parents=True)
@@ -51,7 +51,6 @@ for index, surface in enumerate((".claude/settings.json", "CLAUDE.md", ".opencod
     rejects_without_mutation(hub, "retired runtime surfaces", "--dry-run")
 
 for index, data in enumerate((
-    {"runtimes": ["codex", "claude"]},
     {"managed_files": [".deepagents/AGENTS.md"]},
     {"runtimes": ["future-runtime"]},
 )):
@@ -388,7 +387,7 @@ renderer.render_all(out)
 (out / "retired-runtime").mkdir()
 (out / "retired-runtime/stale.md").write_text("retired output")
 renderer.render_all(out)
-assert set(p.name for p in out.iterdir()) == {"codex"}
+assert set(p.name for p in out.iterdir()) == {"codex", "claude", "copilot"}
 assert not renderer.compare_dirs(ROOT / "generated", out)
 
 # The renderer must reject future whole-file overrides, rather than silently
@@ -482,7 +481,7 @@ requires("AGENTS.md",
     "`automation-policy.md` owns action boundaries.",
     "`design-studio` is optional deeper durable design after explicit user choice.",
     "`piper-workflow` verifies converged direction and formalizes an execution boundary before Ralph edits.",
-    "Codex uses skills and natural language, not a custom `.codex/commands/` slash-command directory.",
+    "Read `RUNTIMES.md` for the active CLI's skill directory, invocation syntax,",
     "`$design-studio`", "`$piper-workflow`", "`$brainstorm`",
     "`piper-workflow/references/coordinated-work.md`",
     "`piper-workflow/references/integration.md`",
