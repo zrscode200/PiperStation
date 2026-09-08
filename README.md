@@ -8,6 +8,14 @@ project understanding and work records shared by its enabled runtimes.
 This repository is the source distribution. It renders shared Piper behavior
 and native adapters into `generated/`.
 
+**Runtime validation status — 2026-09-08:** Claude Code and Copilot adapters have
+passed local distribution tests and independent implementation review. Live
+Claude/Copilot sessions have **not yet been validated** for this change. The
+local Copilot CLI check encountered `SecItemCopyMatching -50` in the verification
+sandbox; this is an observed environment limitation, not an established failure
+on every installation. See [evidence and limits](docs/capability-matrix.md#evidence-and-limits--2026-09-08)
+for checked versions and the scope of the evidence.
+
 ```sh
 # New hub, defaulting to Codex
 ./bootstrap/init.sh --git-init /path/to/hub
@@ -30,11 +38,19 @@ all supplied arguments. Bare `claude` still loads instructions, skills and roles
 but omits Piper lifecycle hooks. Explicit loading prevents Copilot from also
 executing Claude's hooks. See [runtime wiring and differences](docs/capability-matrix.md).
 
+Hooks provide reminders and context; they do not save checkpoints. Explicitly
+checkpoint before compaction or switching sessions. Copilot has no documented
+post-compaction hook equivalent. Native role tool restrictions also do not
+establish an OS sandbox; verify actual tools and workspace access before
+assigning source work.
+
 A refresh retains previously enabled supported runtimes. Passing `--runtime`
 adds adapters; it never disables another installed runtime. Refresh at an idle
 boundary after affected sessions checkpoint. Managed files are updated and stale
 managed files retired; project records, source workspaces and unmanaged content
 are preserved. Unsupported old runtime surfaces require explicit migration.
+Updating this source checkout does not refresh an existing hub: rerun the
+installer for that hub at the checkpointed boundary described above.
 
 Read [PRODUCT.md](PRODUCT.md), [ARCHITECTURE.md](ARCHITECTURE.md) and
 [TESTING.md](TESTING.md) for scope, ownership and verification. Piper provides

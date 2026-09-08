@@ -4,6 +4,12 @@ Piper's phase, ownership, design, review and action contracts live in `STATION.m
 and shared skills. Use only the row for the CLI actually running this session.
 An installed adapter or old session handle does not identify the active runtime.
 
+**Validation status — 2026-09-08:** Claude Code and Copilot adapter wiring has
+passed local synthetic/distribution checks and independent implementation
+review. Live model sessions have not yet been validated for this change.
+Verify native instruction/skill discovery, selected roles and effective tools
+in your installed CLI; generated files alone do not establish these behaviors.
+
 | CLI | Launch from the hub | Instructions | Skills | Native roles |
 | --- | --- | --- | --- | --- |
 | Codex | `codex` | `AGENTS.md` | `.codex/skills/` | `.codex/agents/<role>.toml` |
