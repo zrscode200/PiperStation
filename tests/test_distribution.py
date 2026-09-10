@@ -387,7 +387,7 @@ renderer.render_all(out)
 (out / "retired-runtime").mkdir()
 (out / "retired-runtime/stale.md").write_text("retired output")
 renderer.render_all(out)
-assert set(p.name for p in out.iterdir()) == {"codex", "claude", "copilot"}
+assert set(p.name for p in out.iterdir()) == {"codex", "claude", "copilot", "omp"}
 assert not renderer.compare_dirs(ROOT / "generated", out)
 
 # The renderer must reject future whole-file overrides, rather than silently

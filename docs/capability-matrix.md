@@ -1,7 +1,7 @@
 # Runtime distribution and native wiring
 
-Piper supports `codex`, `claude` (Claude Code CLI) and `copilot` (GitHub Copilot
-CLI), individually or together. All receive the current shared workflow:
+Piper supports `codex`, `claude` (Claude Code CLI), `copilot` (GitHub Copilot
+CLI) and `omp` (Oh My Pi), individually or together. All receive the current shared workflow:
 brainstorm and optional Design Studio, accepted revisions/adopted details and
 later evidence, planning/Ralph/review, independent lanes, exclusive source
 checkouts, three bounded roles, protected records/integration, action boundaries
@@ -66,7 +66,7 @@ Piper source ownership and native access. These tool allowlists are not an OS
 sandbox. Codex role sandbox narrowing remains conditional on the client actually
 selecting/applying its overlay. Report observed permissions or mark them unknown.
 
-All three CLI surfaces document `--add-dir`; verify effective access at runtime.
+All four CLI surfaces document `--add-dir`; verify effective access at runtime.
 Claude normally does not load CLAUDE.md from added directories. Copilot may load
 trusted skills/agents there. Workers receive absolute hub/source/record references
 and must not infer their assignment from an inherited directory or role name.
@@ -74,8 +74,8 @@ and must not infer their assignment from an inherited directory or role name.
 ## Installation and refresh
 
 ```sh
-./bootstrap/init.sh --runtime codex,claude,copilot --dry-run /path/to/hub
-./bootstrap/init.sh --runtime codex,claude,copilot /path/to/hub
+./bootstrap/init.sh --runtime codex,claude,copilot,omp --dry-run /path/to/hub
+./bootstrap/init.sh --runtime codex,claude,copilot,omp /path/to/hub
 ```
 
 New installations default to Codex. An existing supported runtime set is retained
@@ -134,3 +134,27 @@ Primary references:
 - [Copilot custom agents](https://docs.github.com/en/copilot/reference/custom-agents-configuration)
 - [Copilot hooks](https://docs.github.com/en/copilot/reference/hooks-reference)
 - [Copilot CLI reference](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference)
+
+## OMP — 2026-09-10
+
+OMP 18.0.8 adds normal `omp` hub startup, native `.omp/skills`, two namespaced
+native observer agents, a plain standalone implementer supplement and a native
+lifecycle extension. Shared instructions and project/lane formats are unchanged.
+See [OMP setup, parallel work and runtime limits](omp.md) before delegating.
+Native isolated task autoapply and disposable-checkout behavior are unsuitable
+for Piper's durable source-writing contract; separate assigned OMP sessions
+preserve that contract. OMP child tool lists do not establish OS sandboxing.
+
+The complete source suite passed: 9 runtime tests (15 combinations, 24 adapter
+enablement orders), 35 record tests and 32 integration tests, plus distribution,
+canonical, shell, render-freshness and whitespace checks. The installed extension
+was exercised with synthetic events and real Python context generation, covering
+resume/branch/tree/compaction, headless fallback, retry and record preservation.
+
+OMP 18.0.8 help/version worked. An offline RPC startup query failed with sandbox
+`EPERM` while creating its own `~/.omp/run/daemons` state, before returning native
+context. A separate `omp read skill://piper-workflow` query returned no available
+skills; that command is not accepted as successful discovery evidence. These
+are recorded probe limits, not proof that full native startup works or fails
+outside this sandbox. No model prompt was sent, no permissions were relaxed,
+and no live OMP model evaluation has been performed.

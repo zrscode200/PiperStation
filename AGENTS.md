@@ -1,6 +1,6 @@
 # Repository Operating Instructions
 
-This repository builds Piper Station for Codex, Claude Code CLI and GitHub Copilot CLI. It is the source distribution
+This repository builds Piper Station for Codex, Claude Code CLI, GitHub Copilot CLI and OMP. It is the source distribution
 for rendering a central Piper hub; it is not itself a generated hub.
 
 ## Required Behavior
@@ -15,7 +15,7 @@ for rendering a central Piper hub; it is not itself a generated hub.
   managed, and `projects/` records are hub-owned.
 - Do not reintroduce a heavy runtime, daemon, global queue, or copied project
   source tree.
-- Support `codex`, `claude` and `copilot`, individually and together. Preserve
+- Support `codex`, `claude`, `copilot` and `omp`, individually and together. Preserve
   project records and source workspaces on refresh. Keep unsupported-runtime
   migration explicit, and test overlapping native discovery paths.
 

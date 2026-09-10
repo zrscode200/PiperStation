@@ -1,7 +1,7 @@
 # Product
 
 Piper Station is a central design and development workspace for one developer
-working with Codex, Claude Code CLI or GitHub Copilot CLI across registered
+working with Codex, Claude Code CLI, GitHub Copilot CLI or OMP across registered
 projects. It connects exploration, deliberate planning, bounded implementation,
 review and durable resumption. A hub may enable any combination of these CLIs.
 

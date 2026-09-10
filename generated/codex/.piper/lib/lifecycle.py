@@ -7,13 +7,14 @@ import sys
 
 sys.dont_write_bytecode = True
 parser = argparse.ArgumentParser()
-parser.add_argument('--runtime', choices=('codex', 'claude', 'copilot'), required=True)
+parser.add_argument('--runtime', choices=('codex', 'claude', 'copilot', 'omp'), required=True)
 parser.add_argument('--event', choices=('session-start', 'pre-compact', 'post-compact'), required=True)
+parser.add_argument('--source', choices=('startup', 'resume', 'compact', 'new', 'clear', 'fork'))
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[2]
 try:
-    event = json.loads(sys.stdin.read() or '{}') if not sys.stdin.isatty() else {}
-    source = event.get('source', 'startup') if isinstance(event, dict) else 'startup'
+    event = json.loads(sys.stdin.read() or '{}') if not args.source and not sys.stdin.isatty() else {}
+    source = args.source or (event.get('source', 'startup') if isinstance(event, dict) else 'startup')
 except ValueError:
     source = 'startup'
 if source not in ('startup', 'resume', 'compact', 'new', 'clear', 'fork'):
@@ -47,7 +48,14 @@ if lanes:
     if len(lanes) > 40:
         context += f'\n{len(lanes) - 40} additional lane records omitted; inspect the selected project.'
 
-if args.event == 'session-start':
+compact_reminder = "Piper Station compact reminder: prepare the selected lane's context-pack.md using STATION -> Lanes and Compaction. Read the old packet and canonical records before a full rewrite; preserve goal, phase/boundary, next exact action, unrecorded verification/review, blockers/risks/questions, stop reason, related-contract impacts and unresolved worker locators. Derive source git and native worker status live at resume. Studios keep packets in their studio folders. Protect shared publication and preserve other lanes' state. This hook reminds; it does not write a snapshot or block compaction."
+post_compact = "Piper Station post-compact: reload AGENTS.md, relevant STATION sections, project binding/memory/decisions and the selected lane's packet, active work, ledger and canonical design when relevant. Verify live git, changed related contracts, incomplete integration/publication and actual native worker status before editing. Stored handles and status are hints, not liveness evidence. Resume the selected phase and preserve ownership; never duplicate work after a wait timeout. SessionStart supplies model-visible resume guidance."
+
+if args.runtime == 'omp':
+    # The native extension consumes text, not another CLI's hook JSON schema.
+    print({'session-start': context, 'pre-compact': compact_reminder,
+           'post-compact': post_compact}[args.event])
+elif args.event == 'session-start':
     if args.runtime == 'copilot':
         print(json.dumps({'additionalContext': context}))
     else:
@@ -56,12 +64,11 @@ if args.event == 'session-start':
                          'systemMessage': f'Piper Station ready (source={source}, projects={len(project_dirs)}).'}))
 elif args.event == 'pre-compact':
     if args.runtime == 'copilot':
-        # Copilot documents this event as notification-only; stdout is not a
-        # checkpoint, model instruction or blocking mechanism.
-        print("Piper Station compact reminder: prepare the selected lane's context-pack.md using STATION -> Lanes and Compaction. Read the old packet and canonical records before a full rewrite; preserve goal, phase/boundary, next exact action, unrecorded verification/review, blockers/risks/questions, stop reason, related-contract impacts and unresolved worker locators. Derive source git and native worker status live at resume. Studios keep packets in their studio folders. Protect shared publication and preserve other lanes' state. This hook reminds; it does not write a snapshot or block compaction.", file=sys.stderr)
+        # Notification only; the native runtime does not process hook output.
+        print(compact_reminder, file=sys.stderr)
     else:
-        print(json.dumps({'systemMessage': "Piper Station compact reminder: prepare the selected lane's context-pack.md using STATION -> Lanes and Compaction. Read the old packet and canonical records before a full rewrite; preserve goal, phase/boundary, next exact action, unrecorded verification/review, blockers/risks/questions, stop reason, related-contract impacts and unresolved worker locators. Derive source git and native worker status live at resume. Studios keep packets in their studio folders. Protect shared publication and preserve other lanes' state. This hook reminds; it does not write a snapshot or block compaction."}))
+        print(json.dumps({'systemMessage': compact_reminder}))
 else:
     if args.runtime == 'copilot':
         parser.error('Copilot CLI has no documented postCompact event')
-    print(json.dumps({'systemMessage': "Piper Station post-compact: reload AGENTS.md, relevant STATION sections, project binding/memory/decisions and the selected lane's packet, active work, ledger and canonical design when relevant. Verify live git, changed related contracts, incomplete integration/publication and actual native worker status before editing. Stored handles and status are hints, not liveness evidence. Resume the selected phase and preserve ownership; never duplicate work after a wait timeout. SessionStart supplies model-visible resume guidance."}))
+    print(json.dumps({'systemMessage': post_compact}))

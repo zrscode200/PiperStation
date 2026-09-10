@@ -1,8 +1,8 @@
 # Piper Station
 
 Piper Station is a central workspace for one developer designing, building,
-reviewing and returning to projects with Codex, Claude Code CLI or GitHub
-Copilot CLI. Registered source stays in its repository; the hub preserves
+reviewing and returning to projects with Codex, Claude Code CLI, GitHub
+Copilot CLI or OMP (Oh My Pi). Registered source stays in its repository; the hub preserves
 project understanding and work records shared by its enabled runtimes.
 
 This repository is the source distribution. It renders shared Piper behavior
@@ -23,7 +23,8 @@ for checked versions and the scope of the evidence.
 # Any supported runtime or combination
 ./bootstrap/init.sh --runtime claude --git-init /path/to/claude-hub
 ./bootstrap/init.sh --runtime copilot --git-init /path/to/copilot-hub
-./bootstrap/init.sh --runtime codex,claude,copilot --git-init /path/to/shared-hub
+./bootstrap/init.sh --runtime omp --git-init /path/to/omp-hub
+./bootstrap/init.sh --runtime codex,claude,copilot,omp --git-init /path/to/shared-hub
 
 ./bootstrap/add-project.sh --hub /path/to/hub --repo /path/to/project --project-id my-project
 ```
@@ -32,11 +33,19 @@ Python 3, a POSIX shell and Git are required. Use `--dry-run` to inspect changes
 `--git-init` creates the hub's own Git root even under an existing repository,
 so hub checkpoint commits cannot land in an enclosing project repository.
 
-At the hub, launch `codex`, `./bin/piper-claude`, or `copilot`. The thin Claude
+At the hub, launch `codex`, `./bin/piper-claude`, `copilot`, or `omp`. The thin Claude
 launcher selects the hub and its hook settings, then execs the native CLI with
 all supplied arguments. Bare `claude` still loads instructions, skills and roles,
 but omits Piper lifecycle hooks. Explicit loading prevents Copilot from also
 executing Claude's hooks. See [runtime wiring and differences](docs/capability-matrix.md).
+
+OMP discovers Piper automatically when launched at the installed hub root. Use
+`/skill:brainstorm`, `/skill:design-studio`, `/skill:piper-workflow` or
+`/skill:piper-review`, or state the intent naturally. Saved project/lane records
+provide continuity; earlier conversations are not automatically imported. Piper's OMP
+native task profiles are observers; source writers use separate OMP sessions in
+assigned persistent checkouts. Automated checks pass; live OMP startup/model
+behavior remains unverified in this sandbox. See [OMP usage and limits](docs/omp.md).
 
 Hooks provide reminders and context; they do not save checkpoints. Explicitly
 checkpoint before compaction or switching sessions. Copilot has no documented
@@ -60,4 +69,4 @@ permission differences are documented in the runtime matrix.
 
 Historical [Codex workflow evaluations](docs/codex-prototype-experiments.md) and
 [three-role evaluations](docs/subagent-experiments.md) remain evidence for their
-recorded versions and runtime. They do not establish Claude/Copilot behavior.
+recorded versions and runtime. They do not establish Claude/Copilot/OMP behavior.

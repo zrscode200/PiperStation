@@ -13,7 +13,7 @@ ROOT = Path(sys.argv.pop(1)).resolve()
 SCRATCH = Path(sys.argv.pop(1)).resolve() / "runtimes"
 SCRATCH.mkdir()
 BOOTSTRAP = ROOT / "bootstrap/init.sh"
-RUNTIMES = ("codex", "claude", "copilot")
+RUNTIMES = ("codex", "claude", "copilot", "omp")
 ROLES = ("investigator", "implementer", "reviewer")
 
 
@@ -33,8 +33,8 @@ class RuntimeTests(unittest.TestCase):
     def bootstrap(self, hub, *args):
         return subprocess.run([str(BOOTSTRAP), *args, str(hub)], text=True, capture_output=True)
 
-    def test_all_seven_combinations_and_refresh(self):
-        for count in range(1, 4):
+    def test_all_runtime_combinations_and_refresh(self):
+        for count in range(1, len(RUNTIMES) + 1):
             for runtimes in itertools.combinations(RUNTIMES, count):
                 with self.subTest(runtimes=runtimes):
                     hub = self.hub("-".join(runtimes), runtimes)
@@ -42,14 +42,14 @@ class RuntimeTests(unittest.TestCase):
                     self.assertEqual(manifest["runtimes"], list(runtimes))
                     for runtime in RUNTIMES:
                         entry = {"codex": ".codex/config.toml", "claude": "bin/piper-claude",
-                                 "copilot": ".github/hooks/piper.json"}[runtime]
+                                 "copilot": ".github/hooks/piper.json", "omp": ".omp/extensions/piper.js"}[runtime]
                         self.assertEqual((hub / entry).exists(), runtime in runtimes)
                     for relative in ("STATION.md", "AGENTS.md", "RUNTIMES.md", "bin/piper-record", "bin/piper-integrate"):
                         self.assertEqual((hub / relative).read_bytes(), (ROOT / "core/shared" / relative).read_bytes())
                     self.assertFalse((hub / ".claude/settings.json").exists(), "Claude hooks must not be auto-discovered by Copilot")
                     self.assertFalse((hub / ".github/skills").exists(), "no duplicate Copilot/Claude skills")
                     for runtime in runtimes:
-                        skills = hub / (".codex/skills" if runtime == "codex" else ".claude/skills")
+                        skills = hub / ({"codex": ".codex/skills", "omp": ".omp/skills"}.get(runtime, ".claude/skills"))
                         self.assertEqual(len(list(skills.glob("*/SKILL.md"))), 5)
                         workflow = skills / "piper-workflow"
                         self.assertEqual((workflow / "SKILL.md").read_bytes(), (ROOT / "core/skills/piper-workflow/SKILL.md").read_bytes())
@@ -60,7 +60,8 @@ class RuntimeTests(unittest.TestCase):
                         self.assertTrue(review.is_file())
                         for role in ROLES:
                             relative = {"codex": f".codex/agents/{role}.toml", "claude": f".claude/agents/{role}.md",
-                                        "copilot": f".github/agents/{role}.agent.md"}[runtime]
+                                        "copilot": f".github/agents/{role}.agent.md",
+                                        "omp": f".omp/{'roles' if role == 'implementer' else 'agents'}/{role}.md"}[runtime]
                             self.assertIn((ROOT / "core/roles" / (role + ".md")).read_text().strip(), (hub / relative).read_text())
                     retained = hub / "projects/example/work/lanes/paused/context-pack.md"
                     retained.parent.mkdir(parents=True)
@@ -130,7 +131,11 @@ class RuntimeTests(unittest.TestCase):
                  ("copilot", ".github/agents/reviewer.agent.md"),
                  ("claude", ".claude/skills/brainstorm/SKILL.md"),
                  ("copilot", ".claude/skills/brainstorm/SKILL.md"),
-                 ("claude", "bin/piper-claude"))
+                 ("claude", "bin/piper-claude"),
+                 ("omp", ".omp/agents/reviewer.md"),
+                 ("omp", ".omp/roles/implementer.md"),
+                 ("omp", ".omp/skills/brainstorm/SKILL.md"),
+                 ("omp", ".omp/extensions/piper.js"))
         for index, (runtime, relative) in enumerate(cases):
             with self.subTest(runtime=runtime, path=relative):
                 hub = self.hub(f"custom-enable-{index}", ("codex",))
@@ -199,6 +204,43 @@ class RuntimeTests(unittest.TestCase):
             else:
                 self.assertIn("does not write a snapshot", json.loads(result.stdout)["systemMessage"])
         self.assertEqual(snapshot(hub), before)
+
+    def test_omp_extension_lifecycle_and_unmanaged_settings(self):
+        hub = self.hub("omp hub $cash 'quotes'", ("omp",))
+        project = hub / "projects/example"
+        (project / "work/lanes/retained").mkdir(parents=True)
+        (project / "project.md").write_text("# Example\n")
+        (project / "work/lanes/retained/context-pack.md").write_text("Unresolved work\n")
+        settings = hub / ".omp/config.yml"
+        settings.write_text("skills:\n  enableSkillCommands: false\n")
+        custom_role = hub / ".omp/agents/custom.md"
+        custom_role.write_text("User-owned role\n")
+        before = snapshot(hub)
+        node = shutil.which("node")
+        self.assertIsNotNone(node, "Node.js 18+ is required for OMP extension contract tests")
+        result = subprocess.run([node, str(ROOT / "tests/test_omp_extension.mjs"), str(hub)],
+                                text=True, capture_output=True, timeout=30)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(snapshot(hub), before, "lifecycle must preserve all hub files")
+        result = self.bootstrap(hub, "--runtime", "claude,codex,copilot")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(settings.read_bytes(), before[".omp/config.yml"][1])
+        self.assertEqual(custom_role.read_bytes(), before[".omp/agents/custom.md"][1])
+        for role in ("investigator", "reviewer"):
+            content = (hub / f".omp/agents/{role}.md").read_text()
+            header = content.split("---", 2)[1]
+            self.assertIn(f"name: piper-{role}", header)
+            self.assertIn("tools: read, grep, glob, web_search", header)
+            # OMP's parser ignores YAML false/empty lists; omitted spawns plus
+            # no task tool uses its fail-closed child default (see docs/omp.md).
+            fields = dict(line.split(":", 1) for line in header.splitlines() if ":" in line)
+            self.assertNotIn("spawns", fields)
+            self.assertEqual({name.strip() for name in fields["tools"].split(",")},
+                             {"read", "grep", "glob", "web_search"})
+            for forbidden in ("model:", "approvalMode:"):
+                self.assertNotIn(forbidden, header)
+        self.assertFalse((hub / ".omp/agents/implementer.md").exists())
+        self.assertFalse((hub / ".omp/roles/implementer.md").read_text().startswith("---"))
 
     def test_claude_launcher_passes_arguments_and_uses_hub(self):
         hub = self.hub("launcher hub $cash 'quotes'", ("claude",))

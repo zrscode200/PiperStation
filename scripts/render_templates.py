@@ -10,10 +10,10 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNTIMES = ("codex", "claude", "copilot")
+RUNTIMES = ("codex", "claude", "copilot", "omp")
 # Claude and Copilot both discover .claude/skills. Identical shared output at
 # one path prevents duplicate same-name skills when both adapters are installed.
-SKILL_DIRS = {"codex": ".codex/skills", "claude": ".claude/skills", "copilot": ".claude/skills"}
+SKILL_DIRS = {"codex": ".codex/skills", "claude": ".claude/skills", "copilot": ".claude/skills", "omp": ".omp/skills"}
 COMMAND_OWNING_SKILL = {
     "add-project.md": "brainstorm",
     "superpowers.md": "piper-workflow",

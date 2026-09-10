@@ -15,8 +15,8 @@ import tempfile
 
 sys.dont_write_bytecode = True
 SOURCE = Path(__file__).resolve().parents[1]
-RUNTIMES = ("codex", "claude", "copilot")
-VERSION = "0.3.0"
+RUNTIMES = ("codex", "claude", "copilot", "omp")
+VERSION = "0.4.0"
 RETIRED = (".opencode", "opencode.json", ".deepagents")
 
 
@@ -70,7 +70,7 @@ def select_runtimes(hub, data, requested):
     # Older manifests may omit runtimes. Only their owned native entry points
     # identify adapters; .claude/skills alone is shared by Claude and Copilot.
     for name, markers in {"codex": (".codex/",), "claude": ("CLAUDE.md", ".claude/settings.json", ".claude/agents/"),
-                          "copilot": (".github/copilot-instructions.md", ".github/agents/", ".github/hooks/")}.items():
+                          "copilot": (".github/copilot-instructions.md", ".github/agents/", ".github/hooks/"), "omp": (".omp/",)}.items():
         if any(p == marker or (marker.endswith("/") and p.startswith(marker)) for p in managed for marker in markers):
             installed.add(name)
     chosen = installed | set(requested)
@@ -163,7 +163,7 @@ def install(args):
     for group in args.runtime or []:
         for runtime in group.split(","):
             if runtime not in RUNTIMES:
-                fail(f"unsupported runtime: {runtime!r}; choose codex, claude or copilot")
+                fail(f"unsupported runtime: {runtime!r}; choose codex, claude, copilot or omp")
             requested.append(runtime)
     hub = Path(args.target).expanduser().resolve()
     if hub == SOURCE or (hub.exists() and os.path.samefile(hub, SOURCE)):
@@ -228,7 +228,7 @@ def install(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--runtime", action="append", help="codex, claude, copilot, or a comma-separated combination; adds to installed runtimes")
+    parser.add_argument("--runtime", action="append", help="codex, claude, copilot, omp, or a comma-separated combination; adds to installed runtimes")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--git-init", action="store_true")
     parser.add_argument("--force", action="store_true", help=argparse.SUPPRESS)

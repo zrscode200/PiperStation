@@ -2,11 +2,12 @@
 
 Run `./tests/run.sh` after changes to behavior, rendering, bootstrap, registration
 or adapters. It covers shared instruction contracts and helper behavior plus
-fresh installs of all seven supported runtime combinations, incremental adapter
+fresh installs of all fifteen supported runtime combinations, incremental adapter
 enablement, refresh and legacy supported-role migration, collision rejection,
 record preservation, native hook payload/output fixtures, launcher argument
-handling and observer tool restrictions. It uses disposable local directories,
-requires Python 3, a POSIX shell and Git, and needs no network or model access.
+handling, OMP extension lifecycle behavior and observer tool restrictions. It uses disposable local directories,
+requires Python 3, Node.js 18+ (extension tests), a POSIX shell and Git, and needs
+no network or model access. OMP itself is not required for the deterministic suite.
 
 Run the remaining source checks from `AGENTS.md`: shell syntax, render freshness
 and `git diff --check`. Static/generated checks establish what is distributed;
